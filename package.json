@@ -18,15 +18,15 @@
       "title": "Yandex Music",
       "properties": {
         "yandexMusic.credentials.username": {
-			"description": "Your Yandex Music user name",
-			"type": "string",
-			"scope": "application"
-		},
-		"yandexMusic.credentials.password": {
-			"description": "Your Yandex Music password",
-			"type": "string",
-			"scope": "application"
-		}
+          "description": "Your Yandex Music user name",
+          "type": "string",
+          "scope": "application"
+        },
+        "yandexMusic.credentials.password": {
+          "description": "Your Yandex Music password",
+          "type": "string",
+          "scope": "application"
+        }
       }
     },
     "commands": [
@@ -34,7 +34,24 @@
         "command": "extension.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "yandex-music-explorer",
+          "title": "Yandex Music",
+          "icon": "resources/megaphone.svg"
+        }
+      ]
+    },
+    "views": {
+      "yandex-music-explorer": [
+        {
+          "id": "yandex-music-play-lists",
+          "name": "Yandex Music Play Lists"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
