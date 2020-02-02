@@ -10,6 +10,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
+  const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
+  const username = configuration.get<string>("username");
+  const password = configuration.get<string>("password");
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -17,21 +20,14 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand("extension.helloWorld", () => {
     const api = new YandexMusicApi();
 
-    api
-      .init({ username: "cherkalexander@yandex.ru", password: "***" })
-      .then((result) => {
-        api.getFeed().then(
-          (feed) => {
-            console.log(feed);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-      })
-      .catch(function() {
-        vscode.window.showInformationMessage("Fail!");
-      });
+    if (username && password) {
+      api
+        .init({ username, password })
+        .then((result) => console.log(result))
+        .catch(function(error) {
+          vscode.window.showInformationMessage("Fail!");
+        });
+    }
 
     // Display a message box to the user
     vscode.window.showInformationMessage("Hello World!");
