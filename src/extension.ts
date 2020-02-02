@@ -1,35 +1,22 @@
-/// <reference path="./../typings/yandex-music-api/yandex-music-api.d.ts"/>
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import YandexMusicApi = require("yandex-music-api");
+import { PlayListProvider } from "./playListProvider";
+import { PlayListTree } from "./playListTree";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
   const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
   const username = configuration.get<string>("username");
   const password = configuration.get<string>("password");
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
+  if (username && password) {
+    const api = new PlayListProvider();
+
+    api.init(username, password).then(() => {
+      vscode.window.registerTreeDataProvider("yandex-music-play-lists", new PlayListTree(api));
+    });
+  }
+
   let disposable = vscode.commands.registerCommand("extension.helloWorld", () => {
-    const api = new YandexMusicApi();
-
-    if (username && password) {
-      api
-        .init({ username, password })
-        .then((result) => console.log(result))
-        .catch(function(error) {
-          vscode.window.showInformationMessage("Fail!");
-        });
-    }
-
-    // Display a message box to the user
     vscode.window.showInformationMessage("Hello World!");
   });
 
