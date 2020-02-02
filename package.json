@@ -18,12 +18,12 @@
       "title": "Yandex Music",
       "properties": {
         "yandexMusic.credentials.username": {
-          "description": "Your Yandex Music user name",
+          "description": "Yandex Music user name",
           "type": "string",
           "scope": "application"
         },
         "yandexMusic.credentials.password": {
-          "description": "Your Yandex Music password",
+          "description": "Yandex Music password",
           "type": "string",
           "scope": "application"
         }
