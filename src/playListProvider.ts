@@ -15,6 +15,10 @@ export class PlayListProvider {
       return this._api.getFeed();
   }
 
+  getTracks(playList: YandexMusicApi.GeneratedPlayList) {
+    return this._api.getPlaylist(playList.owner.uid, playList.kind)
+  }
+
 //TODO: add ability to listen own playlists
 //   getPlayLists() {
 //     return this._api.getUserPlaylists().then((playLists) => {

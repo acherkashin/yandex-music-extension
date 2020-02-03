@@ -2,10 +2,10 @@ declare module "yandex-music-api" {
   class YandexMusicApi {
     constructor();
 
-    init(config: { username: string; password: string }): Promise<YandexMusicApi.InitResult>;
-    getFeed(): Promise<YandexMusicApi.FeedResult>;
+    init(config: { username: string; password: string }): Promise<YandexMusicApi.InitResponse>;
+    getFeed(): Promise<YandexMusicApi.FeedResponse>;
     getUserPlaylists(userId?: string): Promise<YandexMusicApi.PlayList[]>;
-    getPlaylist(userId: string | undefined, playListId: string | number): Promise<any>;
+    getPlaylist(userId: number | string | undefined, playListId: string | number): Promise<YandexMusicApi.GeneratedPlayList>;
     /**
      * GET: /users/[user_id]/playlists
      * Get an array of playlists with tracks
@@ -36,14 +36,14 @@ declare module "yandex-music-api" {
       "rich-tracks"?: boolean;
     }
 
-    interface InitResult {
+    interface InitResponse {
       access_token: string;
       expires_in: number;
       token_type: string;
       uid: number;
     }
 
-    interface FeedResult {
+    interface FeedResponse {
       canGetMoreEvents: boolean;
       days: any[];
       generatedPlaylists: GeneratedPlayListItem[];
@@ -73,7 +73,7 @@ declare module "yandex-music-api" {
       trackCount: number;
       uid: number;
       visibility: Visibility;
-      tracks: Track;
+      tracks: Track[];
     }
 
     interface GeneratedPlayList extends PlayList {
