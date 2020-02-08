@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { PlayListProvider } from "./playListProvider";
-import YandexMusicApi = require("yandex-music-api");
+import { TrackInfo, GeneratedPlayListItem } from "./yandexApi/interfaces";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
@@ -20,23 +20,23 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     }
 
     return this.playListProvider.getTracks(element.playList.data).then((resp) => {
-      return resp.tracks.map((item) => new TrackNodeItem(<YandexMusicApi.TrackInfo>item.track));
+      return resp.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track));
     });
   }
 }
 
 export class PlayListNodeItem extends vscode.TreeItem {
-  constructor(public playList: YandexMusicApi.GeneratedPlayListItem) {
+  constructor(public playList: GeneratedPlayListItem) {
     super(playList.data.title, vscode.TreeItemCollapsibleState.Collapsed);
   }
 
   getChildren(): TrackNodeItem[] {
-    return this.playList.data.tracks.map((item) => new TrackNodeItem(<YandexMusicApi.TrackInfo>item.track));
+    return this.playList.data.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track));
   }
 }
 
 export class TrackNodeItem extends vscode.TreeItem {
-  constructor(private track: YandexMusicApi.TrackInfo) {
+  constructor(private track: TrackInfo) {
     super(track.title, vscode.TreeItemCollapsibleState.None);
   }
 }

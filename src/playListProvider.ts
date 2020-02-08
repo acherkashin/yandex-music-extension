@@ -1,6 +1,4 @@
-/// <reference path="./../typings/yandex-music-api/yandex-music-api.d.ts"/>
-
-import YandexMusicApi = require("yandex-music-api");
+import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 
 export class PlayListProvider {
   private _api: YandexMusicApi;
@@ -12,20 +10,20 @@ export class PlayListProvider {
   }
 
   getPlayLists() {
-      return this._api.getFeed();
+    return this._api.getFeed().then((resp) => resp.data);
   }
 
-  getTracks(playList: YandexMusicApi.GeneratedPlayList) {
-    return this._api.getPlaylist(playList.owner.uid, playList.kind)
+  getTracks(playList: any) {
+    return this._api.getPlaylist(playList.owner.uid, playList.kind).then((resp) => resp.data);
   }
 
-//TODO: add ability to listen own playlists
-//   getPlayLists() {
-//     return this._api.getUserPlaylists().then((playLists) => {
-//       const ids = playLists.map((item) => item.kind.toString());
-//       return this._api.getPlaylists(undefined, ids, {
-//         "rich-tracks": false,
-//       });
-//     });
-//   }
+  //TODO: add ability to listen own playlists
+  //   getPlayLists() {
+  //     return this._api.getUserPlaylists().then((playLists) => {
+  //       const ids = playLists.map((item) => item.kind.toString());
+  //       return this._api.getPlaylists(undefined, ids, {
+  //         "rich-tracks": false,
+  //       });
+  //     });
+  //   }
 }

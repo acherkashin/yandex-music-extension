@@ -73,6 +73,6 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
-    "yandex-music-api": "^0.0.3"
+    "axios": "^0.19.2"
   }
 }
