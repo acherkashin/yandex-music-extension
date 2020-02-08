@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { InitResponse, FeedResponse, PlayList, GeneratedPlayList, GetPlayListsOptions, Visibility } from "./interfaces";
+const querystring = require('querystring');
 
 export interface Config {
   ouath_code: {
@@ -21,6 +22,15 @@ export interface Config {
     TOKEN: string | null;
     UID: number | null;
   };
+}
+
+export interface Response<T> {
+  invocationInfo: {
+    "exec-duration-millis": number,
+    hostname: string,
+    "req-id": number,
+  }, 
+  result: T
 }
 
 export class YandexMusicApi {
@@ -59,6 +69,7 @@ export class YandexMusicApi {
 
     this.authClient = axios.create({
       baseURL: `https://oauth.mobile.yandex.net:443`,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
   }
 
@@ -82,23 +93,23 @@ export class YandexMusicApi {
     this._config.user.PASSWORD = config.password;
 
     return this.authClient
-      .post(`1/token`, {
+      .post(`1/token`, querystring.stringify({
         grant_type: "password",
         username: this._config.user.USERNAME,
         password: this._config.user.PASSWORD,
         client_id: this._config.ouath_code.CLIENT_ID,
         client_secret: this._config.ouath_code.CLIENT_SECRET,
-      })
+      }))
       .then((resp) => {
         return this.authClient
           .post(
             `1/token`,
-            {
+            querystring.stringify({
               grant_type: "x-token",
               access_token: resp.data.access_token,
               client_id: this._config.oauth_token.CLIENT_ID,
               client_secret: this._config.oauth_token.CLIENT_SECRET,
-            },
+            }),
             {
               params: {
                 device_id: this._config.fake_device.DEVICE_ID,
@@ -136,7 +147,7 @@ export class YandexMusicApi {
    * Get the user's feed
    * @returns {Promise}
    */
-  getFeed(): Promise<AxiosResponse<FeedResponse>> {
+  getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
     return this.apiClient.get(`/feed`, {
       headers: this._getAuthHeader(),
     });
@@ -195,7 +206,7 @@ export class YandexMusicApi {
    * @param   {String} playlistKind The playlist ID.
    * @returns {Promise}
    */
-  getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<GeneratedPlayList>> {
+  getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<Response<GeneratedPlayList>>> {
     return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/${playlistKind}`, {
       headers: this._getAuthHeader(),
     });

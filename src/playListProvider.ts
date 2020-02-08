@@ -10,11 +10,11 @@ export class PlayListProvider {
   }
 
   getPlayLists() {
-    return this._api.getFeed().then((resp) => resp.data);
+    return this._api.getFeed().then((resp) => resp.data.result);
   }
 
   getTracks(playList: any) {
-    return this._api.getPlaylist(playList.owner.uid, playList.kind).then((resp) => resp.data);
+    return this._api.getPlaylist(playList.owner.uid, playList.kind).then((resp) => resp.data.result);
   }
 
   //TODO: add ability to listen own playlists
