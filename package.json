@@ -73,6 +73,7 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "play-sound": "^1.1.3"
   }
 }
