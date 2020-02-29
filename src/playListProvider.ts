@@ -1,5 +1,6 @@
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 
+//TODO: rename
 export class PlayListProvider {
   private _api: YandexMusicApi;
   constructor() {

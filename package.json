@@ -74,6 +74,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "crypto": "^1.0.1",
     "play-sound": "^1.1.3"
   }
 }

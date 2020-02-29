@@ -130,3 +130,10 @@ export interface Owner {
   uid: number;
   verified: boolean;
 }
+
+export interface DownloadInfo {
+  s: string;
+  ts: string;
+  path: string;
+  host: string;
+}

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { InitResponse, FeedResponse, PlayList, GeneratedPlayList, GetPlayListsOptions, Visibility } from "./interfaces";
-const querystring = require('querystring');
+import { InitResponse, FeedResponse, PlayList, GeneratedPlayList, GetPlayListsOptions, Visibility, DownloadInfo } from "./interfaces";
+import { createHash } from "crypto";
+const querystring = require("querystring");
 
 export interface Config {
   ouath_code: {
@@ -26,16 +27,17 @@ export interface Config {
 
 export interface Response<T> {
   invocationInfo: {
-    "exec-duration-millis": number,
-    hostname: string,
-    "req-id": number,
-  }, 
-  result: T
+    "exec-duration-millis": number;
+    hostname: string;
+    "req-id": number;
+  };
+  result: T;
 }
 
 export class YandexMusicApi {
   private apiClient: AxiosInstance;
   private authClient: AxiosInstance;
+  private storageClient: AxiosInstance;
 
   _config: Config = {
     ouath_code: {
@@ -71,6 +73,10 @@ export class YandexMusicApi {
       baseURL: `https://oauth.mobile.yandex.net:443`,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
+
+    this.storageClient = axios.create({
+      baseURL: `https://storage.mds.yandex.net`,
+    });
   }
 
   private _getAuthHeader() {
@@ -93,13 +99,16 @@ export class YandexMusicApi {
     this._config.user.PASSWORD = config.password;
 
     return this.authClient
-      .post(`1/token`, querystring.stringify({
-        grant_type: "password",
-        username: this._config.user.USERNAME,
-        password: this._config.user.PASSWORD,
-        client_id: this._config.ouath_code.CLIENT_ID,
-        client_secret: this._config.ouath_code.CLIENT_SECRET,
-      }))
+      .post(
+        `1/token`,
+        querystring.stringify({
+          grant_type: "password",
+          username: this._config.user.USERNAME,
+          password: this._config.user.PASSWORD,
+          client_id: this._config.ouath_code.CLIENT_ID,
+          client_secret: this._config.ouath_code.CLIENT_SECRET,
+        })
+      )
       .then((resp) => {
         return this.authClient
           .post(
@@ -357,5 +366,27 @@ export class YandexMusicApi {
         headers: this._getAuthHeader(),
       }
     );
+  }
+
+  async downloadInfo(storageDir: string): Promise<DownloadInfo> {
+    try {
+      const response = await this.storageClient.get(`/download-info/${storageDir}/2?format=json`);
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async createTrackURL(info: DownloadInfo) {
+    const trackUrl = `XGRlBW9FXlekgbPrRHuSiA${info.path.substr(1)}${info.s}`;
+
+    const hashedUrl = createHash("md5")
+      .update(trackUrl)
+      .digest("hex");
+
+    const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
+
+    return link;
   }
 }
