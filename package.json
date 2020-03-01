@@ -53,7 +53,7 @@
         {
           "command": "yandexMusic.stopTrack",
           "group": "navigation",
-          "when": "yandexMusic.isPlaying"
+          "when": "yandexMusic.isPlaying && view == yandex-music-play-lists"
         }
       ]
     },
