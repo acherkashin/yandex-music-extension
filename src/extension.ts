@@ -1,9 +1,7 @@
 import * as vscode from "vscode";
 import { PlayListProvider } from "./playListProvider";
 import { PlayListTree, TrackNodeItem } from "./playListTree";
-var player = require("play-sound")({
-  /*player: "mplayer"*/
-});
+import { Player } from "./player";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
@@ -12,6 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   const password = configuration.get<string>("password");
 
   const api = new PlayListProvider();
+  const player = new Player();
 
   if (username && password) {
     api.init(username, password).then(() => {
@@ -25,11 +24,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand("yandexMusic.playTrack", async (item: TrackNodeItem) => {
     const url = await api.getUrl(item.track);
-    player.play(url, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+    player.play(url);
+  });
+
+  vscode.commands.registerCommand("yandexMusic.stopTrack", () => {
+    player.stop();
   });
 
   context.subscriptions.push(disposable);

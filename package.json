@@ -38,8 +38,24 @@
       {
         "command": "yandexMusic.playTrack",
         "title": "Play Track"
+      },
+      {
+        "command": "yandexMusic.stopTrack",
+        "title": "Stop track",
+        "icon": {
+          "dark": "resources/dark/track-stop.svg",
+          "light": "resources/light/track-stop.svg"
+        }
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "yandexMusic.stopTrack",
+          "group": "navigation"          
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
