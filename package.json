@@ -34,6 +34,10 @@
       {
         "command": "extension.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "yandexMusic.playTrack",
+        "title": "Play Track"
       }
     ],
     "viewsContainers": {

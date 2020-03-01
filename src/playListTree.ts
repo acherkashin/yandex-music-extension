@@ -26,7 +26,7 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 }
 
 export class PlayListNodeItem extends vscode.TreeItem {
-  constructor(public playList: GeneratedPlayListItem) {
+  constructor(public readonly playList: GeneratedPlayListItem) {
     super(playList.data.title, vscode.TreeItemCollapsibleState.Collapsed);
   }
 
@@ -36,7 +36,13 @@ export class PlayListNodeItem extends vscode.TreeItem {
 }
 
 export class TrackNodeItem extends vscode.TreeItem {
-  constructor(private track: TrackInfo) {
+  constructor(public readonly track: TrackInfo) {
     super(track.title, vscode.TreeItemCollapsibleState.None);
+    this.command = {
+      command: "yandexMusic.playTrack",
+      title: "Play Track",
+      tooltip: `Play ${track.title}`,
+      arguments: [this],
+    };
   }
 }

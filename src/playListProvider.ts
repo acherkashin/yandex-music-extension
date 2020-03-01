@@ -1,4 +1,5 @@
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { TrackInfo } from "./yandexApi/interfaces";
 
 //TODO: rename
 export class PlayListProvider {
@@ -16,6 +17,10 @@ export class PlayListProvider {
 
   getTracks(playList: any) {
     return this._api.getPlaylist(playList.owner.uid, playList.kind).then((resp) => resp.data.result);
+  }
+
+  getUrl(track: TrackInfo): Promise<string> {
+    return this._api.getTrackUrl(track);
   }
 
   //TODO: add ability to listen own playlists

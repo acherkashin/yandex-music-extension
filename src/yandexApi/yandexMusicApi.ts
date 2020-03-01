@@ -1,5 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { InitResponse, FeedResponse, PlayList, GeneratedPlayList, GetPlayListsOptions, Visibility, DownloadInfo } from "./interfaces";
+import {
+  InitResponse,
+  FeedResponse,
+  PlayList,
+  GeneratedPlayList,
+  GetPlayListsOptions,
+  Visibility,
+  DownloadInfo,
+  TrackInfo,
+} from "./interfaces";
 import { createHash } from "crypto";
 const querystring = require("querystring");
 
@@ -284,7 +293,7 @@ export class YandexMusicApi {
    * @param   {String} name         New playlist name.
    * @returns {Promise}
    */
-  renamePlaylist(playlistKind, name) {
+  renamePlaylist(playlistKind: string, name: string) {
     return this.apiClient.post(
       `/users/${this._config.user.UID}/playlists/${playlistKind}/name`,
       {
@@ -368,7 +377,17 @@ export class YandexMusicApi {
     );
   }
 
-  async downloadInfo(storageDir: string): Promise<DownloadInfo> {
+  async getTrackUrl(track: TrackInfo): Promise<string> {
+    try {
+      const downloadInfo = await this.getDownloadInfo(track.storageDir);
+      const url = await this.createTrackURL(downloadInfo);
+      return url;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async getDownloadInfo(storageDir: string): Promise<DownloadInfo> {
     try {
       const response = await this.storageClient.get(`/download-info/${storageDir}/2?format=json`);
 
