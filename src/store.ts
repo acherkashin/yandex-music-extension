@@ -42,7 +42,6 @@ export class Store {
       if (playList) {
         const index = playList.tracks.findIndex((item) => item.track?.id === song?.itemId);
         if (index !== -1) {
-          this.currentSongIndex = index;
           this.currentPlayListId = song.playListId;
           this.internalPlay(index);
         }
@@ -61,7 +60,7 @@ export class Store {
   }
 
   next() {
-    this.internalPlay(this.currentSongIndex ?? 0 + 1);
+    this.internalPlay((this.currentSongIndex ?? 0) + 1);
   }
 
   prev() {
@@ -69,11 +68,14 @@ export class Store {
   }
 
   private async internalPlay(index: number) {
+    this.currentSongIndex = index;
+
     if (this.currentPlayListId) {
       const item = this.playLists.get(this.currentPlayListId)?.tracks[index];
 
       if (item && item.track) {
         const url = await this.api.getUrl(item.track.storageDir);
+        this.player.stop();
         this.player.play(url);
         //TODO: add isPlaying observable flag
         vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", true);

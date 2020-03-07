@@ -35,6 +35,14 @@
         "title": "Play Track"
       },
       {
+        "command": "yandexMusic.next",
+        "title": "Next Track"
+      },
+      {
+        "command": "yandexMusic.prev",
+        "title": "Previous Track"
+      },
+      {
         "command": "yandexMusic.stopTrack",
         "title": "Stop track",
         "icon": {

@@ -17,8 +17,23 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.playTrack", async (item: TrackNodeItem) => {
-      store.play({ itemId: item.track.id, playListId: item.playListId });
+    vscode.commands.registerCommand("yandexMusic.playTrack", async (item?: TrackNodeItem) => {
+      if (item) {
+        store.play({ itemId: item.track.id, playListId: item.playListId });
+      }
+      //if item is undefined need continue play current song "store.play()"
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.next", () => {
+      store.next();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.prev", () => {
+      store.prev();
     })
   );
 
