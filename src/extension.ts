@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PlayListProvider } from "./playListProvider";
+import { MusicProvider } from "./musicProvider";
 import { PlayListTree, TrackNodeItem } from "./playListTree";
 import { Player } from "./player";
 import { playerControlPanel } from "./playerControlPanel";
@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   const username = configuration.get<string>("username");
   const password = configuration.get<string>("password");
 
-  const api = new PlayListProvider();
+  const api = new MusicProvider();
   const player = new Player();
   playerControlPanel.init();
 

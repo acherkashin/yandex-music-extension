@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import { PlayListProvider } from "./playListProvider";
+import { MusicProvider } from "./musicProvider";
 import { TrackInfo, GeneratedPlayListItem } from "./yandexApi/interfaces";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
 
-  constructor(private playListProvider: PlayListProvider) {}
+  constructor(private playListProvider: MusicProvider) {}
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
     //TODO: figure out when this method is called
