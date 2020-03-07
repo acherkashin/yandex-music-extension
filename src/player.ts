@@ -1,27 +1,16 @@
 import { ChildProcessWithoutNullStreams } from "child_process";
-
-const player = require("play-sound")({
-  /*player: "mplayer"*/
-});
+import MPlayer = require("mplayer");
+var player = new MPlayer();
 
 export class Player {
   private process: ChildProcessWithoutNullStreams | undefined | null;
   constructor() {}
 
   play(path: string) {
-    this.stop();
-
-    this.process = player.play(path, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+    player.openFile(path);
   }
 
   stop() {
-    if (this.process) {
-      this.process.kill();
-      this.process = null;
-    }
+    player.stop();
   }
 }
