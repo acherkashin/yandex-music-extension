@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { PlayListProvider } from "./playListProvider";
 import { PlayListTree, TrackNodeItem } from "./playListTree";
 import { Player } from "./player";
+import { playerControlPanel } from "./playerControlPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
@@ -11,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const api = new PlayListProvider();
   const player = new Player();
+  playerControlPanel.init();
 
   if (username && password) {
     api.init(username, password).then(() => {
