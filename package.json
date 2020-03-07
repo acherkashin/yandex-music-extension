@@ -10,7 +10,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.helloWorld",
     "onView:yandex-music-play-lists"
   ],
   "main": "./out/extension.js",
@@ -31,10 +30,6 @@
       }
     },
     "commands": [
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "yandexMusic.playTrack",
         "title": "Play Track"

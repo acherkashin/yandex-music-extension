@@ -18,22 +18,20 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  let disposable = vscode.commands.registerCommand("extension.helloWorld", () => {
-    vscode.window.showInformationMessage("Hello World!");
-  });
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.playTrack", async (item: TrackNodeItem) => {
+      const url = await api.getUrl(item.track);
+      player.play(url);
+      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", true);
+    })
+  );
 
-  vscode.commands.registerCommand("yandexMusic.playTrack", async (item: TrackNodeItem) => {
-    const url = await api.getUrl(item.track);
-    player.play(url);
-    vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", true);
-  });
-
-  vscode.commands.registerCommand("yandexMusic.stopTrack", () => {
-    player.stop();
-    vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", false);
-  });
-
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.stopTrack", () => {
+      player.stop();
+      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", false);
+    })
+  );
 }
 
 // this method is called when your extension is deactivated
