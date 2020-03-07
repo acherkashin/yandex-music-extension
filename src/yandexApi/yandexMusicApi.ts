@@ -377,9 +377,9 @@ export class YandexMusicApi {
     );
   }
 
-  async getTrackUrl(track: TrackInfo): Promise<string> {
+  async getTrackUrl(storageDir: string): Promise<string> {
     try {
-      const downloadInfo = await this.getDownloadInfo(track.storageDir);
+      const downloadInfo = await this.getDownloadInfo(storageDir);
       const url = await this.createTrackURL(downloadInfo);
       return url;
     } catch (error) {
