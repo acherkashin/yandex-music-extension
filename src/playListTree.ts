@@ -39,7 +39,7 @@ export class TrackNodeItem extends vscode.TreeItem {
   constructor(public readonly track: TrackInfo, public readonly playListId: string | number) {
     super(track.title, vscode.TreeItemCollapsibleState.None);
     this.command = {
-      command: "yandexMusic.playTrack",
+      command: "yandexMusic.play",
       title: "Play Track",
       tooltip: `Play ${track.title}`,
       arguments: [this],

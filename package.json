@@ -31,7 +31,7 @@
     },
     "commands": [
       {
-        "command": "yandexMusic.playTrack",
+        "command": "yandexMusic.play",
         "title": "Play Track"
       },
       {
@@ -43,7 +43,7 @@
         "title": "Previous Track"
       },
       {
-        "command": "yandexMusic.stopTrack",
+        "command": "yandexMusic.stop",
         "title": "Stop track",
         "icon": {
           "dark": "resources/dark/track-stop.svg",
@@ -54,7 +54,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "yandexMusic.stopTrack",
+          "command": "yandexMusic.stop",
           "group": "navigation",
           "when": "yandexMusic.isPlaying && view == yandex-music-play-lists"
         }

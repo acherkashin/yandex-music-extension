@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.playTrack", async (item?: TrackNodeItem) => {
+    vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackNodeItem) => {
       if (item) {
         store.play({ itemId: item.track.id, playListId: item.playListId });
       }
@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.stopTrack", () => {
+    vscode.commands.registerCommand("yandexMusic.stop", () => {
       store.stop();
     })
   );
