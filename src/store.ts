@@ -3,10 +3,10 @@ import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
 import { timingSafeEqual } from "crypto";
 import { FeedResponse, GeneratedPlayList } from "./yandexApi/interfaces";
-import { Player } from "./player";
+import MPlayer = require("mplayer");
 
 export class Store {
-  private player = new Player();
+  private player = new MPlayer();
   private playLists = new Map<string | number, GeneratedPlayList>();
   private currentSongIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
@@ -49,9 +49,9 @@ export class Store {
         console.error(`playlist ${song?.itemId}`);
       }
       // update current song
+    } else {
+      this.player.play();
     }
-
-    // continue play current song
   }
 
   stop() {
@@ -67,6 +67,10 @@ export class Store {
     this.internalPlay((this.currentSongIndex ?? 1) - 1);
   }
 
+  /**
+   *
+   * @param index Song index of current playList
+   */
   private async internalPlay(index: number) {
     this.currentSongIndex = index;
 
@@ -76,7 +80,7 @@ export class Store {
       if (item && item.track) {
         const url = await this.api.getUrl(item.track.storageDir);
         this.player.stop();
-        this.player.play(url);
+        this.player.openFile(url);
         //TODO: add isPlaying observable flag
         vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", true);
       }
