@@ -1,8 +1,19 @@
 declare module "mplayer" {
+  class MPlayerOptions {
+    verbose?: boolean;
+    debug?: boolean;
+  }
+
+  class MPlayerStatus {
+    muted: boolean;
+    playing: boolean;
+    volume: number;
+  }
+
   class MPlayer {
-    constructor();
+    constructor(options?: MPlayerOptions);
     on(eventName: "status" | "start" | "stop" | "pause" | "time", callback: Function);
-    setOptions(options): void;
+    setOptions(options: MPlayerOptions): void;
     openFile(file: string, options?): void;
     openPlaylist(file: string, options?): void;
     play(): void;

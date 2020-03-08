@@ -35,6 +35,10 @@
         "title": "Play Track"
       },
       {
+        "command": "yandexMusic.pause",
+        "title": "Play Track"
+      },
+      {
         "command": "yandexMusic.next",
         "title": "Next Track"
       },

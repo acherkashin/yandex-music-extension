@@ -1,12 +1,17 @@
-import { observable, action, computed, observe } from "mobx";
 import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
-import { timingSafeEqual } from "crypto";
 import { FeedResponse, GeneratedPlayList } from "./yandexApi/interfaces";
+import { observable, observe, autorun } from "mobx";
 import MPlayer = require("mplayer");
+import { PlayerControlPanel } from "./playerControlPanel";
 
 export class Store {
-  private player = new MPlayer();
+  private player = new MPlayer({
+    debug: false,
+    verbose: true,
+  });
+  private playerControlPanel = new PlayerControlPanel(this);
+  @observable isPlaying = false;
   private playLists = new Map<string | number, GeneratedPlayList>();
   private currentSongIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
@@ -22,6 +27,10 @@ export class Store {
     if (username && password) {
       await this.api.init(username, password);
     }
+
+    autorun(() => {
+      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
+    });
   }
 
   getPlayLists(): Promise<FeedResponse> {
@@ -51,12 +60,18 @@ export class Store {
       // update current song
     } else {
       this.player.play();
+      this.isPlaying = true;
     }
   }
 
   stop() {
     this.player.stop();
-    vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", false);
+    this.isPlaying = false;
+  }
+
+  pause() {
+    this.player.pause();
+    this.isPlaying = false;
   }
 
   next() {
@@ -81,8 +96,7 @@ export class Store {
         const url = await this.api.getUrl(item.track.storageDir);
         this.player.stop();
         this.player.openFile(url);
-        //TODO: add isPlaying observable flag
-        vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", true);
+        this.isPlaying = true;
       }
     }
   }
