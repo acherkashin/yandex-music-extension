@@ -18,8 +18,6 @@ export class Player extends EventEmitter {
       this.setFile(path);
     }
 
-    EventEmitter.call(this);
-
     exec("mplayer", function(err, stdout, stdin) {
       if (err) {
         throw new Error("Mplayer encountered an error or isn't installed.");
@@ -111,9 +109,14 @@ export class Player extends EventEmitter {
     }
   }
 
-  seek(sec) {
+  /**
+   * is a relative seek of +/- <value> seconds (default).
+   * http://www.mplayerhq.hu/DOCS/tech/slave.txt
+   * @param sec if positive number rewind forward on provided value. if negative number rewind backward.
+   */
+  rewind(sec: number) {
     if (this.childProc !== null) {
-      this.childProc.stdin.write("seek " + sec + " 2\n");
+      this.childProc.stdin.write("seek " + sec + " 0\n");
     }
   }
 

@@ -44,6 +44,19 @@ export function activate(context: vscode.ExtensionContext) {
       store.pause();
     })
   );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.rewindForward", () => {
+      // move 15 to the settings
+      store.rewind(15);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.rewindBackward", () => {
+      store.rewind(-15);
+    })
+  );
 }
 
 // this method is called when your extension is deactivated

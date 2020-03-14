@@ -1,16 +1,15 @@
 import * as vscode from "vscode";
 import { Store } from "./store";
-import { observe, autorun } from "mobx";
+import { autorun } from "mobx";
 
 export class PlayerControlPanel {
-  private startIndex: number = 2000;
   private prevButton: vscode.StatusBarItem;
   private playButton: vscode.StatusBarItem;
   private pauseButton: vscode.StatusBarItem;
   private nextButton: vscode.StatusBarItem;
 
-  constructor(private store: Store) {
-    this.prevButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, this.startIndex);
+  constructor(private store: Store, priority: number) {
+    this.prevButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority);
     this.prevButton.text = "$(chevron-left)";
     this.prevButton.command = "yandexMusic.prev";
     autorun(() => {
@@ -24,17 +23,17 @@ export class PlayerControlPanel {
       }
     });
 
-    this.playButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, this.startIndex - 1);
+    this.playButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.1);
     this.playButton.text = "$(play)";
     this.playButton.tooltip = "Воспроизведение";
     this.playButton.command = "yandexMusic.play";
 
-    this.pauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, this.startIndex - 1);
+    this.pauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.2);
     this.pauseButton.text = "$(debug-pause)";
     this.pauseButton.tooltip = "Пауза";
     this.pauseButton.command = "yandexMusic.pause";
 
-    this.nextButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, this.startIndex - 2);
+    this.nextButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.3);
     this.nextButton.text = "$(chevron-right)";
     this.nextButton.command = "yandexMusic.next";
     autorun(() => {

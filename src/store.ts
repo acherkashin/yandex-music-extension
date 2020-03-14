@@ -4,10 +4,12 @@ import { FeedResponse, GeneratedPlayList, Track } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerControlPanel } from "./playerControlPanel";
+import { RewindBar } from "./rewindBar";
 
 export class Store {
   private player = new Player();
-  private playerControlPanel = new PlayerControlPanel(this);
+  private playerControlPanel = new PlayerControlPanel(this, 2000);
+  private rewindPanel = new RewindBar(this, 2001);
   @observable isPlaying = false;
   private playLists = new Map<string | number, GeneratedPlayList>();
   @observable private currentTrackIndex: number | undefined;
@@ -104,6 +106,10 @@ export class Store {
   pause() {
     this.player.pause();
     this.isPlaying = false;
+  }
+
+  rewind(sec: number) {
+    this.player.rewind(sec);
   }
 
   next() {

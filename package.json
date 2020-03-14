@@ -47,6 +47,14 @@
         "title": "Previous Track"
       },
       {
+        "command": "yandexMusic.rewindForward",
+        "title": "Rewind Track Forward"
+      },
+      {
+        "command": "yandexMusic.rewindBackward",
+        "title": "Rewind Track Backward"
+      },
+      {
         "command": "yandexMusic.stop",
         "title": "Stop track",
         "icon": {
