@@ -1,7 +1,7 @@
 import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
-import { FeedResponse, GeneratedPlayList } from "./yandexApi/interfaces";
-import { observable, observe, autorun } from "mobx";
+import { FeedResponse, GeneratedPlayList, Track } from "./yandexApi/interfaces";
+import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerControlPanel } from "./playerControlPanel";
 
@@ -10,11 +10,42 @@ export class Store {
   private playerControlPanel = new PlayerControlPanel(this);
   @observable isPlaying = false;
   private playLists = new Map<string | number, GeneratedPlayList>();
-  private currentSongIndex: number | undefined;
+  @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
-  private currentPlayListId: string | number | undefined;
+  @observable private currentPlayListId: string | number | undefined;
 
   api = new MusicProvider();
+
+  @computed get currentTrack(): Track | null {
+    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
+      return null;
+    }
+    return this.getTrack(this.currentPlayListId, this.currentTrackIndex);
+  }
+
+  @computed get nextTrack(): Track | null {
+    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
+      return null;
+    }
+
+    return this.getTrack(this.currentPlayListId, this.currentTrackIndex + 1);
+  }
+
+  @computed get prevTrack(): Track | null {
+    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
+      return null;
+    }
+
+    return this.getTrack(this.currentPlayListId, this.currentTrackIndex - 1);
+  }
+
+  @computed get hasNextTrack(): boolean {
+    return this.nextTrack == null ? false : true;
+  }
+
+  @computed get hasPrevTrack(): boolean {
+    return this.prevTrack == null ? false : true;
+  }
 
   constructor() {}
   async init(): Promise<void> {
@@ -76,11 +107,11 @@ export class Store {
   }
 
   next() {
-    this.internalPlay((this.currentSongIndex ?? 0) + 1);
+    this.internalPlay((this.currentTrackIndex ?? 0) + 1);
   }
 
   prev() {
-    this.internalPlay((this.currentSongIndex ?? 1) - 1);
+    this.internalPlay((this.currentTrackIndex ?? 1) - 1);
   }
 
   /**
@@ -88,7 +119,7 @@ export class Store {
    * @param index Song index of current playList
    */
   private async internalPlay(index: number) {
-    this.currentSongIndex = index;
+    this.currentTrackIndex = index;
 
     if (this.currentPlayListId) {
       const item = this.playLists.get(this.currentPlayListId)?.tracks[index];
@@ -100,5 +131,15 @@ export class Store {
         this.isPlaying = true;
       }
     }
+  }
+
+  private getTrack(playListId: number | string, index: number): Track | null {
+    const playList = this.playLists.get(playListId);
+
+    if (playList == null) {
+      return null;
+    }
+
+    return playList.tracks[index];
   }
 }
