@@ -103,6 +103,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "crypto": "^1.0.1",
-    "mobx": "^5.15.4"
+    "mobx": "^5.15.4",
+    "valid-url": "^1.0.9"
   }
 }

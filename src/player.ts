@@ -52,6 +52,7 @@ export class Player extends EventEmitter {
       });
 
       this.childProc.on("exit", function(code, sig) {
+        // when we call "childProc.kill()" sig is equal "SIGTERM" and event("end") will not be emitted
         if (code === 0 && sig === null) {
           that.playing = false;
           that.emit("end");
@@ -72,7 +73,7 @@ export class Player extends EventEmitter {
   quit() {
     if (this.childProc !== null) {
       this.playing = false;
-      this.childProc.stdin.write("quit\n");
+      this.childProc.kill();
     }
   }
 
