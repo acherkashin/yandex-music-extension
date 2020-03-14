@@ -2,14 +2,11 @@ import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
 import { FeedResponse, GeneratedPlayList } from "./yandexApi/interfaces";
 import { observable, observe, autorun } from "mobx";
-import MPlayer = require("mplayer");
+import { Player } from "./player";
 import { PlayerControlPanel } from "./playerControlPanel";
 
 export class Store {
-  private player = new MPlayer({
-    debug: false,
-    verbose: true,
-  });
+  private player = new Player();
   private playerControlPanel = new PlayerControlPanel(this);
   @observable isPlaying = false;
   private playLists = new Map<string | number, GeneratedPlayList>();
@@ -27,6 +24,10 @@ export class Store {
     if (username && password) {
       await this.api.init(username, password);
     }
+
+    this.player.on("end", () => {
+      this.next();
+    });
 
     autorun(() => {
       vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
@@ -59,7 +60,7 @@ export class Store {
       }
       // update current song
     } else {
-      this.player.play();
+      this.player.pause();
       this.isPlaying = true;
     }
   }
@@ -94,8 +95,8 @@ export class Store {
 
       if (item && item.track) {
         const url = await this.api.getUrl(item.track.storageDir);
-        this.player.stop();
-        this.player.openFile(url);
+        this.player.setFile(url);
+        this.player.play();
         this.isPlaying = true;
       }
     }

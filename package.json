@@ -103,7 +103,6 @@
   "dependencies": {
     "axios": "^0.19.2",
     "crypto": "^1.0.1",
-    "mobx": "^5.15.4",
-    "mplayer": "^2.1.0"
+    "mobx": "^5.15.4"
   }
 }

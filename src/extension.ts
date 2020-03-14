@@ -15,8 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackNodeItem) => {
       if (item) {
         store.play({ itemId: item.track.id, playListId: item.playListId });
+      } else {
+        store.play();
       }
-      store.play();
     })
   );
 
