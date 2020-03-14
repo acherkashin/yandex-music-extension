@@ -26,6 +26,14 @@
           "description": "Yandex Music password",
           "type": "string",
           "scope": "application"
+        },
+        "yandexMusic.rewindTime": {
+          "description": "Rewind time (sec)",
+          "type": "number",
+          "default": 15,
+          "minimum": 5,
+          "maximum": 60,
+          "scope": "application"
         }
       }
     },
