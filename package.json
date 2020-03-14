@@ -63,6 +63,36 @@
         }
       }
     ],
+    "keybindings": [
+      {
+        "command": "yandexMusic.play",
+        "win": "alt+shift+p",
+        "mac": "alt+shift+p",
+        "linux": "alt+shift+p",
+        "when": "!yandexMusic.isPlaying"
+      },
+      {
+        "command": "yandexMusic.pause",
+        "win": "alt+shift+p",
+        "mac": "alt+shift+p",
+        "linux": "alt+shift+p",
+        "when": "yandexMusic.isPlaying"
+      },
+      {
+        "command": "yandexMusic.next",
+        "win": "alt+shift+n",
+        "mac": "alt+shift+n",
+        "linux": "alt+shift+n",
+        "when": "yandexMusic.isPlaying"
+      },
+      {
+        "command": "yandexMusic.prev",
+        "win": "alt+shift+b",
+        "mac": "alt+shift+b",
+        "linux": "alt+shift+b",
+        "when": "yandexMusic.isPlaying"
+      }
+    ],
     "menus": {
       "view/title": [
         {
