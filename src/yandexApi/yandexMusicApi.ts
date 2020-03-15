@@ -8,6 +8,8 @@ import {
   Visibility,
   DownloadInfo,
   TrackInfo,
+  LikedTracksResponse,
+  Track,
 } from "./interfaces";
 import { createHash } from "crypto";
 const querystring = require("querystring");
@@ -211,7 +213,7 @@ export class YandexMusicApi {
    * @param   {String} userId The user ID, if null then equal to current user id
    * @returns {Promise}
    */
-  getUserPlaylists(userId: string): Promise<PlayList[]> {
+  getUserPlaylists(userId?: string): Promise<PlayList[]> {
     return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/list`, {
       headers: this._getAuthHeader(),
     });
@@ -375,6 +377,37 @@ export class YandexMusicApi {
         headers: this._getAuthHeader(),
       }
     );
+  }
+
+  async getLikedTracks(): Promise<LikedTracksResponse> {
+    try {
+      const results = await this.apiClient.get<LikedTracksResponse>(`/users/${this._config.user.UID}/likes/tracks`);
+
+      return results.data;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async getTracks(trackIds: string[], withPositions?: boolean): Promise<TrackInfo[]> {
+    try {
+      const tracks = await this.apiClient.post<TrackInfo[]>(
+        `/tracks/`,
+        querystring.stringify({
+          "track-ids": trackIds.join(","),
+          "with-positions": withPositions || false,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      return tracks.data;
+    } catch (error) {
+      return error;
+    }
   }
 
   async getTrackUrl(storageDir: string): Promise<string> {

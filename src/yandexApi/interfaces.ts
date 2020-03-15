@@ -67,6 +67,7 @@ export interface GeneratedPlayListItem {
 
 export type Visibility = "public" | "private";
 
+//TODO: rename Track -> TrackItem; TrackInfo -> Track
 export interface Track {
   id: number;
   recent: boolean;
@@ -136,4 +137,32 @@ export interface DownloadInfo {
   ts: string;
   path: string;
   host: string;
+}
+
+export interface InvocationInfo {
+  hostname: string;
+  "req-id": string;
+  "exec-duration-mills": string;
+}
+
+export interface LikedTrack {
+  id: string;
+  albumId: string;
+  timespan: string;
+}
+
+export interface LikedTracksResponse {
+  invocationInfo: InvocationInfo;
+  result: {
+    library: {
+      uid: number;
+      revision: number;
+      tracks: LikedTrack[];
+    };
+  };
+}
+
+export interface GetTracksResponse {
+  invocationInfo: InvocationInfo;
+  result: TrackInfo[];
 }

@@ -3,7 +3,7 @@ import { TrackInfo, GeneratedPlayList } from "./yandexApi/interfaces";
 
 //TODO: rename
 export class MusicProvider {
-  private _api: YandexMusicApi;
+  _api: YandexMusicApi;
   constructor() {
     this._api = new YandexMusicApi();
   }
@@ -23,13 +23,16 @@ export class MusicProvider {
     return this._api.getTrackUrl(storageDir);
   }
 
-  //TODO: add ability to listen own playlists
-  //   getPlayLists() {
-  //     return this._api.getUserPlaylists().then((playLists) => {
-  //       const ids = playLists.map((item) => item.kind.toString());
-  //       return this._api.getPlaylists(undefined, ids, {
-  //         "rich-tracks": false,
-  //       });
-  //     });
-  //   }
+  getUserPlayLists() {
+    return this._api.getUserPlaylists().then((playLists) => {
+      const ids = playLists.map((item) => item.kind.toString());
+      return this._api.getPlaylists(undefined, ids, {
+        "rich-tracks": false,
+      });
+    });
+  }
+
+  getLikedTracks() {
+    return this._api.getLikedTracks();
+  }
 }
