@@ -61,14 +61,6 @@
       {
         "command": "yandexMusic.rewindBackward",
         "title": "Rewind Track Backward"
-      },
-      {
-        "command": "yandexMusic.stop",
-        "title": "Stop track",
-        "icon": {
-          "dark": "resources/dark/track-stop.svg",
-          "light": "resources/light/track-stop.svg"
-        }
       }
     ],
     "keybindings": [
@@ -101,15 +93,6 @@
         "when": "yandexMusic.isPlaying"
       }
     ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "yandexMusic.stop",
-          "group": "navigation",
-          "when": "yandexMusic.isPlaying && view == yandex-music-play-lists"
-        }
-      ]
-    },
     "viewsContainers": {
       "activitybar": [
         {

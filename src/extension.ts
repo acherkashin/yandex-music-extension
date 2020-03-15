@@ -32,13 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
       store.prev();
     })
   );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.stop", () => {
-      store.stop();
-    })
-  );
-
+  
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.pause", () => {
       store.pause();

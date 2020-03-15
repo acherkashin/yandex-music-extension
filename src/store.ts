@@ -97,12 +97,7 @@ export class Store {
       this.isPlaying = true;
     }
   }
-
-  stop() {
-    this.player.stop();
-    this.isPlaying = false;
-  }
-
+  
   pause() {
     this.player.pause();
     this.isPlaying = false;
