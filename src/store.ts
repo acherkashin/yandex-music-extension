@@ -3,13 +3,13 @@ import * as vscode from "vscode";
 import { FeedResponse, GeneratedPlayList, Track } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
-import { PlayerControlPanel } from "./playerControlPanel";
-import { RewindBar } from "./rewindBar";
+import { PlayerBarItem } from "./statusbar/playerBarItem";
+import { RewindBarItem } from "./statusbar/rewindBarItem";
 
 export class Store {
   private player = new Player();
-  private playerControlPanel = new PlayerControlPanel(this, 2000);
-  private rewindPanel = new RewindBar(this, 2001);
+  private playerControlPanel = new PlayerBarItem(this, 2000);
+  private rewindPanel = new RewindBarItem(this, 2001);
   @observable isPlaying = false;
   private playLists = new Map<string | number, GeneratedPlayList>();
   @observable private currentTrackIndex: number | undefined;

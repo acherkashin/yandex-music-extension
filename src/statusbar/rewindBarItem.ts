@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { Store } from "./store";
+import { Store } from "../store";
 import { autorun } from "mobx";
 
-export class RewindBar {
+export class RewindBarItem {
   forward: vscode.StatusBarItem;
   backward: vscode.StatusBarItem;
 

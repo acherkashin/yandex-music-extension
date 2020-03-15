@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { Store } from "./store";
+import { Store } from "../store";
 import { autorun } from "mobx";
 
-export class PlayerControlPanel {
+export class PlayerBarItem {
   private prevButton: vscode.StatusBarItem;
   private playButton: vscode.StatusBarItem;
   private pauseButton: vscode.StatusBarItem;
