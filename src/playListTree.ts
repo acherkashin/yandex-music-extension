@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { TrackInfo, GeneratedPlayListItem } from "./yandexApi/interfaces";
+import { Track, GeneratedPlayListItem } from "./yandexApi/interfaces";
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from "./store";
 import { createTrackAlbumIds } from "./yandexApi/apiUtils";
 
@@ -16,7 +16,7 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   getChildren(element?: LikedTracksNode | PlayListNodeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof LikedTracksNode) {
       return this.store.getLikedTracks().then((tracks) => {
-        return tracks.map((item) => new TrackNodeItem(<TrackInfo>item, LIKED_TRACKS_PLAYLIST_ID));
+        return tracks.map((item) => new TrackNodeItem(<Track>item, LIKED_TRACKS_PLAYLIST_ID));
       });
     }
 
@@ -26,7 +26,7 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     if (element instanceof PlayListNodeItem) {
       return this.store.getTracks(element.playList.data.owner.uid, element.playList.data.kind).then((resp) => {
-        return resp.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track, element.playList.data.kind));
+        return resp.tracks.map((item) => new TrackNodeItem(<Track>item.track, element.playList.data.kind));
       });
     }
   }
@@ -54,7 +54,7 @@ export class PlayListNodeItem extends vscode.TreeItem {
 }
 
 export class TrackNodeItem extends vscode.TreeItem {
-  constructor(public readonly track: TrackInfo, public readonly playListId: string | number) {
+  constructor(public readonly track: Track, public readonly playListId: string | number) {
     super(track.title, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",

@@ -7,9 +7,9 @@ import {
   GetPlayListsOptions,
   Visibility,
   DownloadInfo,
-  TrackInfo,
-  LikedTracksResponse,
   Track,
+  LikedTracksResponse,
+  TrackItem,
   GetTracksResponse,
 } from "./interfaces";
 import { createHash } from "crypto";

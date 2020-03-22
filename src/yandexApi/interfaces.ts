@@ -40,7 +40,7 @@ export interface PlayList {
   trackCount: number;
   uid: number;
   visibility: Visibility;
-  tracks: Track[];
+  tracks: TrackItem[];
 }
 
 export interface GeneratedPlayList extends PlayList {
@@ -67,18 +67,17 @@ export interface GeneratedPlayListItem {
 
 export type Visibility = "public" | "private";
 
-//TODO: rename Track -> TrackItem; TrackInfo -> Track
-export interface Track {
+export interface TrackItem {
   id: number;
   recent: boolean;
   timestamp: string;
   /**
    * Null when tracks are not riched
    */
-  track?: TrackInfo;
+  track?: Track;
 }
 
-export interface TrackInfo {
+export interface Track {
   albums: any[];
   artists: any[];
   available: boolean;
@@ -164,5 +163,5 @@ export interface LikedTracksResponse {
 
 export interface GetTracksResponse {
   invocationInfo: InvocationInfo;
-  result: TrackInfo[];
+  result: Track[];
 }

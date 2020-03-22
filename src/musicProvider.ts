@@ -1,5 +1,5 @@
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import { TrackInfo, GeneratedPlayList } from "./yandexApi/interfaces";
+import { Track, GeneratedPlayList } from "./yandexApi/interfaces";
 
 //TODO: rename
 export class MusicProvider {

@@ -1,6 +1,6 @@
 import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
-import { FeedResponse, GeneratedPlayList, Track, TrackInfo } from "./yandexApi/interfaces";
+import { FeedResponse, GeneratedPlayList, TrackItem, Track } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -12,21 +12,21 @@ export class Store {
   private playerControlPanel = new PlayerBarItem(this, 2000);
   private rewindPanel = new RewindBarItem(this, 2001);
   @observable isPlaying = false;
-  private playLists = new Map<string | number, TrackInfo[]>();
+  private playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
 
   api = new MusicProvider();
 
-  @computed get currentTrack(): TrackInfo | null {
+  @computed get currentTrack(): Track | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
     return this.getTrack(this.currentPlayListId, this.currentTrackIndex);
   }
 
-  @computed get nextTrack(): TrackInfo | null {
+  @computed get nextTrack(): Track | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
@@ -34,7 +34,7 @@ export class Store {
     return this.getTrack(this.currentPlayListId, this.currentTrackIndex + 1);
   }
 
-  @computed get prevTrack(): TrackInfo | null {
+  @computed get prevTrack(): Track | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
@@ -80,7 +80,7 @@ export class Store {
     });
   }
 
-  async getLikedTracks(): Promise<TrackInfo[]> {
+  async getLikedTracks(): Promise<Track[]> {
     const resp = await this.api._api.getLikedTracks();
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
 
@@ -142,15 +142,15 @@ export class Store {
     }
   }
 
-  private exposeTracks(tracks: Track[]): TrackInfo[] {
-    return tracks.map((item) => <TrackInfo>item.track);
+  private exposeTracks(tracks: TrackItem[]): Track[] {
+    return tracks.map((item) => <Track>item.track);
   }
 
-  private savePlaylist(playListId: number | string, tracks: TrackInfo[]) {
+  private savePlaylist(playListId: number | string, tracks: Track[]) {
     this.playLists.set(playListId, tracks);
   }
 
-  private getTrack(playListId: number | string, index: number): TrackInfo | null {
+  private getTrack(playListId: number | string, index: number): Track | null {
     const tracks = this.playLists.get(playListId);
 
     if (tracks == null) {
