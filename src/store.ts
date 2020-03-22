@@ -77,6 +77,10 @@ export class Store {
     return resp.data.result;
   }
 
+  async getUserPlaylists() {
+    return this.api.getUserPlaylists();
+  }
+
   getTracks(userId: string | number | undefined, playListId: string | number) {
     return this.api.getPlaylist(userId, playListId).then((result) => {
       this.savePlaylist(playListId, this.exposeTracks(result.data.result.tracks));

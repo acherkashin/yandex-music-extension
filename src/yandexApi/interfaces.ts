@@ -150,18 +150,18 @@ export interface LikedTrack {
   timespan: string;
 }
 
-export interface LikedTracksResponse {
-  invocationInfo: InvocationInfo;
-  result: {
+export interface LikedTracksResponse
+  extends YandexMusicResponse<{
     library: {
       uid: number;
       revision: number;
       tracks: LikedTrack[];
     };
-  };
-}
+  }> {}
 
-export interface GetTracksResponse {
+export interface GetTracksResponse extends YandexMusicResponse<Track[]> {}
+
+export interface YandexMusicResponse<T> {
   invocationInfo: InvocationInfo;
-  result: Track[];
+  result: T;
 }

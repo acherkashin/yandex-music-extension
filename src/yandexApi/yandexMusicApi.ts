@@ -11,6 +11,7 @@ import {
   LikedTracksResponse,
   TrackItem,
   GetTracksResponse,
+  YandexMusicResponse,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
@@ -215,8 +216,8 @@ export class YandexMusicApi {
    * @param   {String} userId The user ID, if null then equal to current user id
    * @returns {Promise}
    */
-  getUserPlaylists(userId?: string): Promise<PlayList[]> {
-    return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/list`, {
+  getUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
+    return this.apiClient.get<YandexMusicResponse<PlayList[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
       headers: this._getAuthHeader(),
     });
   }
@@ -450,14 +451,5 @@ export class YandexMusicApi {
     const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
 
     return link;
-  }
-
-  getUserPlayLists() {
-    return this.getUserPlaylists().then((playLists) => {
-      const ids = playLists.map((item) => item.kind.toString());
-      return this.getPlaylists(undefined, ids, {
-        "rich-tracks": false,
-      });
-    });
   }
 }

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Track, GeneratedPlayListItem } from "./yandexApi/interfaces";
+import { Track, GeneratedPlayListItem, PlayList } from "./yandexApi/interfaces";
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from "./store";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -24,20 +24,22 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     }
 
     if (element instanceof PlayListNodeItem) {
-      return this.store.getTracks(element.playList.data.owner.uid, element.playList.data.kind).then((resp) => {
-        return resp.data.result.tracks.map((item) => new TrackNodeItem(<Track>item.track, element.playList.data.kind));
+      return this.store.getTracks(element.playList.owner.uid, element.playList.kind).then((resp) => {
+        return resp.data.result.tracks.map((item) => new TrackNodeItem(<Track>item.track, element.playList.kind));
       });
     }
   }
 }
 
-function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
-  return store.getFeed().then((playLists) => {
-    const nodes: vscode.TreeItem[] = playLists.generatedPlaylists.map((item) => new PlayListNodeItem(item));
-    nodes.push(new LikedTracksNode());
+async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
+  const feedPlayLists = await store.getFeed();
+  const usersPlayLists = await store.getUserPlaylists();
+  const nodes: vscode.TreeItem[] = [];
+  nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListNodeItem(item.data)));
+  nodes.push(...usersPlayLists.data.result.map((item) => new PlayListNodeItem(item)));
+  nodes.push(new LikedTracksNode());
 
-    return nodes;
-  });
+  return nodes;
 }
 
 export class LikedTracksNode extends vscode.TreeItem {
@@ -47,8 +49,8 @@ export class LikedTracksNode extends vscode.TreeItem {
 }
 
 export class PlayListNodeItem extends vscode.TreeItem {
-  constructor(public readonly playList: GeneratedPlayListItem) {
-    super(playList.data.title, vscode.TreeItemCollapsibleState.Collapsed);
+  constructor(public readonly playList: PlayList) {
+    super(playList.title, vscode.TreeItemCollapsibleState.Collapsed);
   }
 }
 
