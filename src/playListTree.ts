@@ -61,5 +61,7 @@ export class TrackNodeItem extends vscode.TreeItem {
       tooltip: `Play ${track.title}`,
       arguments: [this],
     };
+
+    this.contextValue = "track";
   }
 }

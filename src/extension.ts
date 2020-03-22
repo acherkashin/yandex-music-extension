@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PlayListTree, TrackNodeItem } from "./playListTree";
+import { PlayListTree, TrackNodeItem as TrackTreeItem } from "./playListTree";
 import { Store } from "./store";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackNodeItem) => {
+    vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackTreeItem) => {
       if (item) {
         store.play({ itemId: item.track.id, playListId: item.playListId });
       } else {
@@ -41,7 +41,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => {
-      // move 15 to the settings
       store.rewind(getRewindTime());
     })
   );
@@ -49,6 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => {
       store.rewind(-getRewindTime());
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
+      store.downloadTrack(node.track);
     })
   );
 }

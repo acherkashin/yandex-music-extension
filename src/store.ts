@@ -5,6 +5,7 @@ import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import * as open from "open";
 
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export class Store {
@@ -125,6 +126,11 @@ export class Store {
 
   prev() {
     this.internalPlay((this.currentTrackIndex ?? 1) - 1);
+  }
+
+  async downloadTrack(track: Track) {
+    const url = await this.api.getTrackUrl(track.storageDir);
+    open(url);
   }
 
   /**
