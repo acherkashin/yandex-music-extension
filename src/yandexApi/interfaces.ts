@@ -77,9 +77,19 @@ export interface TrackItem {
   track?: Track;
 }
 
+export interface Artist {
+  composer: boolean;
+  cover: Cover;
+  decomposed: any[];
+  genres: any[];
+  id: number;
+  name: string;
+  various: boolean;
+}
+
 export interface Track {
   albums: any[];
-  artists: any[];
+  artists: Artist[];
   available: boolean;
   availableForPremiumUsers: boolean;
   availableFullWithoutPermission: boolean;

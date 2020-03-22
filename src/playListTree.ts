@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
-import { Track, GeneratedPlayListItem, PlayList } from "./yandexApi/interfaces";
+import { Track, PlayList } from "./yandexApi/interfaces";
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from "./store";
+import { getArtists as getArtist } from "./yandexApi/apiUtils";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
@@ -56,11 +57,11 @@ export class PlayListNodeItem extends vscode.TreeItem {
 
 export class TrackNodeItem extends vscode.TreeItem {
   constructor(public readonly track: Track, public readonly playListId: string | number) {
-    super(track.title, vscode.TreeItemCollapsibleState.None);
+    super(`${track.title} - ${getArtist(track)}`, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",
       title: "Play Track",
-      tooltip: `Play ${track.title}`,
+      tooltip: `Play ${this.label}`,
       arguments: [this],
     };
 
