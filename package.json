@@ -1,6 +1,7 @@
 {
   "name": "yandex-music-extension",
   "displayName": "yandex-music-extension",
+  "publisher": "Cherkashin Alexander",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -61,8 +62,22 @@
       {
         "command": "yandexMusic.rewindBackward",
         "title": "Rewind Track Backward"
+      },
+      {
+        "command": "yandexMusic.downloadTrack",
+        "title": "Download Track",
+        "icon": "$(cloud-download)"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "yandexMusic.downloadTrack",
+          "group": "inline",
+          "when": "view == yandex-music-play-lists && viewItem == track"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "yandexMusic.play",
@@ -133,6 +148,7 @@
     "axios": "^0.19.2",
     "crypto": "^1.0.1",
     "mobx": "^5.15.4",
+    "open": "^7.0.3",
     "valid-url": "^1.0.9"
   }
 }
