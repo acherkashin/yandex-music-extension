@@ -10,8 +10,10 @@ import {
   TrackInfo,
   LikedTracksResponse,
   Track,
+  GetTracksResponse,
 } from "./interfaces";
 import { createHash } from "crypto";
+import { createTrackAlbumIds } from "./apiUtils";
 const querystring = require("querystring");
 
 export interface Config {
@@ -379,7 +381,7 @@ export class YandexMusicApi {
     );
   }
 
-  async getLikedTracks(): Promise<LikedTracksResponse> {
+  async getLikedTracksIds(): Promise<LikedTracksResponse> {
     try {
       const results = await this.apiClient.get<LikedTracksResponse>(`/users/${this._config.user.UID}/likes/tracks`);
 
@@ -389,9 +391,17 @@ export class YandexMusicApi {
     }
   }
 
-  async getTracks(trackIds: string[], withPositions?: boolean): Promise<TrackInfo[]> {
+  async getLikedTracks(): Promise<GetTracksResponse> {
+    const result = await this.getLikedTracksIds();
+    const ids = createTrackAlbumIds(result.result.library.tracks);
+    const tracks = await this.getTracks(ids);
+
+    return tracks;
+  }
+
+  async getTracks(trackIds: string[], withPositions?: boolean): Promise<GetTracksResponse> {
     try {
-      const tracks = await this.apiClient.post<TrackInfo[]>(
+      const tracks = await this.apiClient.post<GetTracksResponse>(
         `/tracks/`,
         querystring.stringify({
           "track-ids": trackIds.join(","),

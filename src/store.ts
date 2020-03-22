@@ -1,31 +1,32 @@
 import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
-import { FeedResponse, GeneratedPlayList, Track } from "./yandexApi/interfaces";
+import { FeedResponse, GeneratedPlayList, Track, TrackInfo } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 
+export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new Player();
   private playerControlPanel = new PlayerBarItem(this, 2000);
   private rewindPanel = new RewindBarItem(this, 2001);
   @observable isPlaying = false;
-  private playLists = new Map<string | number, GeneratedPlayList>();
+  private playLists = new Map<string | number, TrackInfo[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
 
   api = new MusicProvider();
 
-  @computed get currentTrack(): Track | null {
+  @computed get currentTrack(): TrackInfo | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
     return this.getTrack(this.currentPlayListId, this.currentTrackIndex);
   }
 
-  @computed get nextTrack(): Track | null {
+  @computed get nextTrack(): TrackInfo | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
@@ -33,7 +34,7 @@ export class Store {
     return this.getTrack(this.currentPlayListId, this.currentTrackIndex + 1);
   }
 
-  @computed get prevTrack(): Track | null {
+  @computed get prevTrack(): TrackInfo | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
       return null;
     }
@@ -67,29 +68,36 @@ export class Store {
     });
   }
 
-  getPlayLists(): Promise<FeedResponse> {
-    return this.api.getPlayLists();
+  async getFeed(): Promise<FeedResponse> {
+    return this.api.getFeed();
   }
 
   getTracks(userId: string | number | undefined, playListId: string | number) {
     return this.api.getTracks(userId, playListId).then((result) => {
-      this.playLists.set(playListId, result);
+      this.savePlaylist(playListId, this.exposeTracks(result.tracks));
 
       return result;
     });
   }
 
-  play(song?: { itemId: string; playListId: string | number }) {
-    if (song) {
-      const playList = this.playLists.get(song.playListId);
-      if (playList) {
-        const index = playList.tracks.findIndex((item) => item.track?.id === song?.itemId);
+  async getLikedTracks(): Promise<TrackInfo[]> {
+    const resp = await this.api._api.getLikedTracks();
+    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
+
+    return resp.result;
+  }
+
+  play(track?: { itemId: string; playListId: string | number }) {
+    if (track) {
+      const tracks = this.playLists.get(track.playListId);
+      if (tracks) {
+        const index = tracks.findIndex((item) => item.id === track?.itemId);
         if (index !== -1) {
-          this.currentPlayListId = song.playListId;
+          this.currentPlayListId = track.playListId;
           this.internalPlay(index);
         }
       } else {
-        console.error(`playlist ${song?.itemId}`);
+        console.error(`playlist ${track?.itemId}`);
       }
       // update current song
     } else {
@@ -97,7 +105,7 @@ export class Store {
       this.isPlaying = true;
     }
   }
-  
+
   pause() {
     this.player.pause();
     this.isPlaying = false;
@@ -123,10 +131,10 @@ export class Store {
     this.currentTrackIndex = index;
 
     if (this.currentPlayListId) {
-      const item = this.playLists.get(this.currentPlayListId)?.tracks[index];
+      const track = this.playLists.get(this.currentPlayListId)?.[index];
 
-      if (item && item.track) {
-        const url = await this.api.getUrl(item.track.storageDir);
+      if (track) {
+        const url = await this.api.getUrl(track.storageDir);
         this.player.setFile(url);
         this.player.play();
         this.isPlaying = true;
@@ -134,13 +142,21 @@ export class Store {
     }
   }
 
-  private getTrack(playListId: number | string, index: number): Track | null {
-    const playList = this.playLists.get(playListId);
+  private exposeTracks(tracks: Track[]): TrackInfo[] {
+    return tracks.map((item) => <TrackInfo>item.track);
+  }
 
-    if (playList == null) {
+  private savePlaylist(playListId: number | string, tracks: TrackInfo[]) {
+    this.playLists.set(playListId, tracks);
+  }
+
+  private getTrack(playListId: number | string, index: number): TrackInfo | null {
+    const tracks = this.playLists.get(playListId);
+
+    if (tracks == null) {
       return null;
     }
 
-    return playList.tracks[index];
+    return tracks[index];
   }
 }

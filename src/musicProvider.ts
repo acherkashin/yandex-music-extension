@@ -11,7 +11,7 @@ export class MusicProvider {
     return this._api.init({ username, password });
   }
 
-  getPlayLists() {
+  getFeed() {
     return this._api.getFeed().then((resp) => resp.data.result);
   }
 
@@ -32,7 +32,7 @@ export class MusicProvider {
     });
   }
 
-  getLikedTracks() {
-    return this._api.getLikedTracks();
+  getLikedTracksIds() {
+    return this._api.getLikedTracksIds();
   }
 }

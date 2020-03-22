@@ -13,7 +13,7 @@ export class PlayerBarItem {
     this.prevButton.text = "$(chevron-left)";
     this.prevButton.command = "yandexMusic.prev";
     autorun(() => {
-      this.prevButton.tooltip = `Предыдущий: ${this.store.prevTrack?.track?.title}`;
+      this.prevButton.tooltip = `Предыдущий: ${this.store.prevTrack?.title}`;
     });
     autorun(() => {
       if (this.store.hasPrevTrack) {
@@ -37,7 +37,7 @@ export class PlayerBarItem {
     this.nextButton.text = "$(chevron-right)";
     this.nextButton.command = "yandexMusic.next";
     autorun(() => {
-      this.nextButton.tooltip = `Следущий: ${this.store.nextTrack?.track?.title}`;
+      this.nextButton.tooltip = `Следущий: ${this.store.nextTrack?.title}`;
     });
     autorun(() => {
       if (this.store.hasNextTrack) {

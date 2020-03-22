@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { TrackInfo, GeneratedPlayListItem } from "./yandexApi/interfaces";
-import { Store } from "./store";
+import { Store, LIKED_TRACKS_PLAYLIST_ID } from "./store";
+import { createTrackAlbumIds } from "./yandexApi/apiUtils";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
@@ -12,26 +13,43 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     return element;
   }
 
-  getChildren(element?: PlayListNodeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
-    if (!element) {
-      return this.store.getPlayLists().then((playLists) => {
-        return playLists.generatedPlaylists.map((item) => new PlayListNodeItem(item));
+  getChildren(element?: LikedTracksNode | PlayListNodeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
+    if (element instanceof LikedTracksNode) {
+      return this.store.getLikedTracks().then((tracks) => {
+        return tracks.map((item) => new TrackNodeItem(<TrackInfo>item, LIKED_TRACKS_PLAYLIST_ID));
       });
     }
 
-    return this.store.getTracks(element.playList.data.owner.uid, element.playList.data.kind).then((resp) => {
-      return resp.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track, element.playList.data.kind));
-    });
+    if (!element) {
+      return getPlayListsNodes(this.store);
+    }
+
+    if (element instanceof PlayListNodeItem) {
+      return this.store.getTracks(element.playList.data.owner.uid, element.playList.data.kind).then((resp) => {
+        return resp.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track, element.playList.data.kind));
+      });
+    }
+  }
+}
+
+function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
+  return store.getFeed().then((playLists) => {
+    const nodes: vscode.TreeItem[] = playLists.generatedPlaylists.map((item) => new PlayListNodeItem(item));
+    nodes.push(new LikedTracksNode());
+
+    return nodes;
+  });
+}
+
+export class LikedTracksNode extends vscode.TreeItem {
+  constructor() {
+    super("Мне нравится", vscode.TreeItemCollapsibleState.Collapsed);
   }
 }
 
 export class PlayListNodeItem extends vscode.TreeItem {
   constructor(public readonly playList: GeneratedPlayListItem) {
     super(playList.data.title, vscode.TreeItemCollapsibleState.Collapsed);
-  }
-
-  getChildren(): TrackNodeItem[] {
-    return this.playList.data.tracks.map((item) => new TrackNodeItem(<TrackInfo>item.track, this.playList.data.kind));
   }
 }
 
