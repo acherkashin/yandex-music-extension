@@ -432,7 +432,7 @@ export class YandexMusicApi {
 
   async getDownloadInfo(storageDir: string): Promise<DownloadInfo> {
     try {
-      const response = await this.storageClient.get(`/download-info/${storageDir}/2?format=json`);
+      const response = await this.storageClient.get<DownloadInfo>(`/download-info/${storageDir}/2?format=json`);
 
       return response.data;
     } catch (error) {
@@ -450,5 +450,14 @@ export class YandexMusicApi {
     const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
 
     return link;
+  }
+
+  getUserPlayLists() {
+    return this.getUserPlaylists().then((playLists) => {
+      const ids = playLists.map((item) => item.kind.toString());
+      return this.getPlaylists(undefined, ids, {
+        "rich-tracks": false,
+      });
+    });
   }
 }

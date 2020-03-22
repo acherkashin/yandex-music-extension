@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { Track, GeneratedPlayListItem } from "./yandexApi/interfaces";
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from "./store";
-import { createTrackAlbumIds } from "./yandexApi/apiUtils";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
@@ -26,7 +25,7 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     if (element instanceof PlayListNodeItem) {
       return this.store.getTracks(element.playList.data.owner.uid, element.playList.data.kind).then((resp) => {
-        return resp.tracks.map((item) => new TrackNodeItem(<Track>item.track, element.playList.data.kind));
+        return resp.data.result.tracks.map((item) => new TrackNodeItem(<Track>item.track, element.playList.data.kind));
       });
     }
   }

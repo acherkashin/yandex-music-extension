@@ -1,10 +1,10 @@
-import { MusicProvider } from "./musicProvider";
 import * as vscode from "vscode";
-import { FeedResponse, GeneratedPlayList, TrackItem, Track } from "./yandexApi/interfaces";
+import { FeedResponse, TrackItem, Track } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
+import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export class Store {
@@ -17,7 +17,7 @@ export class Store {
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
 
-  api = new MusicProvider();
+  api = new YandexMusicApi();
 
   @computed get currentTrack(): Track | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
@@ -56,7 +56,10 @@ export class Store {
     const username = configuration.get<string>("username");
     const password = configuration.get<string>("password");
     if (username && password) {
-      await this.api.init(username, password);
+      await this.api.init({
+        username,
+        password,
+      });
     }
 
     this.player.on("end", () => {
@@ -69,19 +72,20 @@ export class Store {
   }
 
   async getFeed(): Promise<FeedResponse> {
-    return this.api.getFeed();
+    const resp = await this.api.getFeed();
+    return resp.data.result;
   }
 
   getTracks(userId: string | number | undefined, playListId: string | number) {
-    return this.api.getTracks(userId, playListId).then((result) => {
-      this.savePlaylist(playListId, this.exposeTracks(result.tracks));
+    return this.api.getPlaylist(userId, playListId).then((result) => {
+      this.savePlaylist(playListId, this.exposeTracks(result.data.result.tracks));
 
       return result;
     });
   }
 
   async getLikedTracks(): Promise<Track[]> {
-    const resp = await this.api._api.getLikedTracks();
+    const resp = await this.api.getLikedTracks();
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
 
     return resp.result;
@@ -134,7 +138,7 @@ export class Store {
       const track = this.playLists.get(this.currentPlayListId)?.[index];
 
       if (track) {
-        const url = await this.api.getUrl(track.storageDir);
+        const url = await this.api.getTrackUrl(track.storageDir);
         this.player.setFile(url);
         this.player.play();
         this.isPlaying = true;
