@@ -1,15 +1,18 @@
 import * as vscode from "vscode";
 import { Store } from "../store";
 import { autorun } from "mobx";
+import { getTrackShortName, getTrackFullName } from "../yandexApi/apiUtils";
+import { Track } from "../yandexApi/interfaces";
 
 export class PlayerBarItem {
   private prevButton: vscode.StatusBarItem;
   private playButton: vscode.StatusBarItem;
   private pauseButton: vscode.StatusBarItem;
   private nextButton: vscode.StatusBarItem;
+  private currentTrack: vscode.StatusBarItem;
 
-  constructor(private store: Store, priority: number) {
-    this.prevButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority);
+  constructor(private store: Store, alignment: vscode.StatusBarAlignment, priority: number) {
+    this.prevButton = vscode.window.createStatusBarItem(alignment, priority);
     this.prevButton.text = "$(chevron-left)";
     this.prevButton.command = "yandexMusic.prev";
     autorun(() => {
@@ -23,19 +26,34 @@ export class PlayerBarItem {
       }
     });
 
-    this.playButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.1);
+    this.playButton = vscode.window.createStatusBarItem(alignment, priority - 0.1);
     this.playButton.text = "$(play)";
     this.playButton.tooltip = "Воспроизведение";
     this.playButton.command = "yandexMusic.play";
 
-    this.pauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.2);
+    this.pauseButton = vscode.window.createStatusBarItem(alignment, priority - 0.2);
     this.pauseButton.text = "$(debug-pause)";
     this.pauseButton.tooltip = "Пауза";
     this.pauseButton.command = "yandexMusic.pause";
 
-    this.nextButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority - 0.3);
+    this.nextButton = vscode.window.createStatusBarItem(alignment, priority - 0.3);
     this.nextButton.text = "$(chevron-right)";
     this.nextButton.command = "yandexMusic.next";
+
+    this.currentTrack = vscode.window.createStatusBarItem(alignment, priority - 0.4);
+    autorun(() => {
+      this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
+      this.currentTrack.tooltip = store.hasCurrentTrack ? getTrackFullName(<Track>store.currentTrack) : "";
+    });
+
+    autorun(() => {
+      if (this.store.hasCurrentTrack) {
+        this.currentTrack.show();
+      } else {
+        this.currentTrack.hide();
+      }
+    });
+
     autorun(() => {
       this.nextButton.tooltip = `Следущий: ${this.store.nextTrack?.title}`;
     });

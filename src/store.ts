@@ -10,8 +10,8 @@ import * as open from "open";
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new Player();
-  private playerControlPanel = new PlayerBarItem(this, 2000);
-  private rewindPanel = new RewindBarItem(this, 2001);
+  private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
+  private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   @observable isPlaying = false;
   private playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
@@ -44,14 +44,18 @@ export class Store {
   }
 
   @computed get hasNextTrack(): boolean {
-    return this.nextTrack == null ? false : true;
+    return this.nextTrack != null;
   }
 
   @computed get hasPrevTrack(): boolean {
-    return this.prevTrack == null ? false : true;
+    return this.prevTrack != null;
   }
 
-  constructor() {}
+  @computed get hasCurrentTrack(): boolean {
+    return this.currentTrack != null;
+  }
+
+  constructor() { }
   async init(): Promise<void> {
     const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
     const username = configuration.get<string>("username");
