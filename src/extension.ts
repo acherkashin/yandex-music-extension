@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { PlayListTree, TrackNodeItem as TrackTreeItem } from "./playListTree";
+import { PlayListTree } from "./tree/playListTree";
+import { TrackNodeTreeItem } from "./tree/trackNodeTreeItem";
 import { Store } from "./store";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -12,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackTreeItem) => {
+    vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackNodeTreeItem) => {
       if (item) {
         store.play({ itemId: item.track.id, playListId: item.playListId });
       } else {
@@ -32,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
       store.prev();
     })
   );
-  
+
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.pause", () => {
       store.pause();
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
+    vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackNodeTreeItem) => {
       store.downloadTrack(node.track);
     })
   );
@@ -64,4 +65,4 @@ function getRewindTime(): number {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
