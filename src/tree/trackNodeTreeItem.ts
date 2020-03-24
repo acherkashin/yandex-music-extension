@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Track } from "./../yandexApi/interfaces";
 import { getArtists } from "./../yandexApi/apiUtils";
+import { getThemeIcon } from "../utils";
 
 export class TrackNodeTreeItem extends vscode.TreeItem {
   constructor(public readonly track: Track, public readonly playListId: string | number) {
@@ -11,7 +12,8 @@ export class TrackNodeTreeItem extends vscode.TreeItem {
       tooltip: `Play ${this.label}`,
       arguments: [this],
     };
-
+    
+    this.iconPath = getThemeIcon("track.svg");
     this.contextValue = "track";
   }
 }
