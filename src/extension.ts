@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackNodeTreeItem } from "./tree/trackNodeTreeItem";
 import { Store } from "./store";
+import { showPasswordBox, showUserNameBox } from "./inputs";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
@@ -19,43 +20,45 @@ export function activate(context: vscode.ExtensionContext) {
       } else {
         store.play();
       }
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.next", () => {
       store.next();
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.prev", () => {
       store.prev();
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.pause", () => {
       store.pause();
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => {
       store.rewind(getRewindTime());
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => {
       store.rewind(-getRewindTime());
-    })
-  );
-
-  context.subscriptions.push(
+    }),
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackNodeTreeItem) => {
       store.downloadTrack(node.track);
-    })
+    }),
+    vscode.commands.registerCommand("yandexMusic.connect", async () => {
+      const credentials = store.getCredentials();
+      const username = await showUserNameBox(credentials.username);
+
+      if (!username) {
+        return;
+      } else {
+        store.updateUserName(username);
+      }
+
+      const password = await showPasswordBox(credentials.password);
+
+      if (!password) {
+        return;
+      } else {
+        store.updatePassword(password);
+      }
+
+      //TODO: need to refresh tree
+    }),
   );
 }
 

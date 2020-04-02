@@ -66,6 +66,14 @@ export class Store {
 
   constructor() { }
 
+  updateUserName(newUserName: string) {
+    vscode.workspace.getConfiguration("yandexMusic.credentials").update("username", newUserName, vscode.ConfigurationTarget.Global);
+  }
+
+  updatePassword(newPassword: string) {
+    vscode.workspace.getConfiguration("yandexMusic.credentials").update("password", newPassword, vscode.ConfigurationTarget.Global);
+  }
+
   getCredentials(): UserCredentials {
     const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
     const username = configuration.get<string>("username");

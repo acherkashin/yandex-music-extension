@@ -67,6 +67,11 @@
         "command": "yandexMusic.downloadTrack",
         "title": "Download Track",
         "icon": "$(cloud-download)"
+      },
+      {
+        "command": "yandexMusic.connect",
+        "title": "Connect to YandexMusic account",
+        "icon": "$(account)"
       }
     ],
     "menus": {
