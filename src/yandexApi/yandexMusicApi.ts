@@ -53,6 +53,10 @@ export class YandexMusicApi {
   private authClient: AxiosInstance;
   private storageClient: AxiosInstance;
 
+  get isAutorized(): boolean {
+    return this._config.user.TOKEN != null && this._config.user.UID != null;
+  }
+
   _config: Config = {
     ouath_code: {
       CLIENT_ID: "0618394846eb4d9589a602f80ce013d6",
@@ -147,10 +151,11 @@ export class YandexMusicApi {
             this._config.user.UID = resp.data.uid;
 
             return resp.data;
+          }, () => {
+            debugger;
           });
-      })
-      .catch((error) => {
-        console.error(error);
+      }, () => {
+        debugger;
       });
   }
 
@@ -172,7 +177,7 @@ export class YandexMusicApi {
    */
   getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
     return this.apiClient.get(`/feed`, {
-      headers: this._getAuthHeader(),
+      headers: this.isAutorized ? this._getAuthHeader() : undefined,
     });
   }
 

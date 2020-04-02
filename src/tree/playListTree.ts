@@ -4,6 +4,7 @@ import { Store, LIKED_TRACKS_PLAYLIST_ID } from "../store";
 import { PlayListNodeTreeItem } from "./playListTreeItem";
 import { LikedTracksTreeItem } from "./likedTracksTreeItem";
 import { TrackNodeTreeItem } from "./trackNodeTreeItem";
+import { LoginTreeItem } from "./loginTreeItem";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
@@ -35,12 +36,17 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 }
 
 async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
-  const feedPlayLists = await store.getFeed();
-  const usersPlayLists = await store.getUserPlaylists();
   const nodes: vscode.TreeItem[] = [];
-  nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListNodeTreeItem(item.data)));
-  nodes.push(...usersPlayLists.data.result.map((item) => new PlayListNodeTreeItem(item)));
-  nodes.push(new LikedTracksTreeItem());
+  
+  if (store.isAuthorized()) {
+    const feedPlayLists = await store.getFeed();
+    nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListNodeTreeItem(item.data)));
+    const usersPlayLists = await store.getUserPlaylists();
+    nodes.push(...usersPlayLists.data.result.map((item) => new PlayListNodeTreeItem(item)));
+    nodes.push(new LikedTracksTreeItem());
+  } else {
+    nodes.push(new LoginTreeItem());
+  }
 
   return nodes;
 }

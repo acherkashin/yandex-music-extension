@@ -7,6 +7,11 @@ import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import * as open from "open";
 
+export interface UserCredentials {
+  username: string | undefined;
+  password: string | undefined;
+}
+
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new Player();
@@ -19,6 +24,10 @@ export class Store {
   @observable private currentPlayListId: string | number | undefined;
 
   api = new YandexMusicApi();
+
+  isAuthorized(): boolean {
+    return this.api.isAutorized;
+  }
 
   @computed get currentTrack(): Track | null {
     if (this.currentPlayListId == null || this.currentTrackIndex == null) {
@@ -56,15 +65,30 @@ export class Store {
   }
 
   constructor() { }
-  async init(): Promise<void> {
+
+  getCredentials(): UserCredentials {
     const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
     const username = configuration.get<string>("username");
     const password = configuration.get<string>("password");
-    if (username && password) {
-      await this.api.init({
-        username,
-        password,
-      });
+
+    return {
+      username,
+      password,
+    };
+  }
+
+  async init(): Promise<void> {
+    const credentials = this.getCredentials();
+
+    if (credentials.username && credentials.password) {
+      try {
+        await this.api.init({
+          username: credentials.username,
+          password: credentials.password,
+        });
+      } catch (ex) {
+        debugger;
+      }
     }
 
     this.player.on("end", () => {
