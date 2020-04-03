@@ -167,11 +167,17 @@ export interface LikedTracksResponse
       revision: number;
       tracks: LikedTrack[];
     };
-  }> {}
+  }> { }
 
-export interface GetTracksResponse extends YandexMusicResponse<Track[]> {}
+export interface GetTracksResponse extends YandexMusicResponse<Track[]> { }
 
 export interface YandexMusicResponse<T> {
   invocationInfo: InvocationInfo;
   result: T;
 }
+
+export type LandingBlock = 'personalplaylists' | 'promotions' | 'new-releases' | 'new-playlists' | 'mixes' |
+  'chart' | 'artists' | 'albums' | 'playlists' | 'play_contexts';
+
+export const ALL_LANDING_BLOCKS: LandingBlock[] = [`personalplaylists`, `promotions`, `new-releases`, `new-playlists`, `mixes`,
+  `chart`, `artists`, `albums`, `playlists`, `play_contexts`];

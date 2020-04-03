@@ -7,11 +7,10 @@ import {
   GetPlayListsOptions,
   Visibility,
   DownloadInfo,
-  Track,
   LikedTracksResponse,
-  TrackItem,
   GetTracksResponse,
   YandexMusicResponse,
+  LandingBlock,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
@@ -56,9 +55,16 @@ export interface Response<T> {
 }
 
 export class YandexMusicApi {
-  private apiClient: AxiosInstance;
-  private authClient: AxiosInstance;
-  private storageClient: AxiosInstance;
+  private apiClient = axios.create({
+    baseURL: `https://api.music.yandex.net:443`,
+  });
+  private authClient = axios.create({
+    baseURL: `https://oauth.mobile.yandex.net:443`,
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
+  private storageClient = axios.create({
+    baseURL: `https://storage.mds.yandex.net`,
+  });
 
   get isAutorized(): boolean {
     return this._config.user.TOKEN != null && this._config.user.UID != null;
@@ -89,20 +95,7 @@ export class YandexMusicApi {
     },
   };
 
-  constructor() {
-    this.apiClient = axios.create({
-      baseURL: `https://api.music.yandex.net:443`,
-    });
-
-    this.authClient = axios.create({
-      baseURL: `https://oauth.mobile.yandex.net:443`,
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-
-    this.storageClient = axios.create({
-      baseURL: `https://storage.mds.yandex.net`,
-    });
-  }
+  constructor() { }
 
   private _getAuthHeader() {
     return { Authorization: "OAuth " + this._config.user.TOKEN };
@@ -185,6 +178,18 @@ export class YandexMusicApi {
   getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
     return this.apiClient.get(`/feed`, {
       headers: this.isAutorized ? this._getAuthHeader() : undefined,
+    });
+  }
+
+  /**
+   * Returns landing page with new releases, charts, ...
+   */
+  getLanding(...blocks: LandingBlock[]): Promise<AxiosResponse<Response<any>>> {
+    return this.apiClient.get(`/landing3?blocks=${blocks.join(',')}`, {
+      headers: this.isAutorized ?
+        this._getAuthHeader() :
+        // To allow not Authorized query. Windows app do in this way. 
+        { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" },
     });
   }
 
