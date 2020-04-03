@@ -7,9 +7,14 @@ import { TrackNodeTreeItem } from "./trackNodeTreeItem";
 import { ConnectTreeItem } from "./connectTreeItem";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
-  onDidChangeTreeData?: vscode.Event<vscode.TreeItem | null | undefined> | undefined;
+  private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(private store: Store) { }
+
+  refresh(item?: vscode.TreeItem): void {
+    this._onDidChangeTreeData.fire(item);
+  }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
     //TODO: figure out when this method is called
@@ -37,7 +42,7 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 
 async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
   const nodes: vscode.TreeItem[] = [];
-  
+
   if (store.isAuthorized()) {
     const feedPlayLists = await store.getFeed();
     nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListNodeTreeItem(item.data)));

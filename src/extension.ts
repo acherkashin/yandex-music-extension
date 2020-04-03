@@ -8,9 +8,18 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "yandex-music-extension" is now active!');
 
   const store = new Store();
+  const treeProvider = new PlayListTree(store);
 
   store.init().then(() => {
-    vscode.window.registerTreeDataProvider("yandex-music-play-lists", new PlayListTree(store));
+    vscode.window.registerTreeDataProvider("yandex-music-play-lists", treeProvider);
+  });
+
+  vscode.workspace.onDidChangeConfiguration((e) => {
+    if (e.affectsConfiguration("yandexMusic.credentials") || e.affectsConfiguration("yandexMusic.credentials")) {
+      store.init().then(() => {
+        treeProvider.refresh();
+      });
+    }
   });
 
   context.subscriptions.push(

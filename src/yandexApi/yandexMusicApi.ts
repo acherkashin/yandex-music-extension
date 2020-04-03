@@ -39,6 +39,13 @@ export interface Config {
   };
 }
 
+export interface InitConfig {
+  username: string;
+  password: string;
+  access_token?: string;
+  uid?: number;
+}
+
 export interface Response<T> {
   invocationInfo: {
     "exec-duration-millis": number;
@@ -101,7 +108,7 @@ export class YandexMusicApi {
     return { Authorization: "OAuth " + this._config.user.TOKEN };
   }
 
-  init(config: { username: string; password: string; access_token?: string; uid?: number }): Promise<InitResponse> {
+  init(config: InitConfig): Promise<InitResponse> {
     // Skip authorization if access_token and uid are present
     if (config.access_token && config.uid) {
       this._config.user.TOKEN = config.access_token;

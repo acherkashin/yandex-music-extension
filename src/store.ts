@@ -94,18 +94,20 @@ export class Store {
           username: credentials.username,
           password: credentials.password,
         });
+
+        this.player.on("end", () => {
+          this.next();
+        });
+
+        autorun(() => {
+          vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
+        });
       } catch (ex) {
         debugger;
       }
     }
 
-    this.player.on("end", () => {
-      this.next();
-    });
-
-    autorun(() => {
-      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
-    });
+    return await Promise.resolve();
   }
 
   async getFeed(): Promise<FeedResponse> {
