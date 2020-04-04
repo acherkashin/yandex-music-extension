@@ -79,7 +79,7 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
-          "when": "view == yandex-music-play-lists && viewItem == track"
+          "when": "viewItem == track"
         }
       ]
     },

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   InitResponse,
   FeedResponse,
@@ -12,11 +12,12 @@ import {
   LandingBlockType,
 } from "./interfaces";
 import { createHash } from "crypto";
-import { createTrackAlbumIds } from "./apiUtils";
+import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
 import { FullChartResponse } from "./responces/fullChartResponse";
 import { PlayList } from "./playlist/playList";
+import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
 const querystring = require("querystring");
 
 export interface Config {
@@ -56,6 +57,10 @@ export interface Response<T> {
   };
   result: T;
 }
+
+// Some API will not work without this header if you are not logged in
+// It is how Win App works
+const winAppHeader = { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" }
 
 export class YandexMusicApi {
   private apiClient = axios.create({
@@ -106,6 +111,7 @@ export class YandexMusicApi {
 
   init(config: InitConfig): Promise<InitResponse> {
     // Skip authorization if access_token and uid are present
+    // TODO: need to store TOKEN and UID to prevent login on every login
     if (config.access_token && config.uid) {
       this._config.user.TOKEN = config.access_token;
       this._config.user.UID = config.uid;
@@ -154,10 +160,10 @@ export class YandexMusicApi {
             this._config.user.UID = resp.data.uid;
 
             return resp.data;
-          }, () => {
+          }, (e) => {
             debugger;
           });
-      }, () => {
+      }, (e) => {
         debugger;
       });
   }
@@ -195,19 +201,29 @@ export class YandexMusicApi {
    */
   getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<LandingResponse>> {
     return this.apiClient.get(`/landing3?blocks=${blocks.join(',')}`, {
-      headers: this.isAutorized ?
-        this._getAuthHeader() :
-        // To allow not Authorized query. Windows app do in this way. 
-        { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" },
+      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader
     });
   }
 
-  getFullChart(chartType: 'russia' | 'world'): Promise<AxiosResponse<FullChartResponse>> {
+  getAllChartTracks(chartType: 'russia' | 'world'): Promise<AxiosResponse<FullChartResponse>> {
     return this.getLandingBlock(`chart/${chartType}`);
   }
 
+  getAllNewPlayListsIds(): Promise<AxiosResponse<AllNewPlayListsIdsResponse>> {
+    return this.getLandingBlock('new-playlists');
+  }
+
+  async getAllNewPlayLists(): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
+    const resp = await this.getAllNewPlayListsIds();
+    const playLists = this.getPlayLists(resp.data.result.newPlaylists);
+
+    return playLists;
+  }
+
   getLandingBlock(block: LandingBlockType | string) {
-    return this.apiClient.get(`/landing3/${block}`);
+    return this.apiClient.get(`/landing3/${block}`, {
+      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader
+    });
   }
 
   /**
@@ -250,10 +266,22 @@ export class YandexMusicApi {
    * @param   {String} userId The user ID, if null then equal to current user id
    * @returns {Promise}
    */
-  getUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
+  getAllUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
     return this.apiClient.get<YandexMusicResponse<PlayList[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
       headers: this._getAuthHeader(),
     });
+  }
+
+  getPlayLists(playLists: NewPlayListItem[]): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
+    return this.apiClient.post(`/playlists/list/`,
+      querystring.stringify({
+        "playlistIds": getPlayListsIds(playLists).join(","),
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
   }
 
   /**
@@ -277,7 +305,7 @@ export class YandexMusicApi {
    * @param   {Object} [options]    Options: mixed {Boolean}, rich-tracks {Boolean}
    * @returns {Promise}
    */
-  getPlaylists(userId: string | undefined, playlists: string[], options: GetPlayListsOptions): Promise<AxiosResponse<any[]>> {
+  getUserPlaylists(userId: string | undefined, playlists: string[], options: GetPlayListsOptions): Promise<AxiosResponse<any[]>> {
     const opts = options || {};
 
     return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists`, {

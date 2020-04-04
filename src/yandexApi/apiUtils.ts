@@ -1,7 +1,12 @@
 import { Track } from "./interfaces";
+import { NewPlayListItem } from "./responces/fullNewPlayLists";
 
 export function createTrackAlbumIds(tracks: { id: string; albumId: string }[]): string[] {
   return tracks.map((track) => `${track.id}:${track.albumId}`);
+}
+
+export function getPlayListsIds(playLists: NewPlayListItem[]) {
+  return playLists.map((item) => `${item.uid}:${item.kind}`);
 }
 
 export function getArtists(track: Track): string {

@@ -122,11 +122,11 @@ export class Store {
   }
 
   async getUserPlaylists() {
-    return this.api.getUserPlaylists();
+    return this.api.getAllUserPlaylists();
   }
 
   getChart(): Promise<Track[]> {
-    return this.api.getFullChart('russia').then((resp) => {
+    return this.api.getAllChartTracks('russia').then((resp) => {
       const tracks = this.exposeTracks(resp.data.result.chart.tracks);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
@@ -144,11 +144,8 @@ export class Store {
   }
 
   getNewPlayLists(): Promise<PlayList[]> {
-    //TODO: use getLandingBlock
-    return this.api.getLanding('new-playlists').then((resp) => {
-      const playLists = (resp.data.result.blocks[0].entities as Array<LandingBlockEntity<PlayList>>).map((item) => item.data);
-
-      return playLists;
+    return this.api.getAllNewPlayLists().then((resp) => {
+      return resp.data.result;
     });
   }
 
