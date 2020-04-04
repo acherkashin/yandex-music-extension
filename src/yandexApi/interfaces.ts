@@ -1,3 +1,6 @@
+import { LandingBlock } from "./landing/block";
+import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
+
 export interface GetPlayListsOptions {
   mixed?: boolean;
   "rich-tracks"?: boolean;
@@ -18,48 +21,6 @@ export interface FeedResponse {
   isWizardPassed: boolean;
   pumpkin: boolean;
   today: string;
-}
-
-export interface Promotion {
-  promoId: string;
-  title: string;
-  subtitle: string;
-  heading: string;
-  urlScheme: string;
-  url: string;
-  textColor: string;
-  gradient: string;
-  image: string;
-}
-
-export interface Chart {
-  position: number;
-  progress: string;
-  listeners: number;
-  shift: number;
-}
-
-export interface ChartItem {
-  track: Track;
-  chart: Chart;
-}
-
-export interface LandingBlockEntity<T> {
-  id: string;
-  type: LandingBlockType;
-  data: T;
-}
-
-export interface LandingBlock {
-  id: string;
-  title: string;
-  type: LandingBlockType;
-  /**
-   * Where block was got from
-   */
-  typeForFrom: LandingBlockType;
-  description: string | undefined;
-  entities: LandingBlockEntity<Promotion | Album | PlayList | ChartItem>;
 }
 
 export interface LandingResult {
@@ -93,28 +54,6 @@ export interface PlayList {
   tracks: TrackItem[];
 }
 
-export interface GeneratedPlayList extends PlayList {
-  animatedCoverUri: string;
-  coverWithoutText: Cover;
-  description: string;
-  descriptionFormatted: string;
-  everPlayed: boolean;
-  generatedPlaylistType: string;
-  idForFrom: string;
-  madeFor: any;
-  ogTitle: string;
-  playCounter: any;
-  uid: number;
-  urlPart: string;
-}
-
-export interface GeneratedPlayListItem {
-  data: GeneratedPlayList;
-  notify: boolean;
-  ready: boolean;
-  type: "playlistOfTheDay";
-}
-
 export type Visibility = "public" | "private";
 
 export interface TrackItem {
@@ -130,8 +69,8 @@ export interface TrackItem {
 export interface Album {
   id: number;
   title: string;
-  type: "single" | string;
-  metaType: "single" | string;
+  type: "single" | "podcast" | string;
+  metaType: "single" | "podcast" | string;
   year: number;
   releaseDate: string;
   coverUri: string;

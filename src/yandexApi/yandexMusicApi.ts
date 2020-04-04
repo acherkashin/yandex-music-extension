@@ -3,19 +3,18 @@ import {
   InitResponse,
   FeedResponse,
   PlayList,
-  GeneratedPlayList,
   GetPlayListsOptions,
   Visibility,
   DownloadInfo,
   LikedTracksResponse,
   GetTracksResponse,
   YandexMusicResponse,
-  LandingBlock,
   LandingResponse,
   LandingBlockType,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
+import { GeneratedPlayList } from "./feed/generatedPlayList";
 const querystring = require("querystring");
 
 export interface Config {
