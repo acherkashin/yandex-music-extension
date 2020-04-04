@@ -185,7 +185,7 @@ export class YandexMusicApi {
   /**
    * Returns landing page with new releases, charts, ...
    */
-  getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<Response<LandingResponse>>> {
+  getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<LandingResponse>> {
     return this.apiClient.get(`/landing3?blocks=${blocks.join(',')}`, {
       headers: this.isAutorized ?
         this._getAuthHeader() :

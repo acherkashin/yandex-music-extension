@@ -6,6 +6,8 @@ import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import * as open from "open";
+import { ChartItem } from "./yandexApi/landing/chartitem";
+import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -13,6 +15,7 @@ export interface UserCredentials {
 }
 
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
+export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new Player();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
@@ -117,6 +120,16 @@ export class Store {
 
   async getUserPlaylists() {
     return this.api.getUserPlaylists();
+  }
+
+  getChart(): Promise<Track[]> {
+    return this.api.getLanding('chart').then((resp) => {
+      const chartTracks = resp.data.result.blocks[0].entities as Array<LandingBlockEntity<ChartItem>>;
+      const tracks = chartTracks.map((item) => item.data.track);
+      this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
+
+      return tracks;
+    });
   }
 
   getTracks(userId: string | number | undefined, playListId: string | number) {

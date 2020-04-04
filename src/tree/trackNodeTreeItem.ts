@@ -12,7 +12,7 @@ export class TrackNodeTreeItem extends vscode.TreeItem {
       tooltip: `Play ${this.label}`,
       arguments: [this],
     };
-    
+
     this.iconPath = getThemeIcon("track.svg");
     this.contextValue = "track";
   }

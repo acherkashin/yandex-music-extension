@@ -15,5 +15,5 @@ export interface LandingBlock {
      */
     typeForFrom: LandingBlockType;
     description: string | undefined;
-    entities: LandingBlockEntity<Promotion | Album | PlayList | ChartItem | MixLink | GeneratedPlayListItem> | PodcastItem;
-  }
+    entities: Array<LandingBlockEntity<Promotion | Album | PlayList | ChartItem | MixLink | GeneratedPlayListItem> | PodcastItem>;
+}
