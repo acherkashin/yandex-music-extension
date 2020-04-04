@@ -1,4 +1,4 @@
-import { LandingBlockType, PlayList } from "../interfaces";
+import { LandingBlockType } from "../interfaces";
 import { LandingBlockEntity } from "./blockentity";
 import { Promotion } from "./promotion";
 import { ChartItem } from "./chartitem";
@@ -6,6 +6,7 @@ import { MixLink } from "./mixLink";
 import { PodcastItem } from "./podcastItem";
 import { GeneratedPlayListItem } from "../feed/generatedPlayListItem";
 import { Album } from "../album/album";
+import { PlayList } from "../playlist/playList";
 
 export interface LandingBlock {
     id: string;

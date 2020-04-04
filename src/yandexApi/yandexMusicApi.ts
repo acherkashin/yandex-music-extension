@@ -2,7 +2,6 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import {
   InitResponse,
   FeedResponse,
-  PlayList,
   GetPlayListsOptions,
   Visibility,
   DownloadInfo,
@@ -16,6 +15,8 @@ import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
+import { FullChartResponse } from "./responces/fullChartResponse";
+import { PlayList } from "./playlist/playList";
 const querystring = require("querystring");
 
 export interface Config {
@@ -201,7 +202,11 @@ export class YandexMusicApi {
     });
   }
 
-  getLandingBlock(block: LandingBlockType) {
+  getFullChart(chartType: 'russia' | 'world'): Promise<AxiosResponse<FullChartResponse>> {
+    return this.getLandingBlock(`chart/${chartType}`);
+  }
+
+  getLandingBlock(block: LandingBlockType | string) {
     return this.apiClient.get(`/landing3/${block}`);
   }
 

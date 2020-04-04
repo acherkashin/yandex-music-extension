@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FeedResponse, TrackItem, Track, PlayList } from "./yandexApi/interfaces";
+import { FeedResponse, TrackItem, Track } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -9,6 +9,7 @@ import * as open from "open";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { Album } from "./yandexApi/album/album";
+import { PlayList } from "./yandexApi/playlist/playList";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -125,9 +126,8 @@ export class Store {
   }
 
   getChart(): Promise<Track[]> {
-    return this.api.getLanding('chart').then((resp) => {
-      const chartTracks = resp.data.result.blocks[0].entities as Array<LandingBlockEntity<ChartItem>>;
-      const tracks = chartTracks.map((item) => item.data.track);
+    return this.api.getFullChart('russia').then((resp) => {
+      const tracks = this.exposeTracks(resp.data.result.chart.tracks);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
       return tracks;

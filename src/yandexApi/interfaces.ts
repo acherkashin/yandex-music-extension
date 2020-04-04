@@ -31,28 +31,6 @@ export interface LandingResult {
 
 export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
 
-export interface PlayList {
-  available: boolean;
-  collective: boolean;
-  cover: Cover;
-  created: string;
-  durationMs: number;
-  isBanner: boolean;
-  isPremiere: boolean;
-  kind: number;
-  modified: string;
-  ogImage: string;
-  owner: Owner;
-  prerolls: any[];
-  revision: number;
-  snapshot: number;
-  tags: any[];
-  title: string;
-  trackCount: number;
-  uid: number;
-  visibility: Visibility;
-  tracks: TrackItem[];
-}
 
 export type Visibility = "public" | "private";
 

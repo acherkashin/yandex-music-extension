@@ -1,10 +1,9 @@
-import { PlayList, Cover } from "../interfaces";
+import { Cover } from "../interfaces";
+import { PlayList } from "../playlist/playList";
 
 export interface GeneratedPlayList extends PlayList {
     animatedCoverUri: string;
     coverWithoutText: Cover;
-    description: string;
-    descriptionFormatted: string;
     everPlayed: boolean;
     generatedPlaylistType: string;
     idForFrom: string;

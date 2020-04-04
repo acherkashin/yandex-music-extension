@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { PlayList } from "../yandexApi/interfaces";
 import { getThemeIcon } from "../utils";
+import { PlayList } from "../yandexApi/playlist/playList";
 
 export class PlayListTreeItem extends vscode.TreeItem {
   constructor(public readonly playList: PlayList) {
