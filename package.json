@@ -131,6 +131,10 @@
         {
           "id": "yandex-music-chart",
           "name": "Chart"
+        },
+        {
+          "id": "yandex-music-recommendations",
+          "name": "Recommendations"
         }
       ]
     }

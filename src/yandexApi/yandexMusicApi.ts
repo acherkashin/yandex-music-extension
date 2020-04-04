@@ -15,6 +15,7 @@ import {
 import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
+import { Album } from "./album/album";
 const querystring = require("querystring");
 
 export interface Config {
@@ -178,6 +179,12 @@ export class YandexMusicApi {
    */
   getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
     return this.apiClient.get(`/feed`, {
+      headers: this.isAutorized ? this._getAuthHeader() : undefined,
+    });
+  }
+
+  getAlbum(albumId: number, withTracks: boolean): Promise<AxiosResponse<YandexMusicResponse<Album>>> {
+    return this.apiClient.get(`/albums/${albumId}/${withTracks ? `with-tracks` : ``}`, {
       headers: this.isAutorized ? this._getAuthHeader() : undefined,
     });
   }

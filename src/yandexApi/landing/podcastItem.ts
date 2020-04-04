@@ -1,4 +1,4 @@
-import { Album } from "../interfaces";
+import { Album } from "../album/album";
 
 export interface PodcastItem {
     type: string;

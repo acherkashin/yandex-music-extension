@@ -8,6 +8,7 @@ import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import * as open from "open";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
+import { Album } from "./yandexApi/album/album";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -16,6 +17,7 @@ export interface UserCredentials {
 
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
+export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
 export class Store {
   private player = new Player();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
@@ -127,6 +129,23 @@ export class Store {
       const chartTracks = resp.data.result.blocks[0].entities as Array<LandingBlockEntity<ChartItem>>;
       const tracks = chartTracks.map((item) => item.data.track);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
+
+      return tracks;
+    });
+  }
+
+  getNewReleases(): Promise<Album[]> {
+    return this.api.getLanding('new-releases').then((resp) => {
+      const albums = (resp.data.result.blocks[0].entities as Array<LandingBlockEntity<Album>>).map((item) => item.data);
+
+      return albums;
+    });
+  }
+
+  getAlbumTracks(albumId: number): Promise<Track[]> {
+    return this.api.getAlbum(albumId, true).then((resp) => {
+      const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
+      this.savePlaylist(albumId, tracks);
 
       return tracks;
     });

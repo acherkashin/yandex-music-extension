@@ -66,35 +66,6 @@ export interface TrackItem {
   track?: Track;
 }
 
-export interface Album {
-  id: number;
-  title: string;
-  type: "single" | "podcast" | string;
-  metaType: "single" | "podcast" | string;
-  year: number;
-  releaseDate: string;
-  coverUri: string;
-  ogImage: string;
-  genre: string;
-  buy: any[];
-  trackCount: number;
-  recent: boolean;
-  /**
-   * Whether albom is popular for listeners
-   */
-  veryImportant: boolean;
-  artists: Artist[];
-  labels: Array<{ id: number, name: string }>;
-  available: boolean;
-  availableForPremiumUsers: boolean;
-  availableForMobile: boolean;
-  availablePartially: boolean;
-  /**
-   * of the best tracks ids
-   */
-  bests: number[];
-}
-
 export interface Artist {
   composer: boolean;
   cover: Cover;

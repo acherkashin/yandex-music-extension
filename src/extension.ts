@@ -4,17 +4,18 @@ import { TrackNodeTreeItem } from "./tree/trackNodeTreeItem";
 import { Store } from "./store";
 import { showPasswordBox, showUserNameBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
+import { RecommendationTree } from "./tree/recommendationTree";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "yandex-music-extension" is now active!');
-
   const store = new Store();
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
+  const recommendationProvider = new RecommendationTree(store);
 
   store.init().then(() => {
     vscode.window.registerTreeDataProvider("yandex-music-play-lists", treeProvider);
     vscode.window.registerTreeDataProvider("yandex-music-chart", chartProvider);
+    vscode.window.registerTreeDataProvider("yandex-music-recommendations", recommendationProvider);
   });
 
   vscode.workspace.onDidChangeConfiguration((e) => {
