@@ -11,6 +11,8 @@ import {
   GetTracksResponse,
   YandexMusicResponse,
   LandingBlock,
+  LandingResponse,
+  LandingBlockType,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds } from "./apiUtils";
@@ -184,7 +186,7 @@ export class YandexMusicApi {
   /**
    * Returns landing page with new releases, charts, ...
    */
-  getLanding(...blocks: LandingBlock[]): Promise<AxiosResponse<Response<any>>> {
+  getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<Response<LandingResponse>>> {
     return this.apiClient.get(`/landing3?blocks=${blocks.join(',')}`, {
       headers: this.isAutorized ?
         this._getAuthHeader() :

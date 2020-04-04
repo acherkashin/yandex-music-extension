@@ -20,6 +20,56 @@ export interface FeedResponse {
   today: string;
 }
 
+export interface Promotion {
+  promoId: string;
+  title: string;
+  subtitle: string;
+  heading: string;
+  urlScheme: string;
+  url: string;
+  textColor: string;
+  gradient: string;
+  image: string;
+}
+
+export interface Chart {
+  position: number;
+  progress: string;
+  listeners: number;
+  shift: number;
+}
+
+export interface ChartItem {
+  track: Track;
+  chart: Chart;
+}
+
+export interface LandingBlockEntity<T> {
+  id: string;
+  type: LandingBlockType;
+  data: T;
+}
+
+export interface LandingBlock {
+  id: string;
+  title: string;
+  type: LandingBlockType;
+  /**
+   * Where block was got from
+   */
+  typeForFrom: LandingBlockType;
+  description: string | undefined;
+  entities: LandingBlockEntity<Promotion | Album | PlayList | ChartItem>;
+}
+
+export interface LandingResult {
+  pumpkin: boolean;
+  contentId: string;
+  blocks: LandingBlock[];
+}
+
+export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
+
 export interface PlayList {
   available: boolean;
   collective: boolean;
@@ -77,10 +127,39 @@ export interface TrackItem {
   track?: Track;
 }
 
+export interface Album {
+  id: number;
+  title: string;
+  type: "single" | string;
+  metaType: "single" | string;
+  year: number;
+  releaseDate: string;
+  coverUri: string;
+  ogImage: string;
+  genre: string;
+  buy: any[];
+  trackCount: number;
+  recent: boolean;
+  /**
+   * Whether albom is popular for listeners
+   */
+  veryImportant: boolean;
+  artists: Artist[];
+  labels: Array<{ id: number, name: string }>;
+  available: boolean;
+  availableForPremiumUsers: boolean;
+  availableForMobile: boolean;
+  availablePartially: boolean;
+  /**
+   * of the best tracks ids
+   */
+  bests: number[];
+}
+
 export interface Artist {
   composer: boolean;
   cover: Cover;
-  decomposed: any[];
+  decomposed?: any[];
   genres: any[];
   id: number;
   name: string;
@@ -176,8 +255,8 @@ export interface YandexMusicResponse<T> {
   result: T;
 }
 
-export type LandingBlock = 'personalplaylists' | 'promotions' | 'new-releases' | 'new-playlists' | 'mixes' |
-  'chart' | 'artists' | 'albums' | 'playlists' | 'play_contexts';
+export type LandingBlockType = 'personalplaylists' | 'promotions' | 'new-releases' | 'new-playlists' | 'mixes' |
+  'chart' | 'artists' | 'albums' | 'playlists' | 'play_contexts' | 'podcasts';
 
-export const ALL_LANDING_BLOCKS: LandingBlock[] = [`personalplaylists`, `promotions`, `new-releases`, `new-playlists`, `mixes`,
-  `chart`, `artists`, `albums`, `playlists`, `play_contexts`];
+export const ALL_LANDING_BLOCKS: LandingBlockType[] = ['personalplaylists', 'promotions', 'new-releases', 'new-playlists', 'mixes',
+  'chart', 'artists', 'albums', 'playlists', 'play_contexts', 'podcasts'];
