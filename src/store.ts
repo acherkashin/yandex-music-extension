@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FeedResponse, TrackItem, Track } from "./yandexApi/interfaces";
+import { FeedResponse, TrackItem, Track, PlayList } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -135,10 +135,20 @@ export class Store {
   }
 
   getNewReleases(): Promise<Album[]> {
+    //TODO: use getLandingBlock
     return this.api.getLanding('new-releases').then((resp) => {
       const albums = (resp.data.result.blocks[0].entities as Array<LandingBlockEntity<Album>>).map((item) => item.data);
 
       return albums;
+    });
+  }
+
+  getNewPlayLists(): Promise<PlayList[]> {
+    //TODO: use getLandingBlock
+    return this.api.getLanding('new-playlists').then((resp) => {
+      const playLists = (resp.data.result.blocks[0].entities as Array<LandingBlockEntity<PlayList>>).map((item) => item.data);
+
+      return playLists;
     });
   }
 

@@ -201,6 +201,10 @@ export class YandexMusicApi {
     });
   }
 
+  getLandingBlock(block: LandingBlockType) {
+    return this.apiClient.get(`/landing3/${block}`);
+  }
+
   /**
    * GET: /genres
    * Get a list of music genres
