@@ -15,9 +15,10 @@ import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
-import { FullChartResponse } from "./responces/fullChartResponse";
+import { FullChartResponse } from "./responces/fullChart";
 import { PlayList } from "./playlist/playList";
 import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
+import { FullNewReleasesResponse } from "./responces/fullNewReleases";
 const querystring = require("querystring");
 
 export interface Config {
@@ -196,6 +197,17 @@ export class YandexMusicApi {
     });
   }
 
+  getAlbums(ids: number[]): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
+    return this.apiClient.post(`/albums`,
+      querystring.stringify({
+        'album-ids': ids.join(',')
+      }), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+  }
+
   /**
    * Returns landing page with new releases, charts, ...
    */
@@ -211,6 +223,20 @@ export class YandexMusicApi {
 
   getAllNewPlayListsIds(): Promise<AxiosResponse<AllNewPlayListsIdsResponse>> {
     return this.getLandingBlock('new-playlists');
+  }
+
+  async getAllNewReleases(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
+    const resp = await this.getAllNewReleasesIds();
+    const albums = await this.getAlbums(resp.data.result.newReleases);
+
+    return albums;
+  }
+
+  /**
+   * Returns new released albums ids
+   */
+  getAllNewReleasesIds(): Promise<AxiosResponse<FullNewReleasesResponse>> {
+    return this.getLandingBlock('new-releases');
   }
 
   async getAllNewPlayLists(): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {

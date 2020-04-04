@@ -6,8 +6,6 @@ import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import * as open from "open";
-import { ChartItem } from "./yandexApi/landing/chartitem";
-import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { Album } from "./yandexApi/album/album";
 import { PlayList } from "./yandexApi/playlist/playList";
 
@@ -135,11 +133,8 @@ export class Store {
   }
 
   getNewReleases(): Promise<Album[]> {
-    //TODO: use getLandingBlock
-    return this.api.getLanding('new-releases').then((resp) => {
-      const albums = (resp.data.result.blocks[0].entities as Array<LandingBlockEntity<Album>>).map((item) => item.data);
-
-      return albums;
+    return this.api.getAllNewReleases().then((resp) => {
+      return resp.data.result;
     });
   }
 
