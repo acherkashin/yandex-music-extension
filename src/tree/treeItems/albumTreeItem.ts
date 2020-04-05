@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { getThemeIcon } from "../utils";
-import { Album } from "../yandexApi/album/album";
+import { getThemeIcon } from "../../utils";
+import { Album } from "../../yandexApi/album/album";
 
 export class AlbumTreeItem extends vscode.TreeItem {
   constructor(public readonly album: Album) {

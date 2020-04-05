@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getThemeIcon } from "../utils";
+import { getThemeIcon } from "../../utils";
 
 export class NewPlayListsTreeItem extends vscode.TreeItem {
   constructor() {

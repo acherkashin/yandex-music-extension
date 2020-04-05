@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getResourceIcon } from "../utils";
+import { getResourceIcon } from "../../utils";
 
 export class ConnectTreeItem extends vscode.TreeItem {
     constructor() {

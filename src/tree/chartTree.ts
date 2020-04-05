@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Store, CHART_TRACKS_PLAYLIST_ID } from "../store";
-import { TrackNodeTreeItem } from "./trackNodeTreeItem";
+import { TrackTreeItem } from "./treeItems";
 
 export class ChartTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -19,7 +19,7 @@ export class ChartTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     getChildren(): vscode.ProviderResult<vscode.TreeItem[]> {
         return this.store.getChart().then((items) => {
-            return items.map((item) => new TrackNodeTreeItem(item, CHART_TRACKS_PLAYLIST_ID));
+            return items.map((item) => new TrackTreeItem(item, CHART_TRACKS_PLAYLIST_ID));
         });
     }
 }
