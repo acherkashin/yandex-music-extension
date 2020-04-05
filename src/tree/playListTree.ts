@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Store } from "../store";
 import { PlayListTreeItem, LikedTracksTreeItem, ConnectTreeItem } from "./treeItems";
 import { getChildren } from "./childrenLoader";
+import { DividerTreeItem } from "./treeItems/dividerTreeItem";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -33,8 +34,10 @@ async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
   if (store.isAuthorized()) {
     const feedPlayLists = await store.getFeed();
     nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListTreeItem(item.data)));
+    nodes.push(new DividerTreeItem());
     const usersPlayLists = await store.getUserPlaylists();
     nodes.push(...usersPlayLists.data.result.map((item) => new PlayListTreeItem(item)));
+    nodes.push(new DividerTreeItem());
     nodes.push(new LikedTracksTreeItem());
   } else {
     nodes.push(new ConnectTreeItem());
