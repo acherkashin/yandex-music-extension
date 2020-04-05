@@ -11,7 +11,7 @@ import { PlayList } from "../playlist/playList";
 export interface LandingBlock {
     id: string;
     title: string;
-    type: "personal-playlists" | string;
+    type: "personal-playlists" | "podcasts" | "play-context" | "chart" | "new-playlists" | "new-releases" | "promotions" | string;
     /**
      * Where block was got from
      */

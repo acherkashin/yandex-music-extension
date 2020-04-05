@@ -22,9 +22,9 @@ export class RecommendationTree implements vscode.TreeDataProvider<vscode.TreeIt
     getChildren(element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
         if (!element) {
             return [
-                new NewReleasesTreeItem(),
-                new NewPlayListsTreeItem(),
-                new ActualPodcastsTreeItem(),
+                new NewReleasesTreeItem(this.store),
+                new NewPlayListsTreeItem(this.store),
+                new ActualPodcastsTreeItem(this.store),
             ];
         }
 

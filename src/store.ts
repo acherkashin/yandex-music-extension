@@ -122,16 +122,15 @@ export class Store {
     return await Promise.resolve();
   }
 
-  getGeneratedPlayLists(): PlayList[] {
-    return (this.landingBlocks
-      .find((item) => item.type === "personal-playlists")
-      ?.entities as LandingBlockEntity<GeneratedPlayListItem>[])
-      .map((item) => item.data.data);
+  getLandingBlock(type: string) {
+    return this.landingBlocks
+      .find((item) => item.type === type);
   }
 
-  async getFeed(): Promise<FeedResponse> {
-    const resp = await this.api.getFeed();
-    return resp.data.result;
+  getGeneratedPlayLists(): PlayList[] {
+    return (this.getLandingBlock("personal-playlists")
+      ?.entities as LandingBlockEntity<GeneratedPlayListItem>[])
+      .map((item) => item.data.data);
   }
 
   async getUserPlaylists() {
