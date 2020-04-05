@@ -144,6 +144,12 @@ export class Store {
     });
   }
 
+  getActualPodcasts(): Promise<Album[]> {
+    return this.api.getActualPodcasts().then((resp) => {
+      return resp.data.result;
+    });
+  }
+
   getAlbumTracks(albumId: number): Promise<Track[]> {
     return this.api.getAlbum(albumId, true).then((resp) => {
       const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));

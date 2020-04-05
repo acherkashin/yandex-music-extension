@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeItem, AlbumTreeItem, LikedTracksTreeItem } from './treeItems';
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from '../store';
 import { Track } from '../yandexApi/interfaces';
+import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {
@@ -30,9 +31,15 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
 
     if (element instanceof LikedTracksTreeItem) {
         return store.getLikedTracks().then((tracks) => {
-          return tracks.map((item) => new TrackTreeItem(<Track>item, LIKED_TRACKS_PLAYLIST_ID));
+            return tracks.map((item) => new TrackTreeItem(<Track>item, LIKED_TRACKS_PLAYLIST_ID));
         });
-      }
+    }
+
+    if (element instanceof ActualPodcastsTreeItem) {
+        return store.getActualPodcasts().then((albums) => {
+            return albums.map((item) => new AlbumTreeItem(item));
+        });
+    }
 
     return null;
 }

@@ -19,6 +19,7 @@ import { FullChartResponse } from "./responces/fullChart";
 import { PlayList } from "./playlist/playList";
 import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
 import { FullNewReleasesResponse } from "./responces/fullNewReleases";
+import { RecommendedPodcastsIdsResponse } from "./responces/recommendedPodcasts";
 const querystring = require("querystring");
 
 export interface Config {
@@ -191,6 +192,12 @@ export class YandexMusicApi {
     });
   }
 
+  /**
+   * Returns album by id. 
+   * Podcasts represent album as well, so you can use this method to get podcast as well.
+   * @param albumId Album id
+   * @param withTracks whether to include tracks in the response
+   */
   getAlbum(albumId: number, withTracks: boolean): Promise<AxiosResponse<YandexMusicResponse<Album>>> {
     return this.apiClient.get(`/albums/${albumId}/${withTracks ? `with-tracks` : ``}`, {
       headers: this.isAutorized ? this._getAuthHeader() : undefined,
@@ -241,9 +248,20 @@ export class YandexMusicApi {
 
   async getAllNewPlayLists(): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
     const resp = await this.getAllNewPlayListsIds();
-    const playLists = this.getPlayLists(resp.data.result.newPlaylists);
+    const playLists = await this.getPlayLists(resp.data.result.newPlaylists);
 
     return playLists;
+  }
+
+  getActualPodcastsIds(): Promise<AxiosResponse<RecommendedPodcastsIdsResponse>> {
+    return this.getLandingBlock('podcasts');
+  }
+
+  async getActualPodcasts(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
+    const resp = await this.getActualPodcastsIds();
+    const podcasts = await this.getAlbums(resp.data.result.podcasts);
+
+    return podcasts;
   }
 
   getLandingBlock(block: LandingBlockType | string) {

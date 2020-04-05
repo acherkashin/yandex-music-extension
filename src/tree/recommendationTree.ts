@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Store } from '../store';
 import { NewReleasesTreeItem, NewPlayListsTreeItem } from './treeItems';
 import { getChildren } from './childrenLoader';
+import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
 
 export class RecommendationTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -23,6 +24,7 @@ export class RecommendationTree implements vscode.TreeDataProvider<vscode.TreeIt
             return [
                 new NewReleasesTreeItem(),
                 new NewPlayListsTreeItem(),
+                new ActualPodcastsTreeItem(),
             ];
         }
 
