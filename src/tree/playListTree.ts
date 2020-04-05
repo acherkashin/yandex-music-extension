@@ -32,8 +32,8 @@ async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
   const nodes: vscode.TreeItem[] = [];
 
   if (store.isAuthorized()) {
-    const feedPlayLists = await store.getFeed();
-    nodes.push(...feedPlayLists.generatedPlaylists.map((item) => new PlayListTreeItem(item.data)));
+    const generatedPlaylists = store.getGeneratedPlayLists();
+    nodes.push(...generatedPlaylists.map((item) => new PlayListTreeItem(item)));
     nodes.push(new DividerTreeItem());
     const usersPlayLists = await store.getUserPlaylists();
     nodes.push(...usersPlayLists.data.result.map((item) => new PlayListTreeItem(item)));

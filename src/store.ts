@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FeedResponse, TrackItem, Track } from "./yandexApi/interfaces";
+import { FeedResponse, TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { Player } from "./player";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -8,6 +8,9 @@ import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import * as open from "open";
 import { Album } from "./yandexApi/album/album";
 import { PlayList } from "./yandexApi/playlist/playList";
+import { LandingBlock } from "./yandexApi/landing/block";
+import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
+import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -21,6 +24,7 @@ export class Store {
   private player = new Player();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2001);
+  private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
   private playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
@@ -99,6 +103,10 @@ export class Store {
           password: credentials.password,
         });
 
+        await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
+          this.landingBlocks = resp.data.result.blocks;
+        });
+
         this.player.on("end", () => {
           this.next();
         });
@@ -112,6 +120,13 @@ export class Store {
     }
 
     return await Promise.resolve();
+  }
+
+  getGeneratedPlayLists(): PlayList[] {
+    return (this.landingBlocks
+      .find((item) => item.type === "personal-playlists")
+      ?.entities as LandingBlockEntity<GeneratedPlayListItem>[])
+      .map((item) => item.data.data);
   }
 
   async getFeed(): Promise<FeedResponse> {

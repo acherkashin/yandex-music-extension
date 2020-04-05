@@ -11,7 +11,7 @@ import { PlayList } from "../playlist/playList";
 export interface LandingBlock {
     id: string;
     title: string;
-    type: LandingBlockType;
+    type: "personal-playlists" | string;
     /**
      * Where block was got from
      */
