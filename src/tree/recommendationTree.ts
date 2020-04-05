@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Store } from '../store';
-import { NewReleasesTreeItem, AlbumTreeItem, TrackTreeItem, NewPlayListsTreeItem, PlayListTreeItem } from './treeItems';
-import { Track } from '../yandexApi/interfaces';
+import { NewReleasesTreeItem, NewPlayListsTreeItem } from './treeItems';
+import { getChildren } from './childrenLoader';
 
 export class RecommendationTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -26,30 +26,6 @@ export class RecommendationTree implements vscode.TreeDataProvider<vscode.TreeIt
             ];
         }
 
-        if (element instanceof NewPlayListsTreeItem) {
-            return this.store.getNewPlayLists().then((playLists) => {
-                return playLists.map((item) => new PlayListTreeItem(item));
-            });
-        }
-
-        if (element instanceof PlayListTreeItem) {
-            return this.store.getTracks(element.playList.owner.uid, element.playList.kind).then((resp) => {
-                return resp.data.result.tracks.map((item) => new TrackTreeItem(<Track>item.track, element.playList.kind));
-            });
-        }
-
-        if (element instanceof NewReleasesTreeItem) {
-            return this.store.getNewReleases().then((albums) => {
-                return albums.map((item) => new AlbumTreeItem(item));
-            });
-        }
-
-        if (element instanceof AlbumTreeItem) {
-            return this.store.getAlbumTracks(element.album.id).then((tracks) => {
-                return tracks.map((item) => new TrackTreeItem(item, element.album.id));
-            });
-        }
-
-        return null;
+        return getChildren(this.store, element);
     }
 }

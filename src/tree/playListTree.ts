@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { Track } from "../yandexApi/interfaces";
-import { Store, LIKED_TRACKS_PLAYLIST_ID } from "../store";
-import { PlayListTreeItem, LikedTracksTreeItem, TrackTreeItem, ConnectTreeItem } from "./treeItems";
+import { Store } from "../store";
+import { PlayListTreeItem, LikedTracksTreeItem, ConnectTreeItem } from "./treeItems";
+import { getChildren } from "./childrenLoader";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -19,21 +19,11 @@ export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   }
 
   getChildren(element?: LikedTracksTreeItem | PlayListTreeItem | undefined): vscode.ProviderResult<vscode.TreeItem[]> {
-    if (element instanceof LikedTracksTreeItem) {
-      return this.store.getLikedTracks().then((tracks) => {
-        return tracks.map((item) => new TrackTreeItem(<Track>item, LIKED_TRACKS_PLAYLIST_ID));
-      });
-    }
-
     if (!element) {
       return getPlayListsNodes(this.store);
     }
 
-    if (element instanceof PlayListTreeItem) {
-      return this.store.getTracks(element.playList.owner.uid, element.playList.kind).then((resp) => {
-        return resp.data.result.tracks.map((item) => new TrackTreeItem(<Track>item.track, element.playList.kind));
-      });
-    }
+    return getChildren(this.store, element);
   }
 }
 
