@@ -1,13 +1,16 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
+import { app, BrowserWindow, ipcMain } from 'electron';
+import * as readline from 'readline';
 
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: true
+        },
         width: 800,
         height: 600,
-        show: false,
+        show: true,
     });
 
     mainWindow.setMenu(null);
@@ -15,7 +18,19 @@ function createWindow() {
     mainWindow.loadURL(`file://${__dirname}/index.html`)
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
+    // setTimeout(() => {
+    //     mainWindow.webContents.send('playAudio', "AAAAAA!");
+    // }, 10_000);
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    process.on('message', (message) => {
+        mainWindow.webContents.send('playAudio', message);
+    });
 }
 
 // This method will be called when Electron has finished
