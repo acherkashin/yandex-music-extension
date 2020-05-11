@@ -26,23 +26,23 @@ export class ElectronPlayer {
       });
 
       setTimeout(() => {
-        childProcess.send('https://s224iva.storage.yandex.net/get-mp3/912b62b8592f3bc7a78b73b68469718d/0005a4d36dc5455b/rmusic/U2FsdGVkX1_qvIVuKirtLV4G-ma98Tn3jAoLsXdf_bWYJJHaMPa0FrwG_4LuDkngzUA_EkXTQ9YCq6L6szsnDZ-ej1FPbcWBMl7oIckSRJw/0771b481a232501c5278803ce2cf5b4821a6e440ecefa111fc8e44f0c46e796e');
+        childProcess.send('https://s126iva.storage.yandex.net/get-mp3/01747d20aafea0d549d66d35fbe76859/0005a5616084caab/rmusic/U2FsdGVkX19MpCrpC7uBNh2wHidceV5-JDdThhJhSoaXihd-HoZOAMmXKJxO5B6MjyAkCa-DhlWXbVkpwNf_KMe0c2ujjpEqoxQvNphvCKs/32473624a4e796972f43daaa59c5b39586eaf0ed24ba8bc2c17f9857911569bc');
       }, 5_000);
 
       setTimeout(() => {
-        childProcess.send('https://s245vla.storage.yandex.net/get-mp3/eb91b2bd1aa8c90430bcd7f8acfccea8/0005a4d36f4b41de/rmusic/U2FsdGVkX19yeK8jG9ScGiX0cLSHJT4xWhiJgiThRuR_3yQQVpuCZOEXhpt8RDCpLWn99bEVXN_Lro8VWhTRbPGe2xL4Z_KKZh8xZ_0qKdo/b6e0749b85f518a1fd25de6bc4b12aadbb7727d0eff70b26f6262a0308b95671');
-      }, 5_000);
+        childProcess.send('https://s101iva.storage.yandex.net/get-mp3/d19b1a320a476d7b14eb8d819770faf9/0005a56162ce8dbc/rmusic/U2FsdGVkX1_pNdltbm_-TeV3O-DIlKsaT9uTI6kaNSQRZK71Yza8TUI_uJx4z5WSGBtt787AJ4pVG-pnMlPPhgovPR97lXuppCbm0MWAic8/d40413d18ed40827cec2134458a01bfe6fa7fea7d9f8305ad802b3b379503e47');
+      }, 15_000);
 
       // const command = `${electronPath}`;
       // // spawn('electron', [fullPath]);
       // const childProcess = exec(command);
-      // childProcess.on("error", function (error) {
-      //   console.log(error);
-      // });
-      // childProcess.on("exit", function (code, sig) {
-      //   console.log(code);
-      //   console.log(sig);
-      // });
+      childProcess.on("error", function (error) {
+        console.log(error);
+      });
+      childProcess.on("exit", function (code, sig) {
+        console.log(code);
+        console.log(sig);
+      });
       // this.childProcess = childProcess;
     }
   }
