@@ -11,6 +11,7 @@ import { PlayList } from "./yandexApi/playlist/playList";
 import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
+import { ElectronPlayer } from "./electron/electronPlayer";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -21,7 +22,8 @@ export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
 export class Store {
-  private player = new Player();
+  private electronPlayer = new ElectronPlayer();
+  // private player = new Player();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private landingBlocks: LandingBlock[] = [];
@@ -107,9 +109,9 @@ export class Store {
           this.landingBlocks = resp.data.result.blocks;
         });
 
-        this.player.on("end", () => {
-          this.next();
-        });
+        // this.player.on("end", () => {
+        //   this.next();
+        // });
 
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
@@ -202,18 +204,18 @@ export class Store {
       }
       // update current song
     } else {
-      this.player.pause();
+      // this.player.pause();
       this.isPlaying = true;
     }
   }
 
   pause() {
-    this.player.pause();
-    this.isPlaying = false;
+    // this.player.pause();
+    // this.isPlaying = false;
   }
 
   rewind(sec: number) {
-    this.player.rewind(sec);
+    // this.player.rewind(sec);
   }
 
   next() {
@@ -241,8 +243,9 @@ export class Store {
 
       if (track) {
         const url = await this.api.getTrackUrl(track.storageDir);
-        this.player.setFile(url);
-        this.player.play();
+        // this.player.setFile(url);
+        // this.player.play();
+        this.electronPlayer.play(url);
         this.isPlaying = true;
       }
     }

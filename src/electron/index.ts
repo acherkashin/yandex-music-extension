@@ -14,7 +14,5 @@ window.onload = () => {
         }
         
         audio.play();
-
-        // console.log(args);
     });
 };
