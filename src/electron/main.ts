@@ -22,17 +22,19 @@ function createWindow() {
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
-    // setTimeout(() => {
-    //     mainWindow.webContents.send('playAudio', "AAAAAA!");
-    // }, 10_000);
 
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });
 
-    process.on('message', (message) => {
-        mainWindow.webContents.send('playAudio', message);
+    process.on('message', (rawMessage) => {
+        const message = JSON.parse(rawMessage);
+
+        switch (message.command) {
+            case 'play': mainWindow.webContents.send('play', message.payload); break;
+            case 'pause': mainWindow.webContents.send('pause');
+        }
     });
 }
 

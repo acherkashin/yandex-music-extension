@@ -39,9 +39,24 @@ export class ElectronPlayer {
     }
   }
 
-  play(url: string) {
+  /**
+   * Plays audio by given @param url, if url is empty it will resume song which was paused
+   * @param url 
+   */
+  play(url?: string) {
     if (this.childProcess) {
-      this.childProcess.send(url);
+      this.childProcess.send(JSON.stringify({
+        command: "play",
+        payload: url
+      }));
+    }
+  }
+
+  pause() {
+    if (this.childProcess) {
+      this.childProcess.send(JSON.stringify({
+        command: "pause",
+      }));
     }
   }
 }

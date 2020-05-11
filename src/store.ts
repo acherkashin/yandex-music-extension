@@ -205,13 +205,15 @@ export class Store {
       // update current song
     } else {
       // this.player.pause();
+      this.electronPlayer.play();
       this.isPlaying = true;
     }
   }
 
   pause() {
     // this.player.pause();
-    // this.isPlaying = false;
+    this.electronPlayer.pause();
+    this.isPlaying = false;
   }
 
   rewind(sec: number) {

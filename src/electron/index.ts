@@ -6,13 +6,20 @@ var Audio: any;
 let audio = new Audio();
 
 window.onload = () => {
-    ipcRenderer.on('playAudio', (event, ...args) => {
-        if (audio) {
-            audio.src = args[0];
-        } else {
-            audio = new Audio(args[0]);
+    ipcRenderer.on('play', (event, ...args) => {
+        const url = args[0];
+        if (url) {
+            if (audio) {
+                audio.src = url;
+            } else {
+                audio = new Audio(url);
+            }
         }
-        
-        audio.play();
+
+        audio && audio.play();
+    });
+
+    ipcRenderer.on('pause', () => {
+        audio.pause();
     });
 };
