@@ -217,6 +217,7 @@ export class Store {
   }
 
   rewind(sec: number) {
+    this.electronPlayer.rewind(sec);
     // this.player.rewind(sec);
   }
 

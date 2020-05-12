@@ -33,7 +33,8 @@ function createWindow() {
 
         switch (message.command) {
             case 'play': mainWindow.webContents.send('play', message.payload); break;
-            case 'pause': mainWindow.webContents.send('pause');
+            case 'pause': mainWindow.webContents.send('pause'); break;
+            case 'rewind': mainWindow.webContents.send('rewind', message.payload); break;
         }
     });
 }

@@ -44,19 +44,26 @@ export class ElectronPlayer {
    * @param url 
    */
   play(url?: string) {
-    if (this.childProcess) {
-      this.childProcess.send(JSON.stringify({
-        command: "play",
-        payload: url
-      }));
-    }
+    this.childProcess?.send(JSON.stringify({
+      command: "play",
+      payload: url
+    }));
   }
 
   pause() {
-    if (this.childProcess) {
-      this.childProcess.send(JSON.stringify({
-        command: "pause",
-      }));
-    }
+    this.childProcess?.send(JSON.stringify({
+      command: "pause",
+    }));
+  }
+
+  /**
+   * Rewinds audio backward/forward on given value in seconds.
+   * @param sec if positive number rewind forward on provided value. if negative number rewind backward.
+   */
+  rewind(sec: number) {
+    this.childProcess?.send(JSON.stringify({
+      command: "rewind",
+      payload: sec
+    }));
   }
 }

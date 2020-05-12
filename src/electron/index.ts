@@ -22,4 +22,8 @@ window.onload = () => {
     ipcRenderer.on('pause', () => {
         audio.pause();
     });
+
+    ipcRenderer.on('rewind', (event, sec) => {
+        audio.currentTime += sec;
+    });
 };
