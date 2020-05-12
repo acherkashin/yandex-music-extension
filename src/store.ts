@@ -109,9 +109,13 @@ export class Store {
           this.landingBlocks = resp.data.result.blocks;
         });
 
-        // this.player.on("end", () => {
+        // this.player.on("ended", () => {
         //   this.next();
         // });
+
+        this.electronPlayer.on("ended", () => {
+          this.next();
+        });
 
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);

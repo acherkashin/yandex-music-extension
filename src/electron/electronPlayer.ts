@@ -1,18 +1,19 @@
 import * as vscode from "vscode";
 import { join } from 'path';
+import { EventEmitter } from "events";
 import { spawn, exec, ChildProcess } from "child_process";
 
-export class ElectronPlayer {
+export class ElectronPlayer extends EventEmitter {
   childProcess: ChildProcess | undefined;
 
   constructor() {
+    super();
     const extensionPath = vscode.extensions.getExtension('Cherkashin Alexander.yandex-music-extension')?.extensionPath;
 
     if (extensionPath) {
       const fullPath = join(extensionPath, "./out/electron/main.js");
       const electronPath = join(extensionPath, "node_modules\\electron\\dist\\electron.exe");
       var spawn_env = JSON.parse(JSON.stringify(process.env));
-      console.log(process.env);
       delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
       delete spawn_env.ELECTRON_RUN_AS_NODE;
       // var spawn = require('child_process').spawn;
@@ -29,12 +30,17 @@ export class ElectronPlayer {
       //   childProcess.send('https://s101iva.storage.yandex.net/get-mp3/d19b1a320a476d7b14eb8d819770faf9/0005a56162ce8dbc/rmusic/U2FsdGVkX1_pNdltbm_-TeV3O-DIlKsaT9uTI6kaNSQRZK71Yza8TUI_uJx4z5WSGBtt787AJ4pVG-pnMlPPhgovPR97lXuppCbm0MWAic8/d40413d18ed40827cec2134458a01bfe6fa7fea7d9f8305ad802b3b379503e47');
       // }, 15_000);
 
-      this.childProcess.on("error", function (error) {
+      this.childProcess.on("error", (error) => {
         console.log(error);
       });
-      this.childProcess.on("exit", function (code, sig) {
+      this.childProcess.on("exit", (code, sig) => {
         console.log(code);
         console.log(sig);
+      });
+      this.childProcess.on('message', (eventName) => {
+        switch (eventName) {
+          case "ended": this.emit('ended'); break;
+        }
       });
     }
   }

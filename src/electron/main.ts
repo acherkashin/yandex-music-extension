@@ -37,6 +37,10 @@ function createWindow() {
             case 'rewind': mainWindow.webContents.send('rewind', message.payload); break;
         }
     });
+
+    ipcMain.on('ended', () => {
+        process.send?.('ended');
+    });
 }
 
 // This method will be called when Electron has finished

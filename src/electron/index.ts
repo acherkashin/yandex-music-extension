@@ -26,4 +26,8 @@ window.onload = () => {
     ipcRenderer.on('rewind', (event, sec) => {
         audio.currentTime += sec;
     });
+
+    audio.addEventListener('ended', () => {
+        ipcRenderer.send('ended');
+    });
 };
