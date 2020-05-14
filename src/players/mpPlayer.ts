@@ -4,7 +4,7 @@ const fs = require("fs");
 import { createInterface, Interface } from "readline";
 const validUrl = require("valid-url");
 
-export class Player extends EventEmitter {
+export class MpPlayer extends EventEmitter {
   childProc: ChildProcessWithoutNullStreams | null = null;
   file = "";
   rl: Interface | null = null;

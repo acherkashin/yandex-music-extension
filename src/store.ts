@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { FeedResponse, TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
-import { Player } from "./player";
+import { MpPlayer } from "./players/mpPlayer";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -11,7 +11,7 @@ import { PlayList } from "./yandexApi/playlist/playList";
 import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
-import { ElectronPlayer } from "./electron/electronPlayer";
+import { ElectronPlayer } from "./players/electronPlayer";
 
 export interface UserCredentials {
   username: string | undefined;
