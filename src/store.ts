@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
-import { FeedResponse, TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
+import { TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
-import { MpPlayer } from "./players/mpPlayer";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -22,8 +21,7 @@ export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
 export class Store {
-  private electronPlayer = new ElectronPlayer();
-  // private player = new Player();
+  private player = new ElectronPlayer();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private landingBlocks: LandingBlock[] = [];
@@ -109,11 +107,7 @@ export class Store {
           this.landingBlocks = resp.data.result.blocks;
         });
 
-        // this.player.on("ended", () => {
-        //   this.next();
-        // });
-
-        this.electronPlayer.on("ended", () => {
+        this.player.on("ended", () => {
           this.next();
         });
 
@@ -208,21 +202,18 @@ export class Store {
       }
       // update current song
     } else {
-      // this.player.pause();
-      this.electronPlayer.play();
+      this.player.play();
       this.isPlaying = true;
     }
   }
 
   pause() {
-    // this.player.pause();
-    this.electronPlayer.pause();
+    this.player.pause();
     this.isPlaying = false;
   }
 
   rewind(sec: number) {
-    this.electronPlayer.rewind(sec);
-    // this.player.rewind(sec);
+    this.player.rewind(sec);
   }
 
   next() {
@@ -250,9 +241,7 @@ export class Store {
 
       if (track) {
         const url = await this.api.getTrackUrl(track.storageDir);
-        // this.player.setFile(url);
-        // this.player.play();
-        this.electronPlayer.play(url);
+        this.player.play(url);
         this.isPlaying = true;
       }
     }

@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import { join } from 'path';
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
+import { IPlayer } from "./player";
 
-export class ElectronPlayer extends EventEmitter {
+export class ElectronPlayer extends EventEmitter implements IPlayer {
   childProcess: ChildProcess | undefined;
 
   constructor() {
@@ -37,10 +38,6 @@ export class ElectronPlayer extends EventEmitter {
     }
   }
 
-  /**
-   * Plays audio by given @param url, if url is empty it will resume song which was paused
-   * @param url 
-   */
   play(url?: string) {
     this.childProcess?.send(JSON.stringify({
       command: "play",
@@ -54,10 +51,6 @@ export class ElectronPlayer extends EventEmitter {
     }));
   }
 
-  /**
-   * Rewinds audio backward/forward on given value in seconds.
-   * @param sec if positive number rewind forward on provided value. if negative number rewind backward.
-   */
   rewind(sec: number) {
     this.childProcess?.send(JSON.stringify({
       command: "rewind",
