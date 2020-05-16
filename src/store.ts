@@ -11,6 +11,7 @@ import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
+import { YandexMusicSettings } from "./settings";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -74,33 +75,14 @@ export class Store {
 
   constructor() { }
 
-  updateUserName(newUserName: string) {
-    vscode.workspace.getConfiguration("yandexMusic.credentials").update("username", newUserName, vscode.ConfigurationTarget.Global);
-  }
-
-  updatePassword(newPassword: string) {
-    vscode.workspace.getConfiguration("yandexMusic.credentials").update("password", newPassword, vscode.ConfigurationTarget.Global);
-  }
-
-  getCredentials(): UserCredentials {
-    const configuration = vscode.workspace.getConfiguration("yandexMusic.credentials");
-    const username = configuration.get<string>("username");
-    const password = configuration.get<string>("password");
-
-    return {
-      username,
-      password,
-    };
-  }
-
   async init(): Promise<void> {
-    const credentials = this.getCredentials();
+    const { username, password } = YandexMusicSettings.getInstance();
 
-    if (credentials.username && credentials.password) {
+    if (username && password) {
       try {
         await this.api.init({
-          username: credentials.username,
-          password: credentials.password,
+          username,
+          password,
         });
 
         await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
