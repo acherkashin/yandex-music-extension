@@ -5,7 +5,6 @@ import { Store } from "./store";
 import { showPasswordBox, showUserNameBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
-import { ElectronPlayer } from "./players/electronPlayer";
 
 export function activate(context: vscode.ExtensionContext) { 
   const store = new Store();

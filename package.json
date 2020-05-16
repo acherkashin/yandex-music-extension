@@ -1,7 +1,10 @@
 {
   "name": "yandex-music-extension",
   "displayName": "yandex-music-extension",
-  "publisher": "Cherkashin Alexander",
+  "publisher": "acherkashin",
+  "repository": {
+    "url": "https://github.com/acherkashin/yandex-music-extension"
+  },
   "description": "",
   "version": "0.0.1",
   "engines": {
