@@ -8,7 +8,8 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
 
   constructor() {
     super();
-    var spawn_env = JSON.parse(JSON.stringify(process.env));
+    // https://stackoverflow.com/a/51517518
+    const spawn_env = JSON.parse(JSON.stringify(process.env));
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 

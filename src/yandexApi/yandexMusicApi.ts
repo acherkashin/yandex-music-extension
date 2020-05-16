@@ -113,7 +113,6 @@ export class YandexMusicApi {
 
   init(config: InitConfig): Promise<InitResponse> {
     // Skip authorization if access_token and uid are present
-    // TODO: need to store TOKEN and UID to prevent login on every login
     if (config.access_token && config.uid) {
       this._config.user.TOKEN = config.access_token;
       this._config.user.UID = config.uid;
