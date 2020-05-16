@@ -2,9 +2,10 @@ import { spawn, exec, ChildProcessWithoutNullStreams } from "child_process";
 import { EventEmitter } from "events";
 const fs = require("fs");
 import { createInterface, Interface } from "readline";
+import { IPlayer } from "./player";
 const validUrl = require("valid-url");
 
-export class Player extends EventEmitter {
+export class MpPlayer extends EventEmitter implements IPlayer {
   childProc: ChildProcessWithoutNullStreams | null = null;
   file = "";
   rl: Interface | null = null;
@@ -18,41 +19,30 @@ export class Player extends EventEmitter {
       this.setFile(path);
     }
 
-    exec("mplayer", function(err, stdout, stdin) {
+    exec("mplayer", function (err, stdout, stdin) {
       if (err) {
         throw new Error("Mplayer encountered an error or isn't installed.");
       }
     });
   }
 
-  play(opts?) {
-    if (this.file !== null) {
-      if (opts && opts.volume) {
-        this.volume = opts.volume;
-      }
-
+  play(url?: string) {
+    if (url != null) {
+      this.file = url;
       var args = ["-slave", "-quiet", this.file],
         that = this;
-
-      if (opts && opts.additionnalArgs) {
-        args = args.concat(opts.additionnalArgs);
-      }
 
       this.childProc = spawn("mplayer", args);
       this.playing = true;
 
-      if (opts && opts.loop) {
-        this.setLoop(opts.loop);
-      }
-
-      this.childProc.on("error", function(error) {
+      this.childProc.on("error", function (error) {
         that.emit("error");
       });
 
-      this.childProc.on("exit", function(code, sig) {
+      this.childProc.on("exit", function (code, sig) {
         // when we call "childProc.kill()" sig is equal "SIGTERM" and event("end") will not be emitted
         if (code === 0 && sig === null) {
-          that.emit("end");
+          that.emit("ended");
         }
         that.playing = false;
       });
@@ -61,6 +51,8 @@ export class Player extends EventEmitter {
         input: this.childProc.stdout,
         output: this.childProc.stdin,
       });
+    } else {
+      this.pause();
     }
   }
 
@@ -77,7 +69,7 @@ export class Player extends EventEmitter {
 
   getPercentPosition(callback) {
     if (this.childProc !== null && this.rl !== null) {
-      this.rl.question("get_percent_pos\n", function(answer) {
+      this.rl.question("get_percent_pos\n", function (answer) {
         callback(answer.split("=")[1]);
       });
     }
@@ -145,7 +137,7 @@ export class Player extends EventEmitter {
 
   getTimeLength(callback) {
     if (this.childProc !== null && this.rl !== null) {
-      this.rl.question("get_time_length\n", function(answer) {
+      this.rl.question("get_time_length\n", function (answer) {
         callback(answer.split("=")[1]);
       });
     }

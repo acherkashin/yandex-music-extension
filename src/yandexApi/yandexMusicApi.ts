@@ -62,7 +62,7 @@ export interface Response<T> {
 
 // Some API will not work without this header if you are not logged in
 // It is how Win App works
-const winAppHeader = { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" }
+const winAppHeader = { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" };
 
 export class YandexMusicApi {
   private apiClient = axios.create({

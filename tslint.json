@@ -1,7 +1,9 @@
 {
   "rules": {
     "no-string-throw": true,
-    "no-unused-expression": true,
+    "no-unused-expression": {
+      "options": ["allow-fast-null-checks", "allow-new"]
+    },
     "no-duplicate-variable": true,
     "curly": true,
     "class-name": true,
