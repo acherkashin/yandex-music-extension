@@ -1,17 +1,18 @@
 import * as path from "path";
 import { ThemeIcon } from "vscode";
-import { PlayList } from "./yandexApi/playlist/playList";
-import { GeneratedPlayList } from "./yandexApi/feed/generatedPlayList";
+import { PlayList } from "../yandexApi/playlist/playList";
+import { GeneratedPlayList } from "../yandexApi/feed/generatedPlayList";
+import { getExtensionPath } from "./extensionUtils";
 
 export function getThemeIcon(iconFileName: string): ThemeIcon {
     return {
-        dark: path.join(__dirname, "..", "resources", "dark", iconFileName),
-        light: path.join(__dirname, "..", "resources", "light", iconFileName),
+        dark: path.join(getExtensionPath(), "resources", "dark", iconFileName),
+        light: path.join(getExtensionPath(), "resources", "light", iconFileName),
     };
 }
 
 export function getResourceIcon(iconFileName: string): string {
-    return path.join(__dirname, "..", "resources", iconFileName);
+    return path.join(getExtensionPath(), "resources", iconFileName);
 }
 
 const generatedPlayListTypes = ["playlistOfTheDay", "recentTracks", "neverHeard", "podcasts", "missedLikes", "origin"];

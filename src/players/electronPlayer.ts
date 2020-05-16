@@ -3,6 +3,7 @@ import { join } from 'path';
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
+import { getElectronPath, getElectronAppPath } from "../utils/extensionUtils";
 
 export class ElectronPlayer extends EventEmitter implements IPlayer {
   childProcess: ChildProcess | undefined;
@@ -12,13 +13,11 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     const extensionPath = vscode.extensions.getExtension('acherkashin.yandex-music-extension')?.extensionPath;
 
     if (extensionPath) {
-      const fullPath = join(extensionPath, "./out/electron/main.js");
-      const electronPath = join(extensionPath, "node_modules\\electron\\dist\\electron.exe");
       var spawn_env = JSON.parse(JSON.stringify(process.env));
       delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
       delete spawn_env.ELECTRON_RUN_AS_NODE;
-      
-      this.childProcess = spawn(electronPath, [fullPath], {
+
+      this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
         env: spawn_env,
         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
       });

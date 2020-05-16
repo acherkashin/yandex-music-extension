@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getThemeIcon } from "../../utils";
+import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
 
 export class ActualPodcastsTreeItem extends vscode.TreeItem {

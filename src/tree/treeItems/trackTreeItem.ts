@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Track } from "../../yandexApi/interfaces";
 import { getArtists } from "../../yandexApi/apiUtils";
-import { getThemeIcon } from "../../utils";
+import { getThemeIcon } from "../../utils/iconUtils";
 
 export class TrackTreeItem extends vscode.TreeItem {
   constructor(public readonly track: Track, public readonly playListId: string | number) {

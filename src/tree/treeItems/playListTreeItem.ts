@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getPlayListIcon } from "../../utils";
+import { getPlayListIcon } from "../../utils/iconUtils";
 import { PlayList } from "../../yandexApi/playlist/playList";
 
 export class PlayListTreeItem extends vscode.TreeItem {
