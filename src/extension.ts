@@ -12,7 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
-  const settings = YandexMusicSettings.getInstance();
+  
+  YandexMusicSettings.init(context.globalState);
+  const settings = YandexMusicSettings.instance;
 
   store.init().then(() => {
     vscode.window.registerTreeDataProvider("yandex-music-play-lists", treeProvider);

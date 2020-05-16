@@ -76,14 +76,14 @@ export class Store {
   constructor() { }
 
   async init(): Promise<void> {
-    const { username, password } = YandexMusicSettings.getInstance();
-
-    if (username && password) {
+    if (YandexMusicSettings.instance.isAuthValid()) {
       try {
-        await this.api.init({
-          username,
-          password,
-        });
+        /**
+         * TODO: need to add mechanism to refresh token
+         */
+        const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
+        YandexMusicSettings.instance.accessToken = initData.access_token;
+        YandexMusicSettings.instance.userId = initData.uid;
 
         await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
           this.landingBlocks = resp.data.result.blocks;
@@ -97,7 +97,7 @@ export class Store {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
       } catch (ex) {
-        debugger;
+        vscode.window.showErrorMessage(JSON.stringify(ex));
       }
     }
 
