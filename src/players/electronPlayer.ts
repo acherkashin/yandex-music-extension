@@ -1,5 +1,3 @@
-import * as vscode from "vscode";
-import { join } from 'path';
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
@@ -10,31 +8,27 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
 
   constructor() {
     super();
-    const extensionPath = vscode.extensions.getExtension('acherkashin.yandex-music-extension')?.extensionPath;
+    var spawn_env = JSON.parse(JSON.stringify(process.env));
+    delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
+    delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    if (extensionPath) {
-      var spawn_env = JSON.parse(JSON.stringify(process.env));
-      delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
-      delete spawn_env.ELECTRON_RUN_AS_NODE;
+    this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
+      env: spawn_env,
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+    });
 
-      this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
-        env: spawn_env,
-        stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-      });
-
-      this.childProcess.on("error", (error) => {
-        console.log(error);
-      });
-      this.childProcess.on("exit", (code, sig) => {
-        console.log(code);
-        console.log(sig);
-      });
-      this.childProcess.on('message', (eventName) => {
-        switch (eventName) {
-          case "ended": this.emit('ended'); break;
-        }
-      });
-    }
+    this.childProcess.on("error", (error) => {
+      this.emit('error', error);
+    });
+    this.childProcess.on("exit", (code, sig) => {
+      console.log(code);
+      console.log(sig);
+    });
+    this.childProcess.on('message', (eventName) => {
+      switch (eventName) {
+        case "ended": this.emit('ended'); break;
+      }
+    });
   }
 
   play(url?: string) {

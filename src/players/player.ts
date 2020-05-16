@@ -1,5 +1,6 @@
 export interface IPlayer {
     on(event: 'ended', listener: () => void): this;
+    on(event: 'error', error: any): this;
     play(url?: string);
 
     /**

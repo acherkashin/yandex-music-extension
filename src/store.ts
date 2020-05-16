@@ -93,6 +93,10 @@ export class Store {
           this.next();
         });
 
+        this.player.on("error", (error) => {
+          vscode.window.showErrorMessage(JSON.stringify(error));
+        });
+
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
