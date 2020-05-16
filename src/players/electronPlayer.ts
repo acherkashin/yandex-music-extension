@@ -9,7 +9,7 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
 
   constructor() {
     super();
-    const extensionPath = vscode.extensions.getExtension('Cherkashin Alexander.yandex-music-extension')?.extensionPath;
+    const extensionPath = vscode.extensions.getExtension('acherkashin.yandex-music-extension')?.extensionPath;
 
     if (extensionPath) {
       const fullPath = join(extensionPath, "./out/electron/main.js");
@@ -17,7 +17,7 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       var spawn_env = JSON.parse(JSON.stringify(process.env));
       delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
       delete spawn_env.ELECTRON_RUN_AS_NODE;
-      // var spawn = require('child_process').spawn;
+      
       this.childProcess = spawn(electronPath, [fullPath], {
         env: spawn_env,
         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
