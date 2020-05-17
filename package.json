@@ -142,7 +142,8 @@
       "yandex-music-explorer": [
         {
           "id": "yandex-music-play-lists",
-          "name": "Yandex Music Play Lists"
+          "name": "Yandex Music Play Lists",
+          "message": "message"
         },
         {
           "id": "yandex-music-chart",

@@ -17,6 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
   const settings = YandexMusicSettings.instance;
 
   store.init().then(() => {
+    const treeView = vscode.window.createTreeView('yandex-music-play-lists', {
+      treeDataProvider: treeProvider,
+    });
+    treeView.message = `Вы вошли как: ${settings.username}`;
     vscode.window.registerTreeDataProvider("yandex-music-play-lists", treeProvider);
     vscode.window.registerTreeDataProvider("yandex-music-chart", chartProvider);
     vscode.window.registerTreeDataProvider("yandex-music-recommendations", recommendationProvider);

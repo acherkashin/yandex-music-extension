@@ -16,11 +16,11 @@ export async function signIn(): Promise<void> {
 
 export async function showLoginBox(value?: string): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
-    prompt: "Input login",
+    prompt: "Введите логин",
     placeHolder: "example@yandex.ru",
     value,
     validateInput: text => {
-      return !text ? "Login cannot be empty!" : null;
+      return !text ? "Логин не может быть пустым!" : null;
     }
   });
 
@@ -29,12 +29,12 @@ export async function showLoginBox(value?: string): Promise<string | undefined> 
 
 export async function showPasswordBox(value?: string): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
-    prompt: "Input password",
-    placeHolder: "Password",
+    prompt: "Введите пароль",
+    placeHolder: "пароль",
     value,
     password: true,
     validateInput: text => {
-      return !text ? "Password cannot be empty!" : null;
+      return !text ? "Пароль не может быть пустым!" : null;
     }
   });
 
