@@ -81,9 +81,20 @@ export class Store {
         /**
          * TODO: need to add mechanism to refresh token
          */
-        const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
-        YandexMusicSettings.instance.accessToken = initData.access_token;
-        YandexMusicSettings.instance.userId = initData.uid;
+        try {
+          const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
+          YandexMusicSettings.instance.accessToken = initData.access_token;
+          YandexMusicSettings.instance.userId = initData.uid;
+        } catch (e) {
+          const signInAction = "Изменить логин и пароль";
+          vscode.window
+            .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", signInAction)
+            .then((value) => {
+              if (signInAction) {
+                vscode.commands.executeCommand("yandexMusic.signIn");
+              }
+            });
+        }
 
         await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
           this.landingBlocks = resp.data.result.blocks;
@@ -101,7 +112,7 @@ export class Store {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
       } catch (ex) {
-        vscode.window.showErrorMessage(JSON.stringify(ex));
+        vscode.window.showErrorMessage(`Unknown exception: ${JSON.stringify(ex)}`);
       }
     }
 

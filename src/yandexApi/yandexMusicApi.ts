@@ -161,11 +161,7 @@ export class YandexMusicApi {
             this._config.user.UID = resp.data.uid;
 
             return resp.data;
-          }, (e) => {
-            debugger;
           });
-      }, (e) => {
-        debugger;
       });
   }
 

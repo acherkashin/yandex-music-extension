@@ -44,36 +44,44 @@
     "commands": [
       {
         "command": "yandexMusic.play",
+        "category": "Yandex Music",
         "title": "Play Track"
       },
       {
         "command": "yandexMusic.pause",
+        "category": "Yandex Music",
         "title": "Play Track"
       },
       {
         "command": "yandexMusic.next",
+        "category": "Yandex Music",
         "title": "Next Track"
       },
       {
         "command": "yandexMusic.prev",
+        "category": "Yandex Music",
         "title": "Previous Track"
       },
       {
         "command": "yandexMusic.rewindForward",
+        "category": "Yandex Music",
         "title": "Rewind Track Forward"
       },
       {
         "command": "yandexMusic.rewindBackward",
+        "category": "Yandex Music",
         "title": "Rewind Track Backward"
       },
       {
         "command": "yandexMusic.downloadTrack",
+        "category": "Yandex Music",
         "title": "Download Track",
         "icon": "$(cloud-download)"
       },
       {
-        "command": "yandexMusic.connect",
-        "title": "Connect to YandexMusic account",
+        "command": "yandexMusic.signIn",
+        "category": "Yandex Music",
+        "title": "Sign In",
         "icon": "$(account)"
       }
     ],

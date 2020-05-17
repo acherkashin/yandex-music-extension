@@ -1,5 +1,7 @@
-import { workspace, WorkspaceConfiguration, ConfigurationTarget, Disposable, Memento, UriHandler } from "vscode";
+import { workspace, WorkspaceConfiguration, ConfigurationTarget, Disposable, Memento, ConfigurationChangeEvent } from "vscode";
 import { InitConfig } from "./yandexApi/yandexMusicApi";
+
+export type YandexMusicSettingsChangedCallback = (e: ConfigurationChangeEvent) => void;
 
 //https://github.com/jlandersen/vscode-vsts-build-status/blob/389d6a816d53657d9c505f383371f3393bae3a85/src/settings.ts/
 export class YandexMusicSettings {
@@ -10,7 +12,7 @@ export class YandexMusicSettings {
     private _rewindTime: number = 15;
 
     private workspaceSettingsChangedDisposable: Disposable;
-    private onDidChangeSettingsHandlers: (() => any)[] = [];
+    private onDidChangeSettingsHandlers: YandexMusicSettingsChangedCallback[] = [];
 
     get username() {
         return this._username;
@@ -48,11 +50,17 @@ export class YandexMusicSettings {
     constructor(state: Memento) {
         this.state = state;
 
-        this.workspaceSettingsChangedDisposable = workspace.onDidChangeConfiguration(() => {
-            this.reload();
+        this.workspaceSettingsChangedDisposable = workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration("yandexMusic.credentials") || e.affectsConfiguration("yandexMusic.rewindTime")) {
+                if (e.affectsConfiguration("yandexMusic.credentials")) {
+                    this.accessToken = undefined;
+                }
 
-            for (let handler of this.onDidChangeSettingsHandlers) {
-                handler();
+                this.reload();
+
+                for (const handler of this.onDidChangeSettingsHandlers) {
+                    handler(e);
+                }
             }
         });
 
@@ -67,7 +75,7 @@ export class YandexMusicSettings {
         return YandexMusicSettings._instance;
     }
 
-    onDidChangeSettings(handler: () => any): void {
+    onDidChangeSettings(handler: YandexMusicSettingsChangedCallback): void {
         this.onDidChangeSettingsHandlers.push(handler);
     }
 

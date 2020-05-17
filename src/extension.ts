@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showPasswordBox, showUserNameBox } from "./inputs";
+import { signIn } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { YandexMusicSettings } from "./settings";
@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
-  
+
   YandexMusicSettings.init(context.globalState);
   const settings = YandexMusicSettings.instance;
 
@@ -22,8 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider("yandex-music-recommendations", recommendationProvider);
   });
 
-  vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration("yandexMusic.credentials") || e.affectsConfiguration("yandexMusic.credentials")) {
+  settings.onDidChangeSettings((e) => {
+    if (e.affectsConfiguration("yandexMusic.credentials")) {
       store.init().then(() => {
         treeProvider.refresh();
         chartProvider.refresh();
@@ -47,25 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
       store.downloadTrack(node.track);
     }),
-    vscode.commands.registerCommand("yandexMusic.connect", async () => {
-      const username = await showUserNameBox(settings.username);
-
-      if (!username) {
-        return;
-      } else {
-        settings.updateUserName(username);
-      }
-
-      const password = await showPasswordBox(settings.password);
-
-      if (!password) {
-        return;
-      } else {
-        settings.updatePassword(password);
-      }
-
-      //TODO: need to refresh tree
-    }),
+    vscode.commands.registerCommand("yandexMusic.signIn", signIn),
   );
 }
 
