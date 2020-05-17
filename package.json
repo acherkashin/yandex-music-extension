@@ -122,6 +122,11 @@
         "mac": "alt+shift+b",
         "linux": "alt+shift+b",
         "when": "yandexMusic.isPlaying"
+      },
+      {
+        "key": "alt+shift+y alt+shift+m",
+        "mac": "alt+shift+y alt+shift+m",
+        "command": "workbench.view.extension.yandex-music-explorer"
       }
     ],
     "viewsContainers": {
