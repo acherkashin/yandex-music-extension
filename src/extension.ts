@@ -17,38 +17,52 @@ export async function activate(context: vscode.ExtensionContext) {
   YandexMusicSettings.init(context.globalState);
   const settings = YandexMusicSettings.instance;
 
-  const hasConenction = await isOnline();
+  let isExplorerInitialized = false;
 
-  if (hasConenction) {
-    store.init().then(() => {
-      const playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
-        treeDataProvider: treeProvider,
-      });
-
-      if (store.isAuthorized()) {
-        playListTreeView.message = `Вы вошли как: ${settings.username}`;
-      }
-
-      const chartTreeView = vscode.window.createTreeView("yandex-music-chart", {
-        treeDataProvider: chartProvider
-      });
-
-      const recommendationsTreeView = vscode.window.createTreeView("yandex-music-recommendations", {
-        treeDataProvider: recommendationProvider
-      });
+  async function initExplorer() {
+    await store.init();
+    const playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
+      treeDataProvider: treeProvider,
     });
+    if (store.isAuthorized()) {
+      playListTreeView.message = `Вы вошли как: ${settings.username}`;
+    }
+    const chartTreeView = vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
+    const recommendationsTreeView = vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
 
     settings.onDidChangeSettings((e) => {
       if (e.affectsConfiguration("yandexMusic.credentials")) {
         vscode.commands.executeCommand("yandexMusic.refresh");
       }
     });
-  } else {
-    vscode.window
-      .showErrorMessage('Ошибка со связью. Проверьте подключение к интернету.');
+
+    isExplorerInitialized = true;
   }
 
+  async function refreshExplorer() {
+    const hasConnection = await isOnline();
+    if (hasConnection) {
+      if (isExplorerInitialized) {
+        await store.init();
+        treeProvider.refresh();
+        chartProvider.refresh();
+        recommendationProvider.refresh();
+      } else {
+        await initExplorer();
+      }
+    } else {
+      vscode.window
+        .showErrorMessage('Ошибка со связью. Проверьте подключение к интернету.', "Обновить")
+        .then(() => {
+          vscode.commands.executeCommand("yandexMusic.refresh");
+        });
+    }
+  }
+
+  await refreshExplorer();
+
   context.subscriptions.push(
+    vscode.commands.registerCommand("yandexMusic.refresh", refreshExplorer),
     vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackTreeItem) => {
       if (item) {
         store.play({ itemId: item.track.id, playListId: item.playListId });

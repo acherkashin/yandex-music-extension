@@ -83,6 +83,12 @@
         "category": "Yandex Music",
         "title": "Sign In",
         "icon": "$(account)"
+      },
+      {
+        "command": "yandexMusic.refresh",
+        "category": "Yandex Music",
+        "title": "Refresh play lists",
+        "icon": "$(refresh)"
       }
     ],
     "menus": {
