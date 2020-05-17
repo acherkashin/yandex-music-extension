@@ -7,7 +7,7 @@
     "url": "https://github.com/acherkashin/yandex-music-extension"
   },
   "description": "Enjoy listening to YandexMusic right in your favorite code editor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.41.0"
   },
