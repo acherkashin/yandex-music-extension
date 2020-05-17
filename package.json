@@ -2,7 +2,7 @@
   "name": "yandex-music-extension",
   "displayName": "YandexMusic",
   "publisher": "acherkashin",
-  "icon": "images/yandex-music-icon.png",
+  "icon": "resources/yandex-music-icon.png",
   "repository": {
     "url": "https://github.com/acherkashin/yandex-music-extension"
   },
@@ -53,7 +53,7 @@
       {
         "command": "yandexMusic.pause",
         "category": "Yandex Music",
-        "title": "Play Track"
+        "title": "Pause Track"
       },
       {
         "command": "yandexMusic.next",
