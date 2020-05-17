@@ -85,20 +85,17 @@ export class Store {
           const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
           YandexMusicSettings.instance.accessToken = initData.access_token;
           YandexMusicSettings.instance.userId = initData.uid;
+
+          await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
+            this.landingBlocks = resp.data.result.blocks;
+          });
         } catch (e) {
-          const signInAction = "Изменить логин и пароль";
           vscode.window
-            .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", signInAction)
-            .then((value) => {
-              if (signInAction) {
-                vscode.commands.executeCommand("yandexMusic.signIn");
-              }
+            .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
+            .then(() => {
+              vscode.commands.executeCommand("yandexMusic.signIn");
             });
         }
-
-        await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
-          this.landingBlocks = resp.data.result.blocks;
-        });
 
         this.player.on("ended", () => {
           this.next();

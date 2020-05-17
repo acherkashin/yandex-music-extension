@@ -37,10 +37,10 @@ export interface Config {
     PACKAGE_NAME: string;
   };
   user: {
-    USERNAME: string | null;
-    PASSWORD: string | null;
-    TOKEN: string | null;
-    UID: number | null;
+    USERNAME?: string;
+    PASSWORD?: string;
+    TOKEN?: string;
+    UID?: number;
   };
 }
 
@@ -98,10 +98,10 @@ export class YandexMusicApi {
     },
 
     user: {
-      USERNAME: null,
-      PASSWORD: null,
-      TOKEN: null,
-      UID: null,
+      USERNAME: undefined,
+      PASSWORD: undefined,
+      TOKEN: undefined,
+      UID: undefined,
     },
   };
 
@@ -113,18 +113,17 @@ export class YandexMusicApi {
 
   init(config: InitConfig): Promise<InitResponse> {
     // Skip authorization if access_token and uid are present
-    if (config.access_token && config.uid) {
-      this._config.user.TOKEN = config.access_token;
-      this._config.user.UID = config.uid;
+    this._config.user.TOKEN = config?.access_token;
+    this._config.user.UID = config?.uid;
+    this._config.user.USERNAME = config.username;
+    this._config.user.PASSWORD = config.password;
 
+    if (config.access_token && config.uid) {
       return Promise.resolve({
         access_token: config.access_token,
         uid: config.uid,
       });
     }
-
-    this._config.user.USERNAME = config.username;
-    this._config.user.PASSWORD = config.password;
 
     return this.authClient
       .post(
@@ -332,7 +331,7 @@ export class YandexMusicApi {
    */
   getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<Response<GeneratedPlayList>>> {
     return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/${playlistKind}`, {
-      headers: this._getAuthHeader(),
+      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
     });
   }
 

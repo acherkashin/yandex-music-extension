@@ -4,7 +4,7 @@ import { Store } from "../../store";
 
 export class NewReleasesTreeItem extends vscode.TreeItem {
   constructor(private store: Store) {
-    super("", vscode.TreeItemCollapsibleState.Collapsed);
+    super("New Releases", vscode.TreeItemCollapsibleState.Collapsed);
 
     const newReleases = store.getLandingBlock('new-releases');
 

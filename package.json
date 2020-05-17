@@ -1,11 +1,12 @@
 {
   "name": "yandex-music-extension",
-  "displayName": "yandex-music-extension",
+  "displayName": "YandexMusic",
   "publisher": "acherkashin",
+  "icon": "images/yandex-music-icon.png",
   "repository": {
     "url": "https://github.com/acherkashin/yandex-music-extension"
   },
-  "description": "",
+  "description": "Enjoy listening to YandexMusic right in your favorite code editor",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.41.0"
@@ -14,7 +15,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:yandex-music-play-lists"
+    "onView:yandex-music-play-lists",
+    "onView:yandex-music-chart",
+    "onView:yandex-music-recommendations"
   ],
   "main": "./out/extension.js",
   "contributes": {
