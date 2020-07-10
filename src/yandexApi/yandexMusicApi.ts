@@ -27,10 +27,6 @@ export interface Config {
     CLIENT_ID: string;
     CLIENT_SECRET: string;
   };
-  oauth_token: {
-    CLIENT_ID: string;
-    CLIENT_SECRET: string;
-  };
   fake_device: {
     DEVICE_ID: string;
     UUID: string;
@@ -62,14 +58,16 @@ export interface Response<T> {
 
 // Some API will not work without this header if you are not logged in
 // It is how Win App works
-const winAppHeader = { 'X-Yandex-Music-Device': "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown" };
+const winAppHeader = {
+  "X-Yandex-Music-Device": "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown",
+};
 
 export class YandexMusicApi {
   private apiClient = axios.create({
     baseURL: `https://api.music.yandex.net:443`,
   });
   private authClient = axios.create({
-    baseURL: `https://oauth.mobile.yandex.net:443`,
+    baseURL: `https://oauth.yandex.ru`,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
   private storageClient = axios.create({
@@ -82,11 +80,6 @@ export class YandexMusicApi {
 
   _config: Config = {
     ouath_code: {
-      CLIENT_ID: "0618394846eb4d9589a602f80ce013d6",
-      CLIENT_SECRET: "c13b3de8d9f5492caf321467c3520358",
-    },
-
-    oauth_token: {
       CLIENT_ID: "23cabbbdc6cd418abb4b39c32c41195d",
       CLIENT_SECRET: "53bc75238f0c4d08a118e51fe9203300",
     },
@@ -105,7 +98,7 @@ export class YandexMusicApi {
     },
   };
 
-  constructor() { }
+  constructor() {}
 
   private _getAuthHeader() {
     return { Authorization: "OAuth " + this._config.user.TOKEN };
@@ -127,40 +120,20 @@ export class YandexMusicApi {
 
     return this.authClient
       .post(
-        `1/token`,
+        `token`,
         querystring.stringify({
           grant_type: "password",
-          username: this._config.user.USERNAME,
-          password: this._config.user.PASSWORD,
           client_id: this._config.ouath_code.CLIENT_ID,
           client_secret: this._config.ouath_code.CLIENT_SECRET,
+          username: this._config.user.USERNAME,
+          password: this._config.user.PASSWORD,
         })
       )
       .then((resp) => {
-        return this.authClient
-          .post(
-            `1/token`,
-            querystring.stringify({
-              grant_type: "x-token",
-              access_token: resp.data.access_token,
-              client_id: this._config.oauth_token.CLIENT_ID,
-              client_secret: this._config.oauth_token.CLIENT_SECRET,
-            }),
-            {
-              params: {
-                device_id: this._config.fake_device.DEVICE_ID,
-                uuid: this._config.fake_device.UUID,
-                package_name: this._config.fake_device.PACKAGE_NAME,
-              },
-            }
-          )
-          .then((resp) => {
-            // Store user token and uid for other requests
-            this._config.user.TOKEN = resp.data.access_token;
-            this._config.user.UID = resp.data.uid;
+        this._config.user.TOKEN = resp.data.access_token;
+        this._config.user.UID = resp.data.uid;
 
-            return resp.data;
-          });
+        return resp.data;
       });
   }
 
@@ -187,7 +160,7 @@ export class YandexMusicApi {
   }
 
   /**
-   * Returns album by id. 
+   * Returns album by id.
    * Podcasts represent album as well, so you can use this method to get podcast as well.
    * @param albumId Album id
    * @param withTracks whether to include tracks in the response
@@ -199,31 +172,34 @@ export class YandexMusicApi {
   }
 
   getAlbums(ids: number[]): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
-    return this.apiClient.post(`/albums`,
+    return this.apiClient.post(
+      `/albums`,
       querystring.stringify({
-        'album-ids': ids.join(',')
-      }), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
+        "album-ids": ids.join(","),
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
   }
 
   /**
    * Returns landing page with new releases, charts, ...
    */
   getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<LandingResponse>> {
-    return this.apiClient.get(`/landing3?blocks=${blocks.join(',')}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader
+    return this.apiClient.get(`/landing3?blocks=${blocks.join(",")}`, {
+      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
     });
   }
 
-  getAllChartTracks(chartType: 'russia' | 'world'): Promise<AxiosResponse<FullChartResponse>> {
+  getAllChartTracks(chartType: "russia" | "world"): Promise<AxiosResponse<FullChartResponse>> {
     return this.getLandingBlock(`chart/${chartType}`);
   }
 
   getAllNewPlayListsIds(): Promise<AxiosResponse<AllNewPlayListsIdsResponse>> {
-    return this.getLandingBlock('new-playlists');
+    return this.getLandingBlock("new-playlists");
   }
 
   async getAllNewReleases(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
@@ -237,7 +213,7 @@ export class YandexMusicApi {
    * Returns new released albums ids
    */
   getAllNewReleasesIds(): Promise<AxiosResponse<FullNewReleasesResponse>> {
-    return this.getLandingBlock('new-releases');
+    return this.getLandingBlock("new-releases");
   }
 
   async getAllNewPlayLists(): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
@@ -248,7 +224,7 @@ export class YandexMusicApi {
   }
 
   getActualPodcastsIds(): Promise<AxiosResponse<RecommendedPodcastsIdsResponse>> {
-    return this.getLandingBlock('podcasts');
+    return this.getLandingBlock("podcasts");
   }
 
   async getActualPodcasts(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
@@ -260,7 +236,7 @@ export class YandexMusicApi {
 
   getLandingBlock(block: LandingBlockType | string) {
     return this.apiClient.get(`/landing3/${block}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader
+      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
     });
   }
 
@@ -311,15 +287,17 @@ export class YandexMusicApi {
   }
 
   getPlayLists(playLists: NewPlayListItem[]): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
-    return this.apiClient.post(`/playlists/list/`,
+    return this.apiClient.post(
+      `/playlists/list/`,
       querystring.stringify({
-        "playlistIds": getPlayListsIds(playLists).join(","),
+        playlistIds: getPlayListsIds(playLists).join(","),
       }),
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      });
+      }
+    );
   }
 
   /**
@@ -544,9 +522,7 @@ export class YandexMusicApi {
   async createTrackURL(info: DownloadInfo) {
     const trackUrl = `XGRlBW9FXlekgbPrRHuSiA${info.path.substr(1)}${info.s}`;
 
-    const hashedUrl = createHash("md5")
-      .update(trackUrl)
-      .digest("hex");
+    const hashedUrl = createHash("md5").update(trackUrl).digest("hex");
 
     const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
 
