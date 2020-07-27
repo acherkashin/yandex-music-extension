@@ -96,6 +96,13 @@
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "yandexMusic.refresh",
+          "group": "navigation",
+          "when": "view == yandex-music-play-lists || view == yandex-music-chart || view == yandex-music-recommendations"
+        }
+      ],
       "view/item/context": [
         {
           "command": "yandexMusic.downloadTrack",
