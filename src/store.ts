@@ -12,6 +12,7 @@ import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { YandexMusicSettings } from "./settings";
+import { ChartItem } from "./yandexApi/landing/chartitem";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -73,7 +74,7 @@ export class Store {
     return this.currentTrack != null;
   }
 
-  constructor() { }
+  constructor() {}
 
   async init(): Promise<void> {
     if (YandexMusicSettings.instance.isAuthValid()) {
@@ -117,26 +118,26 @@ export class Store {
   }
 
   getLandingBlock(type: string) {
-    return this.landingBlocks
-      .find((item) => item.type === type);
+    return this.landingBlocks.find((item) => item.type === type);
   }
 
   getGeneratedPlayLists(): PlayList[] {
-    return (this.getLandingBlock("personal-playlists")
-      ?.entities as LandingBlockEntity<GeneratedPlayListItem>[])
-      .map((item) => item.data.data);
+    return (this.getLandingBlock("personal-playlists")?.entities as LandingBlockEntity<GeneratedPlayListItem>[]).map(
+      (item) => item.data.data
+    );
   }
 
   async getUserPlaylists() {
     return this.api.getAllUserPlaylists();
   }
 
-  getChart(): Promise<Track[]> {
-    return this.api.getAllChartTracks('russia').then((resp) => {
-      const tracks = this.exposeTracks(resp.data.result.chart.tracks);
+  getChart(): Promise<ChartItem[]> {
+    return this.api.getAllChartTracks("russia").then((resp) => {
+      const chartItems = resp.data.result.chart.tracks as ChartItem[];
+      const tracks = this.exposeTracks(chartItems);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
-      return tracks;
+      return chartItems;
     });
   }
 

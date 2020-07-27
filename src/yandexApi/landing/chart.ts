@@ -1,6 +1,7 @@
 export interface Chart {
-    position: number;
-    progress: string;
-    listeners: number;
-    shift: number;
+  bgColor: string;
+  position: number;
+  progress: "same" | "up" | "down";
+  listeners: number;
+  shift: number;
 }

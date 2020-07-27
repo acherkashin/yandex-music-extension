@@ -29,13 +29,13 @@ export interface LandingResult {
   blocks: LandingBlock[];
 }
 
-export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
-
+export interface LandingResponse extends YandexMusicResponse<LandingResult> {}
 
 export type Visibility = "public" | "private";
 
 export interface TrackItem {
   id: number;
+  playCount: number;
   recent: boolean;
   timestamp: string;
   /**
@@ -134,17 +134,38 @@ export interface LikedTracksResponse
       revision: number;
       tracks: LikedTrack[];
     };
-  }> { }
+  }> {}
 
-export interface GetTracksResponse extends YandexMusicResponse<Track[]> { }
+export interface GetTracksResponse extends YandexMusicResponse<Track[]> {}
 
 export interface YandexMusicResponse<T> {
   invocationInfo: InvocationInfo;
   result: T;
 }
 
-export type LandingBlockType = 'personalplaylists' | 'promotions' | 'new-releases' | 'new-playlists' | 'mixes' |
-  'chart' | 'artists' | 'albums' | 'playlists' | 'play_contexts' | 'podcasts';
+export type LandingBlockType =
+  | "personalplaylists"
+  | "promotions"
+  | "new-releases"
+  | "new-playlists"
+  | "mixes"
+  | "chart"
+  | "artists"
+  | "albums"
+  | "playlists"
+  | "play_contexts"
+  | "podcasts";
 
-export const ALL_LANDING_BLOCKS: LandingBlockType[] = ['personalplaylists', 'promotions', 'new-releases', 'new-playlists', 'mixes',
-  'chart', 'artists', 'albums', 'playlists', 'play_contexts', 'podcasts'];
+export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
+  "personalplaylists",
+  "promotions",
+  "new-releases",
+  "new-playlists",
+  "mixes",
+  "chart",
+  "artists",
+  "albums",
+  "playlists",
+  "play_contexts",
+  "podcasts",
+];
