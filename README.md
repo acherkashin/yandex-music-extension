@@ -1,8 +1,7 @@
 # [Yandex Music Extension](https://marketplace.visualstudio.com/items?itemName=acherkashin.yandex-music-extension)
 
 Extension allows you enjoy listening to YandexMusic right in your favorite code editor.
-
-> Only Windows is supported right now 🙄
+All operation systems are supported.
 
 ## Requirements
 
