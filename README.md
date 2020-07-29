@@ -34,3 +34,10 @@ This extension contributes the following settings:
 ## Contributing
 
 You can open an issue on a GitHub page or contact me at cherkalexander@gmail.com with any additional questions or feedback.
+
+## Running locally
+
+1. Ensure you have locally installed `nodejs` and `npm`.
+2. Ensure you have locally installed `yarn` as it is used as package manager for this project.
+3. Run `yarn install` in your terminal;
+4. Open Visual Studio Code and press `F5`.
