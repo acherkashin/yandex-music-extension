@@ -6,7 +6,7 @@ export interface Album {
     /**
      * Getting albom error
      */
-    error: string;
+    error?: string;
     title: string;
     type: "single" | "podcast" | string;
     metaType: "single" | "podcast" | "music" | string;

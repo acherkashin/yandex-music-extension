@@ -1,8 +1,15 @@
 import { Track } from "./interfaces";
 import { NewPlayListItem } from "./responces/fullNewPlayLists";
 
-export function createTrackAlbumIds(tracks: { id: string; albumId: string }[]): string[] {
-  return tracks.map((track) => `${track.id}:${track.albumId}`);
+export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
+  return tracks.map((track) => createAlbumTrackId(track));
+}
+
+/**
+ * Every track can be many albums so to perform operation with track from certain album need to use combination of track id and album id
+ */
+export function createAlbumTrackId(track: { id: string | number, albumId: string | number }): string {
+  return `${track.id}:${track.albumId}`;
 }
 
 export function getPlayListsIds(playLists: NewPlayListItem[]) {

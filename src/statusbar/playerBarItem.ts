@@ -10,6 +10,7 @@ export class PlayerBarItem {
   private pauseButton: vscode.StatusBarItem;
   private nextButton: vscode.StatusBarItem;
   private currentTrack: vscode.StatusBarItem;
+  private likeTrack: vscode.StatusBarItem;
 
   constructor(private store: Store, alignment: vscode.StatusBarAlignment, priority: number) {
     this.prevButton = vscode.window.createStatusBarItem(alignment, priority);
@@ -41,10 +42,6 @@ export class PlayerBarItem {
     this.nextButton.command = "yandexMusic.next";
 
     this.currentTrack = vscode.window.createStatusBarItem(alignment, priority - 0.4);
-    autorun(() => {
-      this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
-      this.currentTrack.tooltip = store.hasCurrentTrack ? getTrackFullName(<Track>store.currentTrack) : "";
-    });
 
     autorun(() => {
       if (this.store.hasCurrentTrack) {
@@ -55,8 +52,27 @@ export class PlayerBarItem {
     });
 
     autorun(() => {
+      this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
+      this.currentTrack.tooltip = store.hasCurrentTrack ? getTrackFullName(<Track>store.currentTrack) : "";
+    });
+
+    this.likeTrack = vscode.window.createStatusBarItem(alignment, priority - 0.5);
+    this.likeTrack.text = "$(heart)";
+    this.likeTrack.command = "yandexMusic.likeCurrentTrack";
+    this.likeTrack.tooltip = "Нравится";
+
+    autorun(() => {
+      if (this.store.hasCurrentTrack && this.store.isAuthorized()) {
+        this.likeTrack.show();
+      } else {
+        this.likeTrack.hide();
+      }
+    });
+
+    autorun(() => {
       this.nextButton.tooltip = `Следущий: ${this.store.nextTrack?.title}`;
     });
+    
     autorun(() => {
       if (this.store.hasNextTrack) {
         this.nextButton.show();
