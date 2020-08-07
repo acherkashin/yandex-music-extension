@@ -229,6 +229,17 @@ export class Store {
     this.internalPlay((this.currentTrackIndex ?? 1) - 1);
   }
 
+  isLikedTrack(id: string) {
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID)) {
+      const tracks = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
+      const track = tracks.find((track) => track.id === id);
+
+      return track != null;
+    }
+
+    return false;
+  }
+
   async downloadTrack(track: Track) {
     const url = await this.api.getTrackUrl(track.storageDir);
     open(url);

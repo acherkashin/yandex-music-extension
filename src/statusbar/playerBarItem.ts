@@ -51,15 +51,16 @@ export class PlayerBarItem {
       }
     });
 
-    autorun(() => {
-      this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
-      this.currentTrack.tooltip = store.hasCurrentTrack ? getTrackFullName(<Track>store.currentTrack) : "";
-    });
-
     this.likeTrack = vscode.window.createStatusBarItem(alignment, priority - 0.5);
     this.likeTrack.text = "$(heart)";
     this.likeTrack.command = "yandexMusic.likeCurrentTrack";
-    this.likeTrack.tooltip = "Нравится";
+
+    autorun(() => {
+      this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
+      this.currentTrack.tooltip = store.hasCurrentTrack ? getTrackFullName(<Track>store.currentTrack) : "";
+      this.likeTrack.tooltip = this.getLikeTooltip();
+      this.likeTrack.color = this.getLikeTrackColor();
+    });
 
     autorun(() => {
       if (this.store.hasCurrentTrack && this.store.isAuthorized()) {
@@ -72,7 +73,7 @@ export class PlayerBarItem {
     autorun(() => {
       this.nextButton.tooltip = `Следущий: ${this.store.nextTrack?.title}`;
     });
-    
+
     autorun(() => {
       if (this.store.hasNextTrack) {
         this.nextButton.show();
@@ -94,5 +95,15 @@ export class PlayerBarItem {
       this.playButton.show();
       this.pauseButton.hide();
     }
+  }
+
+  private getLikeTooltip() {
+    return this.store.currentTrack && this.store.isLikedTrack(this.store.currentTrack.id) ?
+    'Вам нравится этот трек, а ещё он добавлен в раздел "Моя коллекция"':
+    'Сделайте рекомендации точнее и добавьте трек в раздел "Моя коллекция"' ;
+  }
+
+  private getLikeTrackColor() {
+    return this.store.currentTrack && this.store.isLikedTrack(this.store.currentTrack.id) ? "red" : "gray";
   }
 }
