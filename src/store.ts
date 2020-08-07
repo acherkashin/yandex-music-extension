@@ -91,6 +91,9 @@ export class Store {
           await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
             this.landingBlocks = resp.data.result.blocks;
           });
+
+          // Need fetch liked tracks to show like/dislike button correctly
+          await this.refreshLikedTracks();
         } catch (e) {
           vscode.window
             .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
@@ -178,6 +181,14 @@ export class Store {
   }
 
   async getLikedTracks(): Promise<Track[]> {
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.length ?? 0) > 0) {
+      return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? []);
+    }
+
+    return this.refreshLikedTracks();
+  }
+
+  async refreshLikedTracks() {
     const resp = await this.api.getLikedTracks();
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
 
