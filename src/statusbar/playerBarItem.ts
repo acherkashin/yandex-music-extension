@@ -53,7 +53,7 @@ export class PlayerBarItem {
 
     this.likeTrack = vscode.window.createStatusBarItem(alignment, priority - 0.5);
     this.likeTrack.text = "$(heart)";
-    this.likeTrack.command = "yandexMusic.likeCurrentTrack";
+    this.likeTrack.command = "yandexMusic.toggleLikeCurrentTrack";
 
     autorun(() => {
       this.currentTrack.text = getTrackShortName(store.currentTrack?.title || "");
@@ -98,12 +98,12 @@ export class PlayerBarItem {
   }
 
   private getLikeTooltip() {
-    return this.store.currentTrack && this.store.isLikedTrack(this.store.currentTrack.id) ?
-    'Вам нравится этот трек, а ещё он добавлен в раздел "Моя коллекция"':
-    'Сделайте рекомендации точнее и добавьте трек в раздел "Моя коллекция"' ;
+    return this.store.isLikedCurrentTrack() ?
+      'Вам нравится этот трек, а ещё он добавлен в раздел "Моя коллекция"' :
+      'Сделайте рекомендации точнее и добавьте трек в раздел "Моя коллекция"';
   }
 
   private getLikeTrackColor() {
-    return this.store.currentTrack && this.store.isLikedTrack(this.store.currentTrack.id) ? "red" : "gray";
+    return this.store.isLikedCurrentTrack() ? "red" : "gray";
   }
 }

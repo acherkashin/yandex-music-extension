@@ -73,9 +73,9 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.next", () => store.next()),
     vscode.commands.registerCommand("yandexMusic.prev", () => store.prev()),
     vscode.commands.registerCommand("yandexMusic.pause", () => store.pause()),
-    vscode.commands.registerCommand("yandexMusic.likeCurrentTrack", async () => {
+    vscode.commands.registerCommand("yandexMusic.toggleLikeCurrentTrack", async () => {
       if (store.currentTrack != null) {
-        await store.likeCurrentTrack();
+        await store.toggleLikeCurrentTrack();
         await refreshExplorer();
       }
     }),

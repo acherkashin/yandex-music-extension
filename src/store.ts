@@ -219,12 +219,12 @@ export class Store {
     this.isPlaying = false;
   }
 
-  async likeCurrentTrack() {
+  async toggleLikeCurrentTrack() {
     if (this.currentTrack != null) {
       await this.api.likeAction('track', createAlbumTrackId({
         id: this.currentTrack.id,
         albumId: this.currentTrack.albums[0].id,
-      }));
+      }), this.isLikedCurrentTrack());
     }
   }
 
@@ -240,7 +240,7 @@ export class Store {
     this.internalPlay((this.currentTrackIndex ?? 1) - 1);
   }
 
-  isLikedTrack(id: string) {
+  isLikedTrack(id: string): boolean {
     if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID)) {
       const tracks = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
       const track = tracks.find((track) => track.id === id);
@@ -249,6 +249,10 @@ export class Store {
     }
 
     return false;
+  }
+
+  isLikedCurrentTrack(): boolean {
+    return this.currentTrack != null && this.isLikedTrack(this.currentTrack.id);
   }
 
   async downloadTrack(track: Track) {
