@@ -83,6 +83,12 @@
         "icon": "$(cloud-download)"
       },
       {
+        "command": "yandexMusic.likeTrack",
+        "category": "Yandex Music",
+        "title": "Like Track",
+        "icon": "$(heart)"
+      },
+      {
         "command": "yandexMusic.signIn",
         "category": "Yandex Music",
         "title": "Sign In",
@@ -106,6 +112,11 @@
       "view/item/context": [
         {
           "command": "yandexMusic.downloadTrack",
+          "group": "inline",
+          "when": "viewItem == track"
+        },
+        {
+          "command": "yandexMusic.likeTrack",
           "group": "inline",
           "when": "viewItem == track"
         }

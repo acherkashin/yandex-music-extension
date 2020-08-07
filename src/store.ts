@@ -219,12 +219,16 @@ export class Store {
     this.isPlaying = false;
   }
 
+  async toggleLikeTrack(track: Track) {
+    await this.api.likeAction('track', createAlbumTrackId({
+      id: track.id,
+      albumId: track.albums[0].id,
+    }), this.isLikedCurrentTrack());
+  }
+
   async toggleLikeCurrentTrack() {
     if (this.currentTrack != null) {
-      await this.api.likeAction('track', createAlbumTrackId({
-        id: this.currentTrack.id,
-        albumId: this.currentTrack.albums[0].id,
-      }), this.isLikedCurrentTrack());
+      return this.toggleLikeTrack(this.currentTrack);
     }
   }
 

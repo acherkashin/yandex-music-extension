@@ -79,6 +79,12 @@ export async function activate(context: vscode.ExtensionContext) {
         await refreshExplorer();
       }
     }),
+    vscode.commands.registerCommand("yandexMusic.likeTrack", async (node: TrackTreeItem) => {
+      if (node.track != null) {
+        store.toggleLikeTrack(node.track);
+        await refreshExplorer();
+      }
+    }),
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => store.rewind(settings.rewindTime)),
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => store.rewind(settings.rewindTime * (-1))),
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
