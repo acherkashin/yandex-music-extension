@@ -21,8 +21,16 @@ export function getTrackFullName(track: Track): string {
   return `${track.title} - ${getArtists(track)}`;
 }
 
-export function getCoverWithSize(converUri: string, size: '200x200') {
-  return `http://${converUri.replace('%%', size)}`;
+export type CoverSize = 50 | 100 | 150 | 200 | 300 | 400 | 700 | 800 | 1000;
+
+/**
+ * Returns cover uri with specified size
+ * 
+ * @param uriTemplate track.coverUri
+ * @param size cover size
+ */
+export function getCoverUri(uriTemplate: string, size: CoverSize) {
+  return `http://${uriTemplate.replace('%%', `${size}x${size}`)}`;
 }
 
 export function getTrackShortName(name: string) {

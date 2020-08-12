@@ -61,6 +61,9 @@ export interface Track {
   available: boolean;
   availableForPremiumUsers: boolean;
   availableFullWithoutPermission: boolean;
+  /**
+   * Cover uri template. To get cover uri with specified size use "getCoverUri" method
+   */
   coverUri: string;
   durationMs: number;
   fileSize: number;

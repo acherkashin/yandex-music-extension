@@ -11,7 +11,7 @@ export interface IPlayPayload {
   coverUri: string;
 }
 
-export class ElectronPlayer extends EventEmitter {
+export class ElectronPlayer extends EventEmitter implements IPlayer {
   childProcess: ChildProcess | undefined;
 
   constructor() {
