@@ -1,5 +1,6 @@
 import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
+import { Album } from "./album/album";
 
 export interface GetPlayListsOptions {
   mixed?: boolean;
@@ -55,11 +56,14 @@ export interface Artist {
 }
 
 export interface Track {
-  albums: any[];
+  albums: Album[];
   artists: Artist[];
   available: boolean;
   availableForPremiumUsers: boolean;
   availableFullWithoutPermission: boolean;
+  /**
+   * Cover uri template. To get cover uri with specified size use "getCoverUri" method
+   */
   coverUri: string;
   durationMs: number;
   fileSize: number;

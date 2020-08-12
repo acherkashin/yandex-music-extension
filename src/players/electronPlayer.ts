@@ -3,6 +3,14 @@ import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
 import { getElectronPath, getElectronAppPath } from "../utils/extensionUtils";
 
+export interface IPlayPayload {
+  url: string;
+  title: string;
+  artist: string;
+  album: string;
+  coverUri: string;
+}
+
 export class ElectronPlayer extends EventEmitter implements IPlayer {
   childProcess: ChildProcess | undefined;
 
@@ -32,10 +40,10 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     });
   }
 
-  play(url?: string) {
+  play(trackinfo?: IPlayPayload) {
     this.childProcess?.send(JSON.stringify({
       command: "play",
-      payload: url
+      payload: trackinfo
     }));
   }
 
