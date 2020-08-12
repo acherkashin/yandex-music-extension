@@ -13,6 +13,10 @@ export function getArtists(track: Track): string {
   return track.artists.map((item) => item.name).join(", ");
 }
 
+export function getAlbums(track: Track): string {
+  return track.albums.map((item) => item.title).join(", ");
+}
+
 export function getTrackFullName(track: Track): string {
   return `${track.title} - ${getArtists(track)}`;
 }
