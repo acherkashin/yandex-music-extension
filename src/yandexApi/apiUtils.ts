@@ -21,6 +21,10 @@ export function getTrackFullName(track: Track): string {
   return `${track.title} - ${getArtists(track)}`;
 }
 
+export function getCoverWithSize(converUri: string, size: '200x200') {
+  return `http://${converUri.replace('%%', size)}`;
+}
+
 export function getTrackShortName(name: string) {
   const maxLength = 14;
   if (!name) {

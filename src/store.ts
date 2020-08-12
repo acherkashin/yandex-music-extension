@@ -13,7 +13,7 @@ import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { YandexMusicSettings } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverWithSize } from "./yandexApi/apiUtils";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -241,8 +241,8 @@ export class Store {
           url,
           album: getAlbums(track),
           artist: getArtists(track),
-          artwork: [],
-          title: track.title
+          title: track.title,
+          coverUri: getCoverWithSize(track.coverUri, "200x200"),
         });
         this.isPlaying = true;
       }

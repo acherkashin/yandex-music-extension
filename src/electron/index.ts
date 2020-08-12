@@ -15,7 +15,16 @@ window.onload = () => {
             audio != null ? audio.src = url : audio = new Audio(url);
 
             if (navigator.mediaSession != null) {
-                navigator.mediaSession.metadata = new MediaMetadata(mediaMetadataInit);
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: mediaMetadataInit.title,
+                    album: mediaMetadataInit.album,
+                    artist: mediaMetadataInit.artist,
+                    artwork: [{
+                        src: mediaMetadataInit.coverUri,
+                        sizes: '200x200',
+                        type: 'image/png'
+                    }]
+                });
             }
         }
 

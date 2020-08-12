@@ -3,8 +3,12 @@ import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
 import { getElectronPath, getElectronAppPath } from "../utils/extensionUtils";
 
-interface IPlayPayload extends MediaMetadataInit {
+export interface IPlayPayload {
   url: string;
+  title: string;
+  artist: string;
+  album: string;
+  coverUri: string;
 }
 
 export class ElectronPlayer extends EventEmitter {
