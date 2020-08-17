@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 const fs = require("fs");
 import { createInterface, Interface } from "readline";
 import { IPlayer } from "./player";
+import { IPlayPayload } from "./electronPlayer";
 const validUrl = require("valid-url");
 
 export class MpPlayer extends EventEmitter implements IPlayer {
@@ -26,9 +27,9 @@ export class MpPlayer extends EventEmitter implements IPlayer {
     });
   }
 
-  play(url?: string) {
-    if (url != null) {
-      this.file = url;
+  play(trackinfo?: IPlayPayload) {
+    if (trackinfo != null) {
+      this.file = trackinfo.url;
       var args = ["-slave", "-quiet", this.file],
         that = this;
 

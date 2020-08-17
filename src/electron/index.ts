@@ -2,17 +2,29 @@ const { ipcRenderer } = require('electron');
 
 var window: any;
 var Audio: any;
+declare var navigator: Navigator;
 
 let audio = new Audio();
 
 window.onload = () => {
     ipcRenderer.on('play', (event, ...args) => {
-        const url = args[0];
-        if (url) {
-            if (audio) {
-                audio.src = url;
-            } else {
-                audio = new Audio(url);
+        const payload = args[0];
+
+        if (payload) {
+            const { url, ...mediaMetadataInit } = payload;
+            audio != null ? audio.src = url : audio = new Audio(url);
+
+            if (navigator.mediaSession != null) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: mediaMetadataInit.title,
+                    album: mediaMetadataInit.album,
+                    artist: mediaMetadataInit.artist,
+                    artwork: [{
+                        src: mediaMetadataInit.coverUri,
+                        sizes: '200x200',
+                        type: 'image/png'
+                    }]
+                });
             }
         }
 

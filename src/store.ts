@@ -13,7 +13,7 @@ import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { YandexMusicSettings } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { createAlbumTrackId } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -276,7 +276,13 @@ export class Store {
 
       if (track) {
         const url = await this.api.getTrackUrl(track.storageDir);
-        this.player.play(url);
+        this.player.play({
+          url,
+          album: getAlbums(track),
+          artist: getArtists(track),
+          title: track.title,
+          coverUri: getCoverUri(track.coverUri, 200),
+        });
         this.isPlaying = true;
       }
     }
