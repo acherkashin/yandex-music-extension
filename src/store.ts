@@ -29,7 +29,7 @@ export class Store {
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
-  private playLists = new Map<string | number, Track[]>();
+  @observable playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
