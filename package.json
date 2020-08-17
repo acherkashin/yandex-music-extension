@@ -85,13 +85,13 @@
       {
         "command": "yandexMusic.likeTrack",
         "category": "Yandex Music",
-        "title": "Like Track",
+        "title": "Сделайте рекомендации точнее и добавьте трек в раздел \"Моя коллекция\"",
         "icon": "$(heart)"
       },
       {
         "command": "yandexMusic.dislikeTrack",
         "category": "Yandex Music",
-        "title": "Dislike Track",
+        "title": "Вам нравится этот трек, а ещё он добавлен в раздел \"Моя коллекция\"",
         "icon": {
           "light": "resources/light/heart-filled.svg",
           "dark": "resources/dark/heart-filled.svg"
