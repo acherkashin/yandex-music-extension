@@ -223,7 +223,7 @@ export class Store {
     await this.api.likeAction('track', createAlbumTrackId({
       id: track.id,
       albumId: track.albums[0].id,
-    }), this.isLikedCurrentTrack());
+    }), this.isLikedTrack(track.id));
   }
 
   async toggleLikeCurrentTrack() {

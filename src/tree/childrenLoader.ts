@@ -13,7 +13,7 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
 
     if (element instanceof PlayListTreeItem) {
         return store.getTracks(element.playList.owner.uid, element.playList.kind).then((resp) => {
-            return resp.data.result.tracks.map((item) => new TrackTreeItem(<Track>item.track, element.playList.kind));
+            return resp.data.result.tracks.map((item) => new TrackTreeItem(store, <Track>item.track, element.playList.kind));
         });
     }
 
@@ -25,13 +25,13 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
 
     if (element instanceof AlbumTreeItem) {
         return store.getAlbumTracks(element.album.id).then((tracks) => {
-            return tracks.map((item) => new TrackTreeItem(item, element.album.id));
+            return tracks.map((item) => new TrackTreeItem(store, item, element.album.id));
         });
     }
 
     if (element instanceof LikedTracksTreeItem) {
         return store.getLikedTracks().then((tracks) => {
-            return tracks.map((item) => new TrackTreeItem(<Track>item, LIKED_TRACKS_PLAYLIST_ID));
+            return tracks.map((item) => new TrackTreeItem(store, <Track>item, LIKED_TRACKS_PLAYLIST_ID));
         });
     }
 

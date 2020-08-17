@@ -19,7 +19,7 @@ export class ChartTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     getChildren(): vscode.ProviderResult<vscode.TreeItem[]> {
         return this.store.getChart().then((items) => {
-            return items.map((item) => new ChartTreeItem(item, CHART_TRACKS_PLAYLIST_ID));
+            return items.map((item) => new ChartTreeItem(this.store, item, CHART_TRACKS_PLAYLIST_ID));
         });
     }
 }

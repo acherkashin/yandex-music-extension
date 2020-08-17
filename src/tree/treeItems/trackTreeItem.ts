@@ -2,9 +2,10 @@ import * as vscode from "vscode";
 import { Track } from "../../yandexApi/interfaces";
 import { getArtists } from "../../yandexApi/apiUtils";
 import { getThemeIcon } from "../../utils/iconUtils";
+import { Store } from "../../store";
 
 export class TrackTreeItem extends vscode.TreeItem {
-  constructor(public readonly track: Track, public readonly playListId: string | number) {
+  constructor(private store: Store, public readonly track: Track, public readonly playListId: string | number) {
     super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",
@@ -14,6 +15,6 @@ export class TrackTreeItem extends vscode.TreeItem {
     };
 
     this.iconPath = getThemeIcon("track.svg");
-    this.contextValue = "track";
+    this.contextValue = store.isLikedTrack(this.track.id) ? "likedTrack" : "track";
   }
 }

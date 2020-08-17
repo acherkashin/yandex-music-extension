@@ -89,6 +89,15 @@
         "icon": "$(heart)"
       },
       {
+        "command": "yandexMusic.dislikeTrack",
+        "category": "Yandex Music",
+        "title": "Dislike Track",
+        "icon": {
+          "light": "resources/light/heart-filled.svg",
+          "dark": "resources/dark/heart-filled.svg"
+        }
+      },
+      {
         "command": "yandexMusic.signIn",
         "category": "Yandex Music",
         "title": "Sign In",
@@ -113,12 +122,17 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
-          "when": "viewItem == track"
+          "when": "viewItem == track || viewItem == likedTrack"
         },
         {
           "command": "yandexMusic.likeTrack",
           "group": "inline",
           "when": "viewItem == track"
+        },
+        {
+          "command": "yandexMusic.dislikeTrack",
+          "group": "inline",
+          "when": "viewItem == likedTrack"
         }
       ]
     },
