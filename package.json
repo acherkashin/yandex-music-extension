@@ -134,6 +134,16 @@
           "group": "inline",
           "when": "viewItem == likedTrack"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "yandexMusic.likeTrack",
+          "when": "false"
+        },
+        {
+          "command": "yandexMusic.dislikeTrack",
+          "when": "false"
+        }
       ]
     },
     "keybindings": [
