@@ -83,6 +83,21 @@
         "icon": "$(cloud-download)"
       },
       {
+        "command": "yandexMusic.likeTrack",
+        "category": "Yandex Music",
+        "title": "Сделайте рекомендации точнее и добавьте трек в раздел \"Моя коллекция\"",
+        "icon": "$(heart)"
+      },
+      {
+        "command": "yandexMusic.dislikeTrack",
+        "category": "Yandex Music",
+        "title": "Вам нравится этот трек, а ещё он добавлен в раздел \"Моя коллекция\"",
+        "icon": {
+          "light": "resources/light/heart-filled.svg",
+          "dark": "resources/dark/heart-filled.svg"
+        }
+      },
+      {
         "command": "yandexMusic.signIn",
         "category": "Yandex Music",
         "title": "Sign In",
@@ -107,7 +122,27 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
+          "when": "viewItem == track || viewItem == likedTrack"
+        },
+        {
+          "command": "yandexMusic.likeTrack",
+          "group": "inline",
           "when": "viewItem == track"
+        },
+        {
+          "command": "yandexMusic.dislikeTrack",
+          "group": "inline",
+          "when": "viewItem == likedTrack"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "yandexMusic.likeTrack",
+          "when": "false"
+        },
+        {
+          "command": "yandexMusic.dislikeTrack",
+          "when": "false"
         }
       ]
     },

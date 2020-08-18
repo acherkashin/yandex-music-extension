@@ -98,10 +98,17 @@ export class YandexMusicApi {
     },
   };
 
-  constructor() {}
+  constructor() { }
 
   private _getAuthHeader() {
     return { Authorization: "OAuth " + this._config.user.TOKEN };
+  }
+
+  private getHeaders(additionalHeaders: { [key: string]: any }): { [key: string]: any } {
+    return {
+      ...this._getAuthHeader(),
+      ...additionalHeaders,
+    };
   }
 
   init(config: InitConfig): Promise<InitResponse> {
@@ -458,6 +465,22 @@ export class YandexMusicApi {
         headers: this._getAuthHeader(),
       }
     );
+  }
+
+  async likeAction(objectType: 'track' | 'artist' | 'playlist' | 'album', ids: number | string | number[] | string[], remove = false): Promise<any> {
+    const action = remove ? 'remove' : 'add-multiple';
+    const result = await this.apiClient.post<GetTracksResponse>(`/users/${this._config.user.UID}/likes/${objectType}s/${action}`,
+      querystring.stringify({
+        [`${objectType}-ids`]: Array.isArray(ids) ? ids.join(",") : ids,
+      }),
+      {
+        headers: this.getHeaders({
+          "Content-Type": "application/x-www-form-urlencoded",
+        }),
+      }
+    );
+
+    return result;
   }
 
   async getLikedTracksIds(): Promise<LikedTracksResponse> {

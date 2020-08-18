@@ -73,6 +73,24 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.next", () => store.next()),
     vscode.commands.registerCommand("yandexMusic.prev", () => store.prev()),
     vscode.commands.registerCommand("yandexMusic.pause", () => store.pause()),
+    vscode.commands.registerCommand("yandexMusic.toggleLikeCurrentTrack", async () => {
+      if (store.currentTrack != null) {
+        await store.toggleLikeCurrentTrack();
+        await refreshExplorer();
+      }
+    }),
+    vscode.commands.registerCommand("yandexMusic.likeTrack", async (node: TrackTreeItem) => {
+      if (node.track != null) {
+        store.toggleLikeTrack(node.track);
+        await refreshExplorer();
+      }
+    }),
+    vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
+      if (node.track != null) {
+        store.toggleLikeTrack(node.track);
+        await refreshExplorer();
+      }
+    }),
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => store.rewind(settings.rewindTime)),
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => store.rewind(settings.rewindTime * (-1))),
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {

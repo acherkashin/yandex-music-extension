@@ -13,7 +13,7 @@ import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { YandexMusicSettings } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists, getCoverUri } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -29,7 +29,7 @@ export class Store {
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
-  private playLists = new Map<string | number, Track[]>();
+  @observable playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
@@ -91,6 +91,9 @@ export class Store {
           await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
             this.landingBlocks = resp.data.result.blocks;
           });
+
+          // Need fetch liked tracks to show like/dislike button correctly
+          await this.refreshLikedTracks();
         } catch (e) {
           vscode.window
             .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
@@ -178,6 +181,14 @@ export class Store {
   }
 
   async getLikedTracks(): Promise<Track[]> {
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.length ?? 0) > 0) {
+      return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? []);
+    }
+
+    return this.refreshLikedTracks();
+  }
+
+  async refreshLikedTracks(): Promise<Track[]> {
     const resp = await this.api.getLikedTracks();
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
 
@@ -208,6 +219,36 @@ export class Store {
     this.isPlaying = false;
   }
 
+  async toggleLikeTrack(track: Track): Promise<void> {
+    try {
+      await this.api.likeAction('track', createAlbumTrackId({
+        id: track.id,
+        albumId: track.albums[0].id,
+      }), this.isLikedTrack(track.id));
+    } catch (ex) {
+      if (ex.response.status === 401) {
+        vscode.window
+          .showErrorMessage(
+            "Добавлять трек в раздел \"Моя коллекция\" могут только авторизованные пользователи", {
+            title: 'Авторизоваться'
+          })
+          .then((action) => {
+            if (action?.title === "Авторизоваться") {
+              vscode.commands.executeCommand("yandexMusic.signIn");
+            }
+          });
+      } else {
+        vscode.window.showErrorMessage("Неизвестная ошибка ошибка");
+      }
+    }
+  }
+
+  async toggleLikeCurrentTrack(): Promise<void> {
+    if (this.currentTrack != null) {
+      return this.toggleLikeTrack(this.currentTrack);
+    }
+  }
+
   rewind(sec: number) {
     this.player.rewind(sec);
   }
@@ -218,6 +259,21 @@ export class Store {
 
   prev() {
     this.internalPlay((this.currentTrackIndex ?? 1) - 1);
+  }
+
+  isLikedTrack(id: string): boolean {
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID)) {
+      const tracks = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
+      const track = tracks.find((track) => track.id === id);
+
+      return track != null;
+    }
+
+    return false;
+  }
+
+  isLikedCurrentTrack(): boolean {
+    return this.currentTrack != null && this.isLikedTrack(this.currentTrack.id);
   }
 
   async downloadTrack(track: Track) {
