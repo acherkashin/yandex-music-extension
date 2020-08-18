@@ -188,7 +188,7 @@ export class Store {
     return this.refreshLikedTracks();
   }
 
-  async refreshLikedTracks() {
+  async refreshLikedTracks(): Promise<Track[]> {
     const resp = await this.api.getLikedTracks();
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
 
@@ -219,14 +219,31 @@ export class Store {
     this.isPlaying = false;
   }
 
-  async toggleLikeTrack(track: Track) {
-    await this.api.likeAction('track', createAlbumTrackId({
-      id: track.id,
-      albumId: track.albums[0].id,
-    }), this.isLikedTrack(track.id));
+  async toggleLikeTrack(track: Track): Promise<void> {
+    try {
+      await this.api.likeAction('track', createAlbumTrackId({
+        id: track.id,
+        albumId: track.albums[0].id,
+      }), this.isLikedTrack(track.id));
+    } catch (ex) {
+      if (ex.response.status === 401) {
+        vscode.window
+          .showErrorMessage(
+            "Добавлять трек в раздел \"Моя коллекция\" могут только авторизованные пользователи", {
+            title: 'Авторизоваться'
+          })
+          .then((action) => {
+            if (action?.title === "Авторизоваться") {
+              vscode.commands.executeCommand("yandexMusic.signIn");
+            }
+          });
+      } else {
+        vscode.window.showErrorMessage("Неизвестная ошибка ошибка");
+      }
+    }
   }
 
-  async toggleLikeCurrentTrack() {
+  async toggleLikeCurrentTrack(): Promise<void> {
     if (this.currentTrack != null) {
       return this.toggleLikeTrack(this.currentTrack);
     }
