@@ -10,6 +10,7 @@ import {
   YandexMusicResponse,
   LandingResponse,
   LandingBlockType,
+  TrackDownloadInfo,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
@@ -70,9 +71,6 @@ export class YandexMusicApi {
     baseURL: `https://oauth.yandex.ru`,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
-  private storageClient = axios.create({
-    baseURL: `https://storage.mds.yandex.net`,
-  });
 
   get isAutorized(): boolean {
     return this._config.user.TOKEN != null && this._config.user.UID != null;
@@ -101,7 +99,7 @@ export class YandexMusicApi {
   constructor() { }
 
   private _getAuthHeader() {
-    return { Authorization: "OAuth " + this._config.user.TOKEN };
+    return this.isAutorized ? { Authorization: "OAuth " + this._config.user.TOKEN } : undefined;
   }
 
   private getHeaders(additionalHeaders: { [key: string]: any }): { [key: string]: any } {
@@ -162,7 +160,7 @@ export class YandexMusicApi {
    */
   getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
     return this.apiClient.get(`/feed`, {
-      headers: this.isAutorized ? this._getAuthHeader() : undefined,
+      headers: this._getAuthHeader(),
     });
   }
 
@@ -174,7 +172,7 @@ export class YandexMusicApi {
    */
   getAlbum(albumId: number, withTracks: boolean): Promise<AxiosResponse<YandexMusicResponse<Album>>> {
     return this.apiClient.get(`/albums/${albumId}/${withTracks ? `with-tracks` : ``}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : undefined,
+      headers: this._getAuthHeader(),
     });
   }
 
@@ -522,24 +520,25 @@ export class YandexMusicApi {
     }
   }
 
-  async getTrackUrl(storageDir: string): Promise<string> {
-    try {
-      const downloadInfo = await this.getDownloadInfo(storageDir);
-      const url = await this.createTrackURL(downloadInfo);
-      return url;
-    } catch (error) {
-      return error;
-    }
+  async getTrackUrl(id: string): Promise<string> {
+    const downloadInfo = await this.getDownloadInfo(id);
+    const url = await this.createTrackURL(downloadInfo);
+    return url;
   }
 
-  async getDownloadInfo(storageDir: string): Promise<DownloadInfo> {
-    try {
-      const response = await this.storageClient.get<DownloadInfo>(`/download-info/${storageDir}/2?format=json`);
+  async getDownloadInfo(trackId: string): Promise<DownloadInfo> {
+    const result = (await this.apiClient.get<YandexMusicResponse<TrackDownloadInfo[]>>(`/tracks/${trackId}/download-info`, {
+      headers: this._getAuthHeader(),
+    })).data.result;
 
-      return response.data;
-    } catch (error) {
-      return error;
-    }
+    const info = this.isAutorized ? result.find((item) => item.codec === 'mp3' && !item.preview) : result[0];
+
+    const downloadInfo = await axios.request<DownloadInfo>({
+      url: `${info!.downloadInfoUrl}&format=json`,
+      headers: this._getAuthHeader(),
+    });
+
+    return downloadInfo.data;
   }
 
   async createTrackURL(info: DownloadInfo) {

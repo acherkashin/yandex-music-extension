@@ -30,7 +30,7 @@ export interface LandingResult {
   blocks: LandingBlock[];
 }
 
-export interface LandingResponse extends YandexMusicResponse<LandingResult> {}
+export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
 
 export type Visibility = "public" | "private";
 
@@ -112,6 +112,14 @@ export interface Owner {
   verified: boolean;
 }
 
+export interface TrackDownloadInfo {
+  bitrateInKbps: number;
+  codec: 'mp3' | 'aac';
+  gain: boolean;
+  preview: boolean;
+  downloadInfoUrl: string;
+}
+
 export interface DownloadInfo {
   s: string;
   ts: string;
@@ -138,9 +146,9 @@ export interface LikedTracksResponse
       revision: number;
       tracks: LikedTrack[];
     };
-  }> {}
+  }> { }
 
-export interface GetTracksResponse extends YandexMusicResponse<Track[]> {}
+export interface GetTracksResponse extends YandexMusicResponse<Track[]> { }
 
 export interface YandexMusicResponse<T> {
   invocationInfo: InvocationInfo;

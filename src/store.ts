@@ -102,14 +102,6 @@ export class Store {
             });
         }
 
-        this.player.on("ended", () => {
-          this.next();
-        });
-
-        this.player.on("error", (error) => {
-          vscode.window.showErrorMessage(JSON.stringify(error));
-        });
-
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
@@ -117,6 +109,14 @@ export class Store {
         vscode.window.showErrorMessage(`Unknown exception: ${JSON.stringify(ex)}`);
       }
     }
+
+    this.player.on("ended", () => {
+      this.next();
+    });
+
+    this.player.on("error", (error) => {
+      vscode.window.showErrorMessage(JSON.stringify(error));
+    });
 
     return await Promise.resolve();
   }
@@ -277,7 +277,7 @@ export class Store {
   }
 
   async downloadTrack(track: Track) {
-    const url = await this.api.getTrackUrl(track.storageDir);
+    const url = await this.api.getTrackUrl(track.id);
     open(url);
   }
 
@@ -292,7 +292,7 @@ export class Store {
       const track = this.playLists.get(this.currentPlayListId)?.[index];
 
       if (track) {
-        const url = await this.api.getTrackUrl(track.storageDir);
+        const url = await this.api.getTrackUrl(track.id);
         this.player.play({
           url,
           album: getAlbums(track),
