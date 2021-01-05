@@ -227,7 +227,7 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "crypto": "^1.0.1",
     "electron": "^8.5.2",
     "mobx": "^5.15.4",
