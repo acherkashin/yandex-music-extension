@@ -1,6 +1,7 @@
 import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
+import { PlayList } from "./playlist/playList";
 
 export interface GetPlayListsOptions {
   mixed?: boolean;
@@ -181,3 +182,48 @@ export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
   "play_contexts",
   "podcasts",
 ];
+
+export interface ISearchOptions {
+  type?: 'artist' | 'album' | 'track' | 'all';
+  page?: number;
+  nococrrect?: boolean;
+}
+
+export interface SearchResponse extends YandexMusicResponse<{
+  misspellCorrected: boolean;
+  nocorrect: boolean;
+  searchRequestId: string;
+  text: string;
+  /**
+   * The best result
+   */
+  best: any;
+  videos: any;
+  tracks: SearchResult<Track>;
+  playlists: SearchResult<PlayList>;
+  albums: SearchResult<Album>;
+  artists: SearchResult<Artist>;
+}> {}
+
+/**
+ * Represents search result
+ */
+export interface SearchResult<T> {
+  /**
+   * Results count
+   */
+  total: number;
+  /**
+   * Maximum results count on the page
+   */
+  perPage: number;
+  /**
+   * Block position
+   */
+  order: number;
+  /**
+   * Search results
+   */
+  results: T[];
+}
+

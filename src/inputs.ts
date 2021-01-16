@@ -40,3 +40,16 @@ export async function showPasswordBox(value?: string): Promise<string | undefine
 
   return name;
 }
+
+export async function showSearchBox() {
+  // TODO: show search history like on music.yandex.ru
+  const name = await vscode.window.showInputBox({
+    prompt: "Поиск",
+    placeHolder: "Трек, альбом, исполнитель, подкаст",
+    validateInput: text => {
+      return !text ? "Значение должно быть не пустым!" : null;
+    }
+  });
+
+  return name;
+}

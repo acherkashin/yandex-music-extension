@@ -28,6 +28,7 @@ export class Store {
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
+  @observable searchText = '';
   @observable isPlaying = false;
   @observable playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;

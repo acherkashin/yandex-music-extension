@@ -108,6 +108,11 @@
         "category": "Yandex Music",
         "title": "Refresh play lists",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "yandexMusic.search",
+        "category": "Yandex Music",
+        "title": "Search"
       }
     ],
     "menus": {
@@ -204,6 +209,10 @@
         {
           "id": "yandex-music-recommendations",
           "name": "Recommendations"
+        },
+        {
+          "id": "yandex-music-search",
+          "name": "Search"
         }
       ]
     }

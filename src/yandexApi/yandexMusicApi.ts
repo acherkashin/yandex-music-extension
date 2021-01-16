@@ -11,6 +11,7 @@ import {
   LandingResponse,
   LandingBlockType,
   TrackDownloadInfo,
+  ISearchOptions,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
@@ -265,7 +266,7 @@ export class YandexMusicApi {
                                             nococrrect {Boolean}
      * @returns {Promise}
      */
-  search(query, options) {
+  search(query: string, options: ISearchOptions): Promise<any> {
     const opts = options || {};
 
     return this.apiClient.get(`/search`, {
