@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { Store } from '../store';
 import { getChildren } from './childrenLoader';
 import { AlbumTreeItem, PlayListTreeItem, TrackTreeItem } from './treeItems';
+import { ArtistTreeItem } from './treeItems/artistTreeItem';
 
 export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -37,10 +38,14 @@ export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
             const playListsItem = new vscode.TreeItem('Плейлисты', vscode.TreeItemCollapsibleState.Expanded);
             playListsItem.id = 'search-playlists-item';
 
+            const artistsItem = new vscode.TreeItem('Исполнители', vscode.TreeItemCollapsibleState.Expanded);
+            artistsItem.id = 'search-artists-item';
+
             return [
                 tracksItem,
                 albumsItem,
                 playListsItem,
+                artistsItem
             ];
         }
 
@@ -65,7 +70,14 @@ export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
             return items;
         }
 
-        if (element instanceof AlbumTreeItem || element instanceof PlayListTreeItem) {
+        if (element.id === 'search-artists-item') {
+            // TODO: no need to make request, need to refactor
+            const responce = await this.store.api.search(this.store.searchText);
+            const items = responce.data.result.artists.results.map(item => new ArtistTreeItem(this.store, item));
+            return items;
+        }
+
+        if (element instanceof AlbumTreeItem || element instanceof PlayListTreeItem || element instanceof ArtistTreeItem) {
             return getChildren(this.store, element);
         }
 

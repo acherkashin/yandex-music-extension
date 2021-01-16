@@ -54,6 +54,12 @@ export interface Artist {
   id: number;
   name: string;
   various: boolean;
+  popularTracks?: Track[];
+  /**
+   * Имеются ли в продаже билеты на концерт
+   */
+  ticketsAvailable?: boolean;
+  regions?: string[];
 }
 
 export interface Track {

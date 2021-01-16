@@ -3,6 +3,7 @@ import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeI
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from '../store';
 import { Track } from '../yandexApi/interfaces';
 import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
+import { ArtistTreeItem } from './treeItems/artistTreeItem';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {
@@ -39,6 +40,10 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
         return store.getActualPodcasts().then((albums) => {
             return albums.map((item) => new AlbumTreeItem(item));
         });
+    }
+
+    if(element instanceof ArtistTreeItem) {
+        return element.getChildren();
     }
 
     return null;
