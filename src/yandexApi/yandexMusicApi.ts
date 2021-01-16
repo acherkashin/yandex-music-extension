@@ -12,6 +12,7 @@ import {
   LandingBlockType,
   TrackDownloadInfo,
   ISearchOptions,
+  SearchResponse,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
@@ -266,15 +267,15 @@ export class YandexMusicApi {
                                             nococrrect {Boolean}
      * @returns {Promise}
      */
-  search(query: string, options: ISearchOptions): Promise<any> {
+  search(query: string, options?: ISearchOptions): Promise<AxiosResponse<SearchResponse>> {
     const opts = options || {};
 
     return this.apiClient.get(`/search`, {
       params: {
-        type: opts["type"] || "all",
+        type: opts?.type ?? "all",
         text: query,
-        page: opts["page"] || 0,
-        nococrrect: opts["nococrrect"] || false,
+        page: opts.page ?? 0,
+        nococrrect: opts.nococrrect ?? false,
       },
       headers: this._getAuthHeader(),
     });

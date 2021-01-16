@@ -30,6 +30,7 @@ export class Store {
   private landingBlocks: LandingBlock[] = [];
   @observable searchText = '';
   @observable isPlaying = false;
+  // TODO: implement PlayList class which will implement "loadMore" function
   @observable playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
@@ -206,7 +207,7 @@ export class Store {
           this.internalPlay(index);
         }
       } else {
-        console.error(`playlist ${track?.itemId}`);
+        console.error(`playlist ${track?.itemId} is not found`);
       }
       // update current song
     } else {

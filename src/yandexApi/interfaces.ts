@@ -184,7 +184,7 @@ export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
 ];
 
 export interface ISearchOptions {
-  type?: 'artist' | 'album' | 'track' | 'all';
+  type?: 'artist' | 'album' | 'track' | 'podcast' | 'all';
   page?: number;
   nococrrect?: boolean;
 }
@@ -203,6 +203,7 @@ export interface SearchResponse extends YandexMusicResponse<{
   playlists: SearchResult<PlayList>;
   albums: SearchResult<Album>;
   artists: SearchResult<Artist>;
+  podcasts: SearchResult<any>;
 }> {}
 
 /**
