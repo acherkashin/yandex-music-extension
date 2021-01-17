@@ -16,10 +16,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:yandex-music-play-lists",
-    "onView:yandex-music-chart",
-    "onView:yandex-music-recommendations",
-    "onView:yandex-music-search"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
