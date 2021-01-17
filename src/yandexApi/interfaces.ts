@@ -195,7 +195,9 @@ export interface ISearchOptions {
   nococrrect?: boolean;
 }
 
-export interface SearchResponse extends YandexMusicResponse<{
+export interface SearchResponse extends YandexMusicResponse<SearchResult> { }
+
+export interface SearchResult {
   misspellCorrected: boolean;
   nocorrect: boolean;
   searchRequestId: string;
@@ -205,17 +207,18 @@ export interface SearchResponse extends YandexMusicResponse<{
    */
   best: any;
   videos: any;
-  tracks: SearchResult<Track>;
-  playlists: SearchResult<PlayList>;
-  albums: SearchResult<Album>;
-  artists: SearchResult<Artist>;
-  podcasts: SearchResult<any>;
-}> { }
+  tracks: SearchTypeResult<Track>;
+  playlists: SearchTypeResult<PlayList>;
+  albums: SearchTypeResult<Album>;
+  artists: SearchTypeResult<Artist>;
+  podcasts: SearchTypeResult<any>;
+}
+
 
 /**
- * Represents search result
+ * Represents search result for tracks, playlists, albums, ...
  */
-export interface SearchResult<T> {
+export interface SearchTypeResult<T> {
   /**
    * Results count
    */

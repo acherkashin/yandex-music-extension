@@ -8,6 +8,7 @@ export class PlayListTreeItem extends vscode.TreeItem {
 
     this.description = playList.description;
     this.tooltip = `${playList.title}. ${playList.description}`;
+    // TODO load playlist icon
     this.iconPath = getPlayListIcon(playList);
   }
 }

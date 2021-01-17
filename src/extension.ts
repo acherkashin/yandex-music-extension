@@ -105,7 +105,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const searchText = await showSearchBox();
 
       if (searchText) {
-        store.searchText = searchText;
+        store.doSearch(searchText);
       }
     }),
   );

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
+import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
@@ -23,18 +23,20 @@ export interface UserCredentials {
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
+export const SEARCH_TRACKS_PLAYLIST_ID = "SEARCH_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new ElectronPlayer();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
-  @observable searchText = '';
   @observable isPlaying = false;
   // TODO: implement PlayList class which will implement "loadMore" function
   @observable playLists = new Map<string | number, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | number | undefined;
+  private searchText = '';
+  @observable searchResponce: SearchResult | undefined;
 
   api = new YandexMusicApi();
 
@@ -121,6 +123,18 @@ export class Store {
     });
 
     return await Promise.resolve();
+  }
+
+  async doSearch(searchText: string): Promise<SearchResult> {
+    //TODO add error handling
+    this.searchText = searchText;
+    this.searchResponce = (await this.api.search(this.searchText)).data.result;
+    if (this.searchResponce.tracks) {
+      this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResponce.tracks.results);
+    } else {
+      this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
+    }
+    return this.searchResponce;
   }
 
   getLandingBlock(type: string) {
@@ -313,6 +327,10 @@ export class Store {
 
   private savePlaylist(playListId: number | string, tracks: Track[]) {
     this.playLists.set(playListId, tracks);
+  }
+
+  private removePlaylist(playListId: number | string) {
+    this.playLists.delete(playListId);
   }
 
   private getTrack(playListId: number | string, index: number): Track | null {
