@@ -210,7 +210,7 @@ export interface SearchResponse extends YandexMusicResponse<{
   albums: SearchResult<Album>;
   artists: SearchResult<Artist>;
   podcasts: SearchResult<any>;
-}> {}
+}> { }
 
 /**
  * Represents search result
@@ -234,3 +234,7 @@ export interface SearchResult<T> {
   results: T[];
 }
 
+export interface ArtistPopularTracksResponce extends YandexMusicResponse<{
+  artist: Artist;
+  tracks: string[];
+}> { }

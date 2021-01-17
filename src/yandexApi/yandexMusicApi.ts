@@ -522,6 +522,16 @@ export class YandexMusicApi {
     }
   }
 
+  /**
+   * Returns popular tracks for an artist
+   * @param artistId Artist id
+   */
+  async getPopularTracks(artistId: string): Promise<AxiosResponse<SearchResponse>> {
+    return await this.apiClient.get<SearchResponse>(`/artists/${artistId}/track-ids-by-rating`, {
+      headers: this._getAuthHeader(),
+    });
+  }
+
   async getTrackUrl(id: string): Promise<string> {
     const downloadInfo = await this.getDownloadInfo(id);
     const url = await this.createTrackURL(downloadInfo);
