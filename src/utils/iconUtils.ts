@@ -1,8 +1,9 @@
 import * as path from "path";
+import * as vscode from "vscode";
 import { ThemeIcon } from "vscode";
 import { PlayList } from "../yandexApi/playlist/playList";
-import { GeneratedPlayList } from "../yandexApi/feed/generatedPlayList";
 import { getExtensionPath } from "./extensionUtils";
+import { getCoverUri } from "../yandexApi/apiUtils";
 
 export function getThemeIcon(iconFileName: string): ThemeIcon {
     return {
@@ -15,15 +16,9 @@ export function getResourceIcon(iconFileName: string): string {
     return path.join(getExtensionPath(), "resources", iconFileName);
 }
 
-const generatedPlayListTypes = ["playlistOfTheDay", "recentTracks", "neverHeard", "podcasts", "missedLikes", "origin"];
-
 export function getPlayListIcon(playList: PlayList) {
-    if ("generatedPlaylistType" in playList) {
-        const playListType = (playList as GeneratedPlayList).generatedPlaylistType;
-
-        if (generatedPlayListTypes.indexOf(playListType) !== -1) {
-            return getResourceIcon(`playLists/${playListType}.png`);
-        }
+    if (playList.coverWithoutText != undefined) {
+        return vscode.Uri.parse(getCoverUri(playList.coverWithoutText.uri ?? '', 30, true));
     }
 
     return getThemeIcon("playlist.svg");
