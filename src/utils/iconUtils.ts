@@ -18,7 +18,7 @@ export function getResourceIcon(iconFileName: string): string {
 
 export function getPlayListIcon(playList: PlayList) {
     if (playList.coverWithoutText != undefined) {
-        return vscode.Uri.parse(getCoverUri(playList.coverWithoutText.uri ?? '', 30, true));
+        return vscode.Uri.parse(getCoverUri(playList.coverWithoutText.uri ?? '', 30));
     }
 
     return getThemeIcon("playlist.svg");

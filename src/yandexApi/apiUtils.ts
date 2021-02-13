@@ -36,8 +36,8 @@ export type CoverSize = 30 | 50 | 100 | 150 | 200 | 300 | 400 | 700 | 800 | 1000
  * @param uriTemplate track.coverUri
  * @param size cover size
  */
-export function getCoverUri(uriTemplate: string, size: CoverSize, useHttps: boolean = false) {
-  return `http${useHttps?'s':''}://${uriTemplate.replace('%%', `${size}x${size}`)}`;
+export function getCoverUri(uriTemplate: string, size: CoverSize) {
+  return `https://${uriTemplate.replace('%%', `${size}x${size}`)}`;
 }
 
 export function getTrackShortName(name: string) {
