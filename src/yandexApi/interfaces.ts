@@ -48,7 +48,7 @@ export interface TrackItem {
 
 export interface Artist {
   composer: boolean;
-  cover: Cover;
+  cover?: Cover;
   decomposed?: any[];
   genres: any[];
   // TODO: when use "yandexApi.search" id is "number", but when use "yandexApi.getPopularTracks" it is "string" 

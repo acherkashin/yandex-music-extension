@@ -4,7 +4,7 @@ import { PlayList } from "../yandexApi/playlist/playList";
 import { GeneratedPlayList } from "../yandexApi/feed/generatedPlayList";
 import { getExtensionPath } from "./extensionUtils";
 
-export function getThemeIcon(iconFileName: string): ThemeIcon {
+export function getThemeIcon(iconFileName: string) {
     return {
         dark: path.join(getExtensionPath(), "resources", "dark", iconFileName),
         light: path.join(getExtensionPath(), "resources", "light", iconFileName),

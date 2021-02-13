@@ -1,6 +1,7 @@
-import { autorun, observable, observe } from 'mobx';
+import { observe } from 'mobx';
 import * as vscode from 'vscode';
 import { SEARCH_TRACKS_PLAYLIST_ID, Store } from '../store';
+import { getThemeIcon } from '../utils/iconUtils';
 import { getChildren } from './childrenLoader';
 import { AlbumTreeItem, PlayListTreeItem, TrackTreeItem } from './treeItems';
 import { ArtistTreeItem } from './treeItems/artistTreeItem';
@@ -36,23 +37,27 @@ export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
             if (responce.tracks) {
                 const tracksItem = new vscode.TreeItem('Треки', vscode.TreeItemCollapsibleState.Expanded);
                 tracksItem.id = 'search-tracks-item';
+                tracksItem.iconPath = getThemeIcon("track.svg");
                 searchItems.push(tracksItem);
             }
 
             if (responce.albums) {
                 const albumsItem = new vscode.TreeItem('Альбомы', vscode.TreeItemCollapsibleState.Expanded);
                 albumsItem.id = 'search-albums-item';
+                albumsItem.iconPath = getThemeIcon("playlist.svg");
                 searchItems.push(albumsItem);
             }
 
             if (responce.playlists) {
                 const playListsItem = new vscode.TreeItem('Плейлисты', vscode.TreeItemCollapsibleState.Expanded);
                 playListsItem.id = 'search-playlists-item';
+                playListsItem.iconPath = getThemeIcon("playlist.svg");
                 searchItems.push(playListsItem);
             }
 
             if (responce.artists) {
                 const artistsItem = new vscode.TreeItem('Исполнители', vscode.TreeItemCollapsibleState.Expanded);
+                artistsItem.iconPath = new vscode.ThemeIcon("organization");
                 artistsItem.id = 'search-artists-item';
                 searchItems.push(artistsItem);
             }
