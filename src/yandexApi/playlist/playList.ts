@@ -6,6 +6,7 @@ export interface PlayList {
     available: boolean;
     collective: boolean;
     cover: Cover;
+    coverWithoutText: Cover;
     created: string;
     durationMs: number;
     isBanner: boolean;
