@@ -42,8 +42,10 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
         });
     }
 
-    if(element instanceof ArtistTreeItem) {
-        return element.getChildren();
+    if (element instanceof ArtistTreeItem) {
+        return store.getArtistTracks(element.artist.id.toString()).then(tracks => {
+            return tracks.map((track) => new TrackTreeItem(store, track, element.artist.id));
+        });
     }
 
     return null;

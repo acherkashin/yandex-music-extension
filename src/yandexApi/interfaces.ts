@@ -51,7 +51,8 @@ export interface Artist {
   cover: Cover;
   decomposed?: any[];
   genres: any[];
-  id: number;
+  // TODO: when use "yandexApi.search" id is "number", but when use "yandexApi.getPopularTracks" it is "string" 
+  id: string | number;
   name: string;
   various: boolean;
   popularTracks?: Track[];

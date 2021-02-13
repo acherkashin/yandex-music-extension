@@ -13,6 +13,7 @@ import {
   TrackDownloadInfo,
   ISearchOptions,
   SearchResponse,
+  ArtistPopularTracksResponce,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
@@ -526,8 +527,8 @@ export class YandexMusicApi {
    * Returns popular tracks for an artist
    * @param artistId Artist id
    */
-  async getPopularTracks(artistId: string): Promise<AxiosResponse<SearchResponse>> {
-    return await this.apiClient.get<SearchResponse>(`/artists/${artistId}/track-ids-by-rating`, {
+  async getPopularTracks(artistId: string): Promise<AxiosResponse<ArtistPopularTracksResponce>> {
+    return await this.apiClient.get<ArtistPopularTracksResponce>(`/artists/${artistId}/track-ids-by-rating`, {
       headers: this._getAuthHeader(),
     });
   }

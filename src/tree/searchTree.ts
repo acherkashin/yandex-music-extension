@@ -10,7 +10,7 @@ export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     constructor(private store: Store) {
-        observe(store, "searchResponce", () => {
+        observe(store, "searchResponse", () => {
             this.refresh();
         });
     }
@@ -24,11 +24,11 @@ export class SearchTree implements vscode.TreeDataProvider<vscode.TreeItem> {
     }
 
     async getChildren(element?: vscode.TreeItem) {
-        if (!this.store.searchResponce) {
+        if (!this.store.searchResponse) {
             return;
         }
 
-        const responce = this.store.searchResponce;
+        const responce = this.store.searchResponse;
 
         if (!element) {
             const searchItems: vscode.TreeItem[] = [];

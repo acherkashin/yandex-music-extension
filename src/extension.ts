@@ -69,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.refresh", refreshExplorer),
     vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackTreeItem) => {
       if (item) {
-        store.play({ itemId: item.track.id, playListId: item.playListId });
+        store.play({ itemId: item.track.id, playListId: item.playListId.toString() });
       } else {
         store.play();
       }
