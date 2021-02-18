@@ -38,6 +38,8 @@ export class Store {
   private searchText = '';
   @observable searchResponse: SearchResult | undefined;
 
+  // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
+  // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
   api = new YandexMusicApi();
 
   isAuthorized(): boolean {
