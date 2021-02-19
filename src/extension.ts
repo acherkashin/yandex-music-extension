@@ -109,7 +109,6 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }),
     vscode.commands.registerCommand("yandexMusic.clearSearchResult", async () => {
-      //TODO need to show clear results icon only when there are results 
       store.clearSearchResult();
     })
   );

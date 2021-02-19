@@ -135,7 +135,7 @@
         {
           "command": "yandexMusic.clearSearchResult",
           "group": "navigation",
-          "when": "view == yandex-music-search"
+          "when": "view == yandex-music-search && yandexMusic.hasSearchResult"
         }
       ],
       "view/item/context": [

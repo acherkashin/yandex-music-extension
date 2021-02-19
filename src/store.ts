@@ -131,6 +131,7 @@ export class Store {
     //TODO add error handling
     this.searchText = searchText;
     this.searchResponse = (await this.api.search(this.searchText)).data.result;
+    vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
     if (this.searchResponse.tracks) {
       this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResponse.tracks.results);
     } else {
@@ -141,6 +142,7 @@ export class Store {
 
   clearSearchResult() {
     this.searchResponse = undefined;
+    vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", false);
   }
 
   getLandingBlock(type: string) {
