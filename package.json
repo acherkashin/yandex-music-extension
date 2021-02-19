@@ -112,6 +112,12 @@
         "category": "Yandex Music",
         "title": "Search",
         "icon": "$(search)"
+      },
+      {
+        "command": "yandexMusic.clearSearchResult",
+        "category": "Yandex Music",
+        "title": "Clear Search Result",
+        "icon": "$(clear-all)"
       }
     ],
     "menus": {
@@ -123,6 +129,11 @@
         },
         {
           "command": "yandexMusic.search",
+          "group": "navigation",
+          "when": "view == yandex-music-search"
+        },
+        {
+          "command": "yandexMusic.clearSearchResult",
           "group": "navigation",
           "when": "view == yandex-music-search"
         }

@@ -139,6 +139,10 @@ export class Store {
     return this.searchResponse;
   }
 
+  clearSearchResult() {
+    this.searchResponse = undefined;
+  }
+
   getLandingBlock(type: string) {
     return this.landingBlocks.find((item) => item.type === type);
   }
