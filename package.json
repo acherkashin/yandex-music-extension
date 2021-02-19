@@ -223,7 +223,7 @@
     "viewsWelcome": [
       {
         "view": "yandex-music-search",
-        "contents": "Поиск по трекам, альбомам, исполнителчям и подкастам. \n[Поиск](command:yandexMusic.search)"
+        "contents": "Поиск по трекам, альбомам, исполнителям и подкастам. \n[Поиск](command:yandexMusic.search)"
       }
     ]
   },
