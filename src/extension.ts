@@ -2,9 +2,10 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { signIn } from "./inputs";
+import { showSearchBox, signIn } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
+import { SearchTree } from './tree/searchTree';
 import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
 
@@ -13,6 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
+  const searchProvider = new SearchTree(store);
 
   YandexMusicSettings.init(context.globalState);
   const settings = YandexMusicSettings.instance;
@@ -27,8 +29,10 @@ export async function activate(context: vscode.ExtensionContext) {
     if (store.isAuthorized()) {
       playListTreeView.message = `Вы вошли как: ${settings.username}`;
     }
-    const chartTreeView = vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
-    const recommendationsTreeView = vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
+
+    vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
+    vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
+    vscode.window.createTreeView("yandex-music-search", { treeDataProvider: searchProvider });
 
     settings.onDidChangeSettings((e) => {
       if (e.affectsConfiguration("yandexMusic.credentials")) {
@@ -65,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.refresh", refreshExplorer),
     vscode.commands.registerCommand("yandexMusic.play", async (item?: TrackTreeItem) => {
       if (item) {
-        store.play({ itemId: item.track.id, playListId: item.playListId });
+        store.play({ itemId: item.track.id, playListId: item.playListId.toString() });
       } else {
         store.play();
       }
@@ -97,6 +101,16 @@ export async function activate(context: vscode.ExtensionContext) {
       store.downloadTrack(node.track);
     }),
     vscode.commands.registerCommand("yandexMusic.signIn", signIn),
+    vscode.commands.registerCommand("yandexMusic.search", async () => {
+      const searchText = await showSearchBox();
+
+      if (searchText) {
+        store.doSearch(searchText);
+      }
+    }),
+    vscode.commands.registerCommand("yandexMusic.clearSearchResult", async () => {
+      store.clearSearchResult();
+    })
   );
 }
 

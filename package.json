@@ -10,15 +10,13 @@
   "version": "0.9.0",
   "preview": true,
   "engines": {
-    "vscode": "^1.41.0"
+    "vscode": "^1.53.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onView:yandex-music-play-lists",
-    "onView:yandex-music-chart",
-    "onView:yandex-music-recommendations"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -108,6 +106,18 @@
         "category": "Yandex Music",
         "title": "Refresh play lists",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "yandexMusic.search",
+        "category": "Yandex Music",
+        "title": "Search",
+        "icon": "$(search)"
+      },
+      {
+        "command": "yandexMusic.clearSearchResult",
+        "category": "Yandex Music",
+        "title": "Clear Search Result",
+        "icon": "$(clear-all)"
       }
     ],
     "menus": {
@@ -116,6 +126,16 @@
           "command": "yandexMusic.refresh",
           "group": "navigation",
           "when": "view == yandex-music-play-lists || view == yandex-music-chart || view == yandex-music-recommendations"
+        },
+        {
+          "command": "yandexMusic.search",
+          "group": "navigation",
+          "when": "view == yandex-music-search"
+        },
+        {
+          "command": "yandexMusic.clearSearchResult",
+          "group": "navigation",
+          "when": "view == yandex-music-search && yandexMusic.hasSearchResult"
         }
       ],
       "view/item/context": [
@@ -204,9 +224,19 @@
         {
           "id": "yandex-music-recommendations",
           "name": "Recommendations"
+        },
+        {
+          "id": "yandex-music-search",
+          "name": "Search"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "yandex-music-search",
+        "contents": "Поиск по трекам, альбомам, исполнителям и подкастам. \n[Поиск](command:yandexMusic.search)"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
@@ -219,7 +249,7 @@
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
-    "@types/vscode": "^1.41.0",
+    "@types/vscode": "^1.53.0",
     "glob": "^7.1.5",
     "mocha": "^6.2.2",
     "tslint": "^5.20.0",

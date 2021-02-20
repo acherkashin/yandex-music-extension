@@ -1,6 +1,7 @@
 import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
+import { PlayList } from "./playlist/playList";
 
 export interface GetPlayListsOptions {
   mixed?: boolean;
@@ -47,12 +48,19 @@ export interface TrackItem {
 
 export interface Artist {
   composer: boolean;
-  cover: Cover;
+  cover?: Cover;
   decomposed?: any[];
   genres: any[];
-  id: number;
+  // TODO: when use "yandexApi.search" id is "number", but when use "yandexApi.getPopularTracks" it is "string" 
+  id: string | number;
   name: string;
   various: boolean;
+  popularTracks?: Track[];
+  /**
+   * Имеются ли в продаже билеты на концерт
+   */
+  ticketsAvailable?: boolean;
+  regions?: string[];
 }
 
 export interface Track {
@@ -181,3 +189,56 @@ export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
   "play_contexts",
   "podcasts",
 ];
+
+export interface ISearchOptions {
+  type?: 'artist' | 'album' | 'track' | 'podcast' | 'all';
+  page?: number;
+  nococrrect?: boolean;
+}
+
+export interface SearchResponse extends YandexMusicResponse<SearchResult> { }
+
+export interface SearchResult {
+  misspellCorrected: boolean;
+  nocorrect: boolean;
+  searchRequestId: string;
+  text: string;
+  /**
+   * The best result
+   */
+  best: any;
+  videos: any;
+  tracks: SearchTypeResult<Track>;
+  playlists: SearchTypeResult<PlayList>;
+  albums: SearchTypeResult<Album>;
+  artists: SearchTypeResult<Artist>;
+  podcasts: SearchTypeResult<any>;
+}
+
+
+/**
+ * Represents search result for tracks, playlists, albums, ...
+ */
+export interface SearchTypeResult<T> {
+  /**
+   * Results count
+   */
+  total: number;
+  /**
+   * Maximum results count on the page
+   */
+  perPage: number;
+  /**
+   * Block position
+   */
+  order: number;
+  /**
+   * Search results
+   */
+  results: T[];
+}
+
+export interface ArtistPopularTracksResponce extends YandexMusicResponse<{
+  artist: Artist;
+  tracks: string[];
+}> { }

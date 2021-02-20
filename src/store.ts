@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { TrackItem, Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
+import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
 import { observable, autorun, computed } from "mobx";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
@@ -23,17 +23,23 @@ export interface UserCredentials {
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
+export const SEARCH_TRACKS_PLAYLIST_ID = "SEARCH_TRACKS_PLAYLIST_ID";
 export class Store {
   private player = new ElectronPlayer();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
-  @observable playLists = new Map<string | number, Track[]>();
+  // TODO: implement PlayList class which will implement "loadMore" function
+  @observable playLists = new Map<string, Track[]>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
-  @observable private currentPlayListId: string | number | undefined;
+  @observable private currentPlayListId: string | undefined;
+  private searchText = '';
+  @observable searchResult: SearchResult | undefined;
 
+  // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
+  // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
   api = new YandexMusicApi();
 
   isAuthorized(): boolean {
@@ -100,13 +106,15 @@ export class Store {
             .then(() => {
               vscode.commands.executeCommand("yandexMusic.signIn");
             });
+          console.error(e);
         }
 
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
       } catch (ex) {
-        vscode.window.showErrorMessage(`Unknown exception: ${JSON.stringify(ex)}`);
+        vscode.window.showErrorMessage(`Неизвестная ошибка: ${JSON.stringify(ex)}`);
+        console.error(ex);
       }
     }
 
@@ -116,9 +124,32 @@ export class Store {
 
     this.player.on("error", (error) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
+      console.error(error);
     });
 
     return await Promise.resolve();
+  }
+
+  async doSearch(searchText: string) {
+    try {
+      this.searchText = searchText;
+      this.searchResult = (await this.api.search(this.searchText)).data.result;
+      vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
+      if (this.searchResult.tracks) {
+        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
+      } else {
+        this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
+      }
+    } catch (e) {
+      vscode.window
+        .showErrorMessage("Не удалось выполнить поиск.");
+      console.error(e);
+    }
+  }
+
+  clearSearchResult() {
+    this.searchResult = undefined;
+    vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", false);
   }
 
   getLandingBlock(type: string) {
@@ -166,15 +197,22 @@ export class Store {
   getAlbumTracks(albumId: number): Promise<Track[]> {
     return this.api.getAlbum(albumId, true).then((resp) => {
       const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
-      this.savePlaylist(albumId, tracks);
+      this.savePlaylist(albumId.toString(), tracks);
 
       return tracks;
     });
   }
 
+  async getArtistTracks(artistId: string): Promise<Track[]> {
+    const { artist, tracks: trackIds } = (await this.api.getPopularTracks(artistId)).data.result;
+    const tracks = (await this.api.getTracks(trackIds)).result;
+    this.savePlaylist(artist.id.toString(), tracks);
+    return tracks;
+  }
+
   getTracks(userId: string | number | undefined, playListId: string | number) {
     return this.api.getPlaylist(userId, playListId).then((result) => {
-      this.savePlaylist(playListId, this.exposeTracks(result.data.result.tracks));
+      this.savePlaylist(playListId.toString(), this.exposeTracks(result.data.result.tracks));
 
       return result;
     });
@@ -195,7 +233,7 @@ export class Store {
     return resp.result;
   }
 
-  play(track?: { itemId: string; playListId: string | number }) {
+  play(track?: { itemId: string; playListId: string }) {
     if (track) {
       const tracks = this.playLists.get(track.playListId);
       if (tracks) {
@@ -205,7 +243,7 @@ export class Store {
           this.internalPlay(index);
         }
       } else {
-        console.error(`playlist ${track?.itemId}`);
+        console.error(`playlist ${track?.itemId} is not found`);
       }
       // update current song
     } else {
@@ -239,6 +277,7 @@ export class Store {
           });
       } else {
         vscode.window.showErrorMessage("Неизвестная ошибка ошибка");
+        console.error(ex);
       }
     }
   }
@@ -309,11 +348,15 @@ export class Store {
     return tracks.map((item) => <Track>item.track);
   }
 
-  private savePlaylist(playListId: number | string, tracks: Track[]) {
+  private savePlaylist(playListId: string, tracks: Track[]) {
     this.playLists.set(playListId, tracks);
   }
 
-  private getTrack(playListId: number | string, index: number): Track | null {
+  private removePlaylist(playListId: string) {
+    this.playLists.delete(playListId);
+  }
+
+  private getTrack(playListId: string, index: number): Track | null {
     const tracks = this.playLists.get(playListId);
 
     if (tracks == null) {

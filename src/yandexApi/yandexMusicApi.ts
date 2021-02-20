@@ -11,6 +11,9 @@ import {
   LandingResponse,
   LandingBlockType,
   TrackDownloadInfo,
+  ISearchOptions,
+  SearchResponse,
+  ArtistPopularTracksResponce,
 } from "./interfaces";
 import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
@@ -265,15 +268,15 @@ export class YandexMusicApi {
                                             nococrrect {Boolean}
      * @returns {Promise}
      */
-  search(query, options) {
+  search(query: string, options?: ISearchOptions): Promise<AxiosResponse<SearchResponse>> {
     const opts = options || {};
 
     return this.apiClient.get(`/search`, {
       params: {
-        type: opts["type"] || "all",
+        type: opts?.type ?? "all",
         text: query,
-        page: opts["page"] || 0,
-        nococrrect: opts["nococrrect"] || false,
+        page: opts.page ?? 0,
+        nococrrect: opts.nococrrect ?? false,
       },
       headers: this._getAuthHeader(),
     });
@@ -518,6 +521,16 @@ export class YandexMusicApi {
     } catch (error) {
       return error;
     }
+  }
+
+  /**
+   * Returns popular tracks for an artist
+   * @param artistId Artist id
+   */
+  async getPopularTracks(artistId: string): Promise<AxiosResponse<ArtistPopularTracksResponce>> {
+    return await this.apiClient.get<ArtistPopularTracksResponce>(`/artists/${artistId}/track-ids-by-rating`, {
+      headers: this._getAuthHeader(),
+    });
   }
 
   async getTrackUrl(id: string): Promise<string> {

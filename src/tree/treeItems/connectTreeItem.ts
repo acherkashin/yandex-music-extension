@@ -8,7 +8,7 @@ export class ConnectTreeItem extends vscode.TreeItem {
         this.iconPath = getResourceIcon("yandex-music-icon.png");
         this.command = {
             command: "yandexMusic.signIn",
-            title: this.label || '',
+            title: this.label as string ?? '',
             tooltip: this.tooltip,
         };
     }
