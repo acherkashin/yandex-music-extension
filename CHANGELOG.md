@@ -7,9 +7,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 0.10.0 - 2021-02-20
 
 ### Added 
-- Tracks, album, actors and podcasts search.
-- Sign Out action;
-- Covers in tree items;
+- Tracks, album, actors and podcasts search. [PR #4](https://github.com/acherkashin/yandex-music-extension/issues/4)
+
+![search](https://user-images.githubusercontent.com/9947582/108598315-07ee0b00-739e-11eb-9f14-3cc13f9073b8.gif)
+
+- Sign Out action [PR #16](https://github.com/acherkashin/yandex-music-extension/issues/16).
+
+![image](https://user-images.githubusercontent.com/9947582/108598419-759a3700-739e-11eb-89ad-727ca139b64d.png)
+
+- Covers in tree items. Thanks to [PR #23](https://github.com/acherkashin/yandex-music-extension/pull/23) by [AlexSnowLeo](https://github.com/AlexSnowLeo).
+
+![image](https://user-images.githubusercontent.com/9947582/108598359-50a5c400-739e-11eb-8e92-2e2cef1cb85a.png)
 
 ## 0.9.0 - 2020-08-31
 
