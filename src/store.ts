@@ -36,7 +36,7 @@ export class Store {
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | undefined;
   private searchText = '';
-  @observable searchResponse: SearchResult | undefined;
+  @observable searchResult: SearchResult | undefined;
 
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
@@ -130,18 +130,18 @@ export class Store {
   async doSearch(searchText: string): Promise<SearchResult> {
     //TODO add error handling
     this.searchText = searchText;
-    this.searchResponse = (await this.api.search(this.searchText)).data.result;
+    this.searchResult = (await this.api.search(this.searchText)).data.result;
     vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
-    if (this.searchResponse.tracks) {
-      this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResponse.tracks.results);
+    if (this.searchResult.tracks) {
+      this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
     } else {
       this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
     }
-    return this.searchResponse;
+    return this.searchResult;
   }
 
   clearSearchResult() {
-    this.searchResponse = undefined;
+    this.searchResult = undefined;
     vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", false);
   }
 
