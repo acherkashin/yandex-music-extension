@@ -4,7 +4,7 @@ All notable changes to Yandex.Music extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## 0.10.0 - 2021-02-20
 
 ### Added 
 - Tracks, album, actors and podcasts search.
