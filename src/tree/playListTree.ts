@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Store } from "../store";
-import { PlayListTreeItem, LikedTracksTreeItem, ConnectTreeItem } from "./treeItems";
+import { PlayListTreeItem, LikedTracksTreeItem } from "./treeItems";
 import { getChildren } from "./childrenLoader";
 import { DividerTreeItem } from "./treeItems/dividerTreeItem";
 
@@ -39,8 +39,6 @@ async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
     nodes.push(...usersPlayLists.data.result.map((item) => new PlayListTreeItem(item)));
     nodes.push(new DividerTreeItem());
     nodes.push(new LikedTracksTreeItem());
-  } else {
-    nodes.push(new ConnectTreeItem());
   }
 
   return nodes;

@@ -108,6 +108,8 @@ export class Store {
       console.error(e);
     }
 
+    vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());
+
     autorun(() => {
       vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
     });
@@ -120,8 +122,6 @@ export class Store {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
     });
-
-    return await Promise.resolve();
   }
 
   async doSearch(searchText: string) {

@@ -134,6 +134,11 @@
           "when": "view == yandex-music-play-lists || view == yandex-music-chart || view == yandex-music-recommendations"
         },
         {
+          "command": "yandexMusic.signOut",
+          "group": "navigation",
+          "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
+        },
+        {
           "command": "yandexMusic.search",
           "group": "navigation",
           "when": "view == yandex-music-search"
@@ -241,6 +246,10 @@
       {
         "view": "yandex-music-search",
         "contents": "Поиск по трекам, альбомам, исполнителям и подкастам. \n[Поиск](command:yandexMusic.search)"
+      },
+      {
+        "view": "yandex-music-play-lists",
+        "contents": "Войдите в Яндекс.Музыку чтобы увидеть ваши рекомендации. \n[Войти](command:yandexMusic.signIn)"
       }
     ]
   },

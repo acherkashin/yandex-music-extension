@@ -1,5 +1,4 @@
 export { AlbumTreeItem } from './albumTreeItem';
-export { ConnectTreeItem } from './connectTreeItem';
 export { LikedTracksTreeItem } from './likedTracksTreeItem';
 export { NewPlayListsTreeItem } from './newPlayListsTreeItem';
 export { NewReleasesTreeItem } from './newReleasesTreeItem';

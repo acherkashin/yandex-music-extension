@@ -26,9 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
       treeDataProvider: treeProvider,
     });
-    if (store.isAuthorized()) {
-      playListTreeView.message = `Вы вошли как: ${settings.username}`;
-    }
+    playListTreeView.message = store.isAuthorized() ? `Вы вошли как: ${settings.username}` : undefined;
 
     vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
     vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
