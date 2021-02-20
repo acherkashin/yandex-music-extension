@@ -84,39 +84,33 @@ export class Store {
   constructor() { }
 
   async init(): Promise<void> {
-    if (YandexMusicSettings.instance.isAuthValid()) {
-      try {
-        /**
-         * TODO: need to add mechanism to refresh token
-         */
-        try {
-          const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
-          YandexMusicSettings.instance.accessToken = initData.access_token;
-          YandexMusicSettings.instance.userId = initData.uid;
-
-          await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
-            this.landingBlocks = resp.data.result.blocks;
-          });
-
-          // Need fetch liked tracks to show like/dislike button correctly
-          await this.refreshLikedTracks();
-        } catch (e) {
-          vscode.window
-            .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
-            .then(() => {
-              vscode.commands.executeCommand("yandexMusic.signIn");
-            });
-          console.error(e);
-        }
-
-        autorun(() => {
-          vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
+    try {
+      if (YandexMusicSettings.instance.isAuthValid()) {
+        const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
+        YandexMusicSettings.instance.accessToken = initData.access_token;
+        YandexMusicSettings.instance.userId = initData.uid;
+        await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
+          this.landingBlocks = resp.data.result.blocks;
         });
-      } catch (ex) {
-        vscode.window.showErrorMessage(`Неизвестная ошибка: ${JSON.stringify(ex)}`);
-        console.error(ex);
+
+        // Need fetch liked tracks to show like/dislike button correctly
+        await this.refreshLikedTracks();
+      } else {
+        // even if configuration is not valid we need to update api settings
+        this.api.setup(YandexMusicSettings.instance.authConfig);
       }
+    } catch (e) {
+      vscode.window
+        .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
+        .then(() => {
+          vscode.commands.executeCommand("yandexMusic.signIn");
+        });
+      console.error(e);
     }
+
+    autorun(() => {
+      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
+    });
 
     this.player.on("ended", () => {
       this.next();

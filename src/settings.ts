@@ -85,16 +85,21 @@ export class YandexMusicSettings {
         }
     }
 
-    updateUserName(newUserName: string) {
+    updateUserName(newUserName?: string) {
         workspace
             .getConfiguration("yandexMusic.credentials")
             .update("username", newUserName, ConfigurationTarget.Global);
     }
 
-    updatePassword(newPassword: string) {
+    updatePassword(newPassword?: string) {
         workspace
             .getConfiguration("yandexMusic.credentials")
             .update("password", newPassword, ConfigurationTarget.Global);
+    }
+
+    signOut(){
+        this.updateUserName(undefined);
+        this.updatePassword(undefined);
     }
 
     isAuthValid(): boolean {
