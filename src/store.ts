@@ -106,13 +106,15 @@ export class Store {
             .then(() => {
               vscode.commands.executeCommand("yandexMusic.signIn");
             });
+          console.error(e);
         }
 
         autorun(() => {
           vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
         });
       } catch (ex) {
-        vscode.window.showErrorMessage(`Unknown exception: ${JSON.stringify(ex)}`);
+        vscode.window.showErrorMessage(`Неизвестная ошибка: ${JSON.stringify(ex)}`);
+        console.error(ex);
       }
     }
 
@@ -122,22 +124,27 @@ export class Store {
 
     this.player.on("error", (error) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
+      console.error(error);
     });
 
     return await Promise.resolve();
   }
 
-  async doSearch(searchText: string): Promise<SearchResult> {
-    //TODO add error handling
-    this.searchText = searchText;
-    this.searchResult = (await this.api.search(this.searchText)).data.result;
-    vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
-    if (this.searchResult.tracks) {
-      this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
-    } else {
-      this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
+  async doSearch(searchText: string) {
+    try {
+      this.searchText = searchText;
+      this.searchResult = (await this.api.search(this.searchText)).data.result;
+      vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
+      if (this.searchResult.tracks) {
+        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
+      } else {
+        this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
+      }
+    } catch (e) {
+      vscode.window
+        .showErrorMessage("Не удалось выполнить поиск.");
+      console.error(e);
     }
-    return this.searchResult;
   }
 
   clearSearchResult() {
@@ -270,6 +277,7 @@ export class Store {
           });
       } else {
         vscode.window.showErrorMessage("Неизвестная ошибка ошибка");
+        console.error(ex);
       }
     }
   }
