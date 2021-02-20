@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getPlayListIcon } from "../../utils/iconUtils";
+import { getCoverUri } from "../../yandexApi/apiUtils";
 import { PlayList } from "../../yandexApi/playlist/playList";
 
 export class PlayListTreeItem extends vscode.TreeItem {
@@ -8,7 +9,12 @@ export class PlayListTreeItem extends vscode.TreeItem {
 
     this.description = playList.description;
     this.tooltip = `${playList.title}. ${playList.description}`;
-    // TODO load playlist icon
-    this.iconPath = getPlayListIcon(playList);
+
+    if (playList.cover?.uri) {
+      const uri = getCoverUri(playList.cover.uri, 50);
+      this.iconPath = vscode.Uri.parse(uri);
+    } else {
+      this.iconPath = getPlayListIcon(playList);
+    }
   }
 }
