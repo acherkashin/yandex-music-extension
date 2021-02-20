@@ -112,21 +112,35 @@ export class YandexMusicApi {
     };
   }
 
-  init(config: InitConfig): Promise<InitResponse> {
-    // Skip authorization if access_token and uid are present
-    this._config.user.TOKEN = config?.access_token;
-    this._config.user.UID = config?.uid;
+  /**
+   * Applies provided configuration
+   * 
+   * @param config credentials information
+   */
+  setup(config: InitConfig): void {
+    this._config.user.TOKEN = config.access_token;
+    this._config.user.UID = config.uid;
     this._config.user.USERNAME = config.username;
     this._config.user.PASSWORD = config.password;
+  }
 
+  /**
+   * Applies provided configuration and requests token if it is not provided
+   * 
+   * @param config credentials information
+   */
+  async init(config: InitConfig): Promise<InitResponse> {
+    this.setup(config);
+
+    // Skip authorization if access_token and uid are present
     if (config.access_token && config.uid) {
-      return Promise.resolve({
+      return {
         access_token: config.access_token,
         uid: config.uid,
-      });
+      };
     }
 
-    return this.authClient
+    const resp = await this.authClient
       .post(
         `token`,
         querystring.stringify({
@@ -136,13 +150,11 @@ export class YandexMusicApi {
           username: this._config.user.USERNAME,
           password: this._config.user.PASSWORD,
         })
-      )
-      .then((resp) => {
-        this._config.user.TOKEN = resp.data.access_token;
-        this._config.user.UID = resp.data.uid;
+      );
+    this._config.user.TOKEN = resp.data.access_token;
+    this._config.user.UID = resp.data.uid;
 
-        return resp.data;
-      });
+    return resp.data;
   }
 
   /**

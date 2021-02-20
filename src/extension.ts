@@ -101,6 +101,10 @@ export async function activate(context: vscode.ExtensionContext) {
       store.downloadTrack(node.track);
     }),
     vscode.commands.registerCommand("yandexMusic.signIn", signIn),
+    vscode.commands.registerCommand("yandexMusic.signOut", () => {
+      settings.signOut();
+      refreshExplorer();
+    }),
     vscode.commands.registerCommand("yandexMusic.search", async () => {
       const searchText = await showSearchBox();
 

@@ -99,7 +99,13 @@
         "command": "yandexMusic.signIn",
         "category": "Yandex Music",
         "title": "Sign In",
-        "icon": "$(account)"
+        "icon": "$(log-in)"
+      },
+      {
+        "command": "yandexMusic.signOut",
+        "category": "Yandex Music",
+        "title": "Sign Out",
+        "icon": "$(log-out)"
       },
       {
         "command": "yandexMusic.refresh",
