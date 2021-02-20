@@ -3,7 +3,6 @@
 ![Visual Studio Code loves Yandex Music](images/vs-loves-yandex-music.png)
 
 Extension allows you enjoy listening to YandexMusic right in your favorite code editor.
-All operation systems are supported.
 
 ## Requirements
 
