@@ -36,6 +36,11 @@ This extension contributes the following settings:
 
 You can open an issue on a GitHub page or contact me at cherkalexander@gmail.com with any additional questions or feedback.
 
+## Known issues
+
+- Only Windows is currently supported 🙄
+
+- ...
 ## Running locally
 
 1. Ensure you have locally installed `nodejs` and `npm`.
