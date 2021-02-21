@@ -15,6 +15,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
   const searchProvider = new SearchTree(store);
+  let playListTreeView: vscode.TreeView<any> | undefined = undefined;
 
   YandexMusicSettings.init(context.globalState);
   const settings = YandexMusicSettings.instance;
@@ -23,10 +24,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   async function initExplorer() {
     await store.init();
-    const playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
+    playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
       treeDataProvider: treeProvider,
     });
-    playListTreeView.message = store.isAuthorized() ? `Вы вошли как: ${settings.username}` : undefined;
 
     vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
     vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
@@ -51,6 +51,10 @@ export async function activate(context: vscode.ExtensionContext) {
         recommendationProvider.refresh();
       } else {
         await initExplorer();
+      }
+
+      if (playListTreeView) {
+        playListTreeView.message = store.isAuthorized() ? `Вы вошли как: ${settings.username}` : undefined;
       }
     } else {
       vscode.window
