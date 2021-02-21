@@ -1,6 +1,5 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { ThemeIcon } from "vscode";
 import { PlayList } from "../yandexApi/playlist/playList";
 import { getExtensionPath } from "./extensionUtils";
 import { getCoverUri } from "../yandexApi/apiUtils";
