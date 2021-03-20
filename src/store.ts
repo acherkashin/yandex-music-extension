@@ -11,7 +11,7 @@ import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
-import { YandexMusicSettings } from "./settings";
+import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
 
@@ -40,7 +40,7 @@ export class Store {
 
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
-  api = new YandexMusicApi();
+  private api: YandexMusicApi;
 
   isAuthorized(): boolean {
     return this.api.isAutorized;
@@ -81,31 +81,20 @@ export class Store {
     return this.currentTrack != null;
   }
 
-  constructor() { }
+  constructor(api: YandexMusicApi) {
+    this.api = api;
+  }
 
-  async init(): Promise<void> {
-    try {
-      if (YandexMusicSettings.instance.isAuthValid()) {
-        const initData = await this.api.init(YandexMusicSettings.instance.authConfig);
-        YandexMusicSettings.instance.accessToken = initData.access_token;
-        YandexMusicSettings.instance.userId = initData.uid;
-        await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
-          this.landingBlocks = resp.data.result.blocks;
-        });
+  async init(authData?: IYandexMusicAuthData): Promise<void> {
+    this.api.setup(authData);
 
-        // Need fetch liked tracks to show like/dislike button correctly
-        await this.refreshLikedTracks();
-      } else {
-        // even if configuration is not valid we need to update api settings
-        this.api.setup(YandexMusicSettings.instance.authConfig);
-      }
-    } catch (e) {
-      vscode.window
-        .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
-        .then(() => {
-          vscode.commands.executeCommand("yandexMusic.signIn");
-        });
-      console.error(e);
+    if (authData != null) {
+      await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
+        this.landingBlocks = resp.data.result.blocks;
+      });
+
+      // Need fetch liked tracks to show like/dislike button correctly
+      await this.refreshLikedTracks();
     }
 
     vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());
