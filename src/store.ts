@@ -151,7 +151,10 @@ export class Store {
   }
 
   getGeneratedPlayLists(): PlayList[] {
-    return (this.getLandingBlock("personal-playlists")?.entities as LandingBlockEntity<GeneratedPlayListItem>[]).map(
+    const block = this.getLandingBlock("personal-playlists");
+    const playLists = (block?.entities ?? []) as LandingBlockEntity<GeneratedPlayListItem>[];
+
+    return playLists.map(
       (item) => item.data.data
     );
   }
