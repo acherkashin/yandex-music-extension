@@ -1,24 +1,10 @@
 import * as vscode from "vscode";
-import { YandexMusicSettings } from "./settings";
 
-export async function signIn(): Promise<void> {
-  const username = await showLoginBox(YandexMusicSettings.instance.username);
-  const password = await showPasswordBox(YandexMusicSettings.instance.password);
-
-  if (username) {
-    YandexMusicSettings.instance.updateUserName(username);
-  }
-
-  if (password) {
-    YandexMusicSettings.instance.updatePassword(password);
-  }
-}
-
-export async function showLoginBox(value?: string): Promise<string | undefined> {
+export async function showLoginBox(): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
     prompt: "Введите логин",
     placeHolder: "example@yandex.ru",
-    value,
+    value: '',
     validateInput: text => {
       return !text ? "Логин не может быть пустым!" : null;
     }
@@ -27,11 +13,11 @@ export async function showLoginBox(value?: string): Promise<string | undefined> 
   return name;
 }
 
-export async function showPasswordBox(value?: string): Promise<string | undefined> {
+export async function showPasswordBox(): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
     prompt: "Введите пароль",
     placeHolder: "пароль",
-    value,
+    value: '',
     password: true,
     validateInput: text => {
       return !text ? "Пароль не может быть пустым!" : null;

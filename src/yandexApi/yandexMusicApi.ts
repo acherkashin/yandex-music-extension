@@ -24,6 +24,7 @@ import { PlayList } from "./playlist/playList";
 import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
 import { FullNewReleasesResponse } from "./responces/fullNewReleases";
 import { RecommendedPodcastsIdsResponse } from "./responces/recommendedPodcasts";
+import { IYandexMusicAuthData } from "../settings";
 const querystring = require("querystring");
 
 export interface Config {
@@ -37,18 +38,14 @@ export interface Config {
     PACKAGE_NAME: string;
   };
   user: {
-    USERNAME?: string;
-    PASSWORD?: string;
     TOKEN?: string;
     UID?: number;
   };
 }
 
-export interface InitConfig {
+export interface ICredentials {
   username: string;
   password: string;
-  access_token?: string;
-  uid?: number;
 }
 
 export interface Response<T> {
@@ -92,8 +89,6 @@ export class YandexMusicApi {
     },
 
     user: {
-      USERNAME: undefined,
-      PASSWORD: undefined,
       TOKEN: undefined,
       UID: undefined,
     },
@@ -117,44 +112,27 @@ export class YandexMusicApi {
    * 
    * @param config credentials information
    */
-  setup(config: InitConfig): void {
-    this._config.user.TOKEN = config.access_token;
-    this._config.user.UID = config.uid;
-    this._config.user.USERNAME = config.username;
-    this._config.user.PASSWORD = config.password;
+  setup(config?: IYandexMusicAuthData) {
+    this._config.user.TOKEN = config?.token;
+    this._config.user.UID = config?.userId;
   }
-
+  
   /**
-   * Applies provided configuration and requests token if it is not provided
+   * Requests token
    * 
-   * @param config credentials information
+   * @param credentials credentials information
    */
-  async init(config: InitConfig): Promise<InitResponse> {
-    this.setup(config);
-
-    // Skip authorization if access_token and uid are present
-    if (config.access_token && config.uid) {
-      return {
-        access_token: config.access_token,
-        uid: config.uid,
-      };
-    }
-
-    const resp = await this.authClient
-      .post(
-        `token`,
-        querystring.stringify({
-          grant_type: "password",
-          client_id: this._config.ouath_code.CLIENT_ID,
-          client_secret: this._config.ouath_code.CLIENT_SECRET,
-          username: this._config.user.USERNAME,
-          password: this._config.user.PASSWORD,
-        })
-      );
-    this._config.user.TOKEN = resp.data.access_token;
-    this._config.user.UID = resp.data.uid;
-
-    return resp.data;
+  authenticate(credentials: ICredentials): Promise<AxiosResponse<InitResponse>> {
+    return this.authClient.post(
+      `token`,
+      querystring.stringify({
+        grant_type: "password",
+        client_id: this._config.ouath_code.CLIENT_ID,
+        client_secret: this._config.ouath_code.CLIENT_SECRET,
+        username: credentials.username,
+        password: credentials.password,
+      })
+    );
   }
 
   /**

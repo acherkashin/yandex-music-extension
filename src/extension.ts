@@ -2,59 +2,52 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showSearchBox, signIn } from "./inputs";
+import { showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
 import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
+import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const store = new Store();
+  const api = new YandexMusicApi();
+  const store = new Store(api);
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
   const searchProvider = new SearchTree(store);
   let playListTreeView: vscode.TreeView<any> | undefined = undefined;
 
-  YandexMusicSettings.init(context.globalState);
+  YandexMusicSettings.init(context, api);
   const settings = YandexMusicSettings.instance;
 
   let isExplorerInitialized = false;
 
-  async function initExplorer() {
-    await store.init();
-    playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
-      treeDataProvider: treeProvider,
-    });
-
-    vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
-    vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
-    vscode.window.createTreeView("yandex-music-search", { treeDataProvider: searchProvider });
-
-    settings.onDidChangeSettings((e) => {
-      if (e.affectsConfiguration("yandexMusic.credentials")) {
-        vscode.commands.executeCommand("yandexMusic.refresh");
-      }
-    });
-
-    isExplorerInitialized = true;
-  }
-
   async function refreshExplorer() {
     const hasConnection = await isOnline();
     if (hasConnection) {
+      const authData = await YandexMusicSettings.instance.getAuthData();
+      await store.init(authData);
+
       if (isExplorerInitialized) {
-        await store.init();
         treeProvider.refresh();
         chartProvider.refresh();
         recommendationProvider.refresh();
       } else {
-        await initExplorer();
+        playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
+          treeDataProvider: treeProvider,
+        });
+    
+        vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
+        vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
+        vscode.window.createTreeView("yandex-music-search", { treeDataProvider: searchProvider });
+    
+        isExplorerInitialized = true;
       }
 
       if (playListTreeView) {
-        playListTreeView.message = store.isAuthorized() ? `Вы вошли как: ${settings.username}` : undefined;
+        playListTreeView.message = store.isAuthorized() ? `Вы вошли как: ${authData?.userName}` : undefined;
       }
     } else {
       vscode.window
@@ -102,9 +95,12 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
       store.downloadTrack(node.track);
     }),
-    vscode.commands.registerCommand("yandexMusic.signIn", signIn),
-    vscode.commands.registerCommand("yandexMusic.signOut", () => {
-      settings.signOut();
+    vscode.commands.registerCommand("yandexMusic.signIn", async () => {
+      await settings.signIn();
+      refreshExplorer();
+    }),
+    vscode.commands.registerCommand("yandexMusic.signOut", async () => {
+      await settings.signOut();
       refreshExplorer();
     }),
     vscode.commands.registerCommand("yandexMusic.search", async () => {
