@@ -38,8 +38,11 @@ You can open an issue on a GitHub page or contact me at cherkalexander@gmail.com
 ## Known issues
 
 - Only Windows is currently supported 🙄
-
 - ...
+
+## Support
+You can subscribe to [the author's telegram channel](https://t.me/cherkashindev) to support and motivate the author.
+
 ## Running locally
 
 1. Ensure you have locally installed `nodejs` and `npm`.
