@@ -28,3 +28,12 @@ function getElectronFileName(): string {
             return 'electron.exe';
     }
 }
+
+export function getPlatformName() {
+    switch (platform()) {
+        case 'win32': return 'Windows';
+        case 'darwin': return 'MacOS';
+        case 'linux': return 'Linux';
+        default: return platform();
+    }
+}

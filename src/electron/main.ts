@@ -1,6 +1,5 @@
 // Modules to control application life and create native browser window
 import { app, BrowserWindow, ipcMain } from 'electron';
-import * as readline from 'readline';
 import fs = require("fs");
 import * as path from "path";
 
@@ -8,21 +7,18 @@ function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            contextIsolation: false
         },
         width: 800,
         height: 600,
-        show: false,
+        title: 'Yandex Music',
+        show: true,
     });
 
     mainWindow.setMenu(null);
     loadAudioHtml(mainWindow);
     mainWindow.webContents.openDevTools();
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
 
     process.on('message', (rawMessage) => {
         const message = JSON.parse(rawMessage);
@@ -39,30 +35,16 @@ function createWindow() {
     });
 }
 
-// Hide electrom icon from dock on macOs
-app.dock?.hide();
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+
+// Hide electron icon from dock on macOs
+// app.dock?.hide();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
-
-app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
-});
 
 function loadAudioHtml(window: BrowserWindow) {
     const filePath = path.join(__dirname, "index.html");

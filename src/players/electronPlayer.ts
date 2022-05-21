@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
-import { getElectronPath, getElectronAppPath } from "../utils/extensionUtils";
+import { getElectronPath, getElectronAppPath, getPlatformName } from "../utils/extensionUtils";
 
 export interface IPlayPayload {
   url: string;
@@ -21,17 +21,23 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
-      env: spawn_env,
-      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-    });
+    const isMacOs = getPlatformName() === 'MacOS';
+    const electronPath = getElectronPath();
+    this.childProcess = isMacOs ?
+      spawn('open', ['-a', electronPath, '--wait-apps', '--new', '--args'], {
+        env: spawn_env, 
+        stdio: ['pipe', 'pipe', 'pipe', 'ipc']
+      }) :
+      spawn(electronPath, [getElectronAppPath()], {
+        env: spawn_env,
+        stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+      });
 
     this.childProcess.on("error", (error) => {
       this.emit('error', error);
     });
     this.childProcess.on("exit", (code, sig) => {
-      console.log(code);
-      console.log(sig);
+      console.log(`exited with code: ${code} and signal: ${sig}`)
     });
     this.childProcess.on('message', (eventName) => {
       switch (eventName) {
