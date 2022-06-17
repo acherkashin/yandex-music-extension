@@ -274,7 +274,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "crypto": "^1.0.1",
-    "electron": "^9.4.0",
+    "electron": "^15.5.5",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
     "valid-url": "^1.0.9"
