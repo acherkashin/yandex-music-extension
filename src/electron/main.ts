@@ -8,7 +8,8 @@ function createWindow() {
     const mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
+            devTools: true,
         },
         width: 800,
         height: 600,

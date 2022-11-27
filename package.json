@@ -272,9 +272,11 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
+    "@electron/get": "^2.0.2",
     "axios": "^0.21.1",
     "crypto": "^1.0.1",
     "electron": "21.3.1",
+    "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
     "valid-url": "^1.0.9"

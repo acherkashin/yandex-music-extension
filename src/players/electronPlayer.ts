@@ -1,7 +1,9 @@
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
-import { getElectronPath, getElectronAppPath, getPlatformName } from "../utils/extensionUtils";
+import { getElectronPath, getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
+import { downloadElectron } from "../electron/downloadElectron";
+import { join } from "path";
 
 export interface IPlayPayload {
   url: string;
@@ -16,12 +18,20 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
 
   constructor() {
     super();
+
+  }
+
+  async init() {
     // https://stackoverflow.com/a/51517518
     const spawn_env: NodeJS.ProcessEnv = JSON.parse(JSON.stringify(process.env));
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
+    const path = await downloadElectron();
+    const pathToElectron = join(path, getElectronFileName());
+    const currentPath = getElectronPath();
+
+    this.childProcess = spawn(pathToElectron, [getElectronAppPath()], {
       env: spawn_env,
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
     });
