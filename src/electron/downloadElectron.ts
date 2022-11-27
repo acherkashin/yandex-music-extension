@@ -89,16 +89,17 @@ export async function downloadElectron() {
         // arch
     })
 
-    await extractFile(zipPath).catch(err => {
-        const noAsar = process.noAsar;
-        process.noAsar = true;
-        try {
-            //TODO: need to remove unzipped content if there is an exception during unzipping
-            console.error(err.stack);
-        } finally {
-            process.noAsar = noAsar;
-        }
-    });
+    // it is required to prevent error during archive extraction
+    // https://www.electronjs.org/docs/latest/tutorial/asar-archives
+    const noAsar = process.noAsar;
+    process.noAsar = true;
+    
+    try {
+        await extractFile(zipPath);
+    } catch(err) {
+        console.error((err as any).stack);
+        process.noAsar = noAsar;
+    }
 
     return extractDefaultPath;
 }

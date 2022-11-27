@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
-import { getElectronPath, getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
+import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
 import { downloadElectron } from "../electron/downloadElectron";
 import { join } from "path";
 
@@ -29,7 +29,6 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
 
     const path = await downloadElectron();
     const pathToElectron = join(path, getElectronFileName());
-    const currentPath = getElectronPath();
 
     this.childProcess = spawn(pathToElectron, [getElectronAppPath()], {
       env: spawn_env,
