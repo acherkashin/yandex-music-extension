@@ -21,17 +21,10 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    const isMacOs = getPlatformName() === 'MacOS';
-    const electronPath = getElectronPath();
-    this.childProcess = isMacOs ?
-      spawn('open', ['-a', electronPath, '--wait-apps', '--new', '--args'], {
-        env: spawn_env, 
-        stdio: ['pipe', 'pipe', 'pipe', 'ipc']
-      }) :
-      spawn(electronPath, [getElectronAppPath()], {
-        env: spawn_env,
-        stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-      });
+    this.childProcess = spawn(getElectronPath(), [getElectronAppPath()], {
+      env: spawn_env,
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+    });
 
     this.childProcess.on("error", (error) => {
       this.emit('error', error);
