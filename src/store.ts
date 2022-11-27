@@ -249,7 +249,8 @@ export class Store {
         id: track.id,
         albumId: track.albums[0].id,
       }), this.isLikedTrack(track.id));
-    } catch (ex) {
+    } catch (_ex) {
+      const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
         vscode.window
           .showErrorMessage(

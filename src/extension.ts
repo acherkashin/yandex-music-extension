@@ -10,7 +10,7 @@ import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 
-export async function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
   const store = new Store(api);
   const treeProvider = new PlayListTree(store);
@@ -58,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  await refreshExplorer();
+  refreshExplorer();
 
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.refresh", refreshExplorer),
