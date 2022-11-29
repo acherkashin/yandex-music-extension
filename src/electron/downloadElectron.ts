@@ -9,7 +9,7 @@ import { downloadArtifact } from '@electron/get';
 import { getElectronFileName as getPlatformPath } from './../utils/extensionUtils';
 
 const version = "21.3.1";
-const extractDefaultPath = path.join(__dirname, 'dist-extract');
+const extractDefaultPath: string = path.join(__dirname, 'dist');
 
 function isInstalled() {
     const platformPath = getPlatformPath();
@@ -32,11 +32,15 @@ function isInstalled() {
 }
 
 // unzips and makes path.txt point at the correct executable
-function extractFile(zipPath: string) {
-    const distPath = process.env.ELECTRON_OVERRIDE_DIST_PATH || extractDefaultPath;
+export async function extractElectron(zipPath: string) {
+    // it is required to prevent error during archive extraction
+    // https://www.electronjs.org/docs/latest/tutorial/asar-archives
+    const noAsar = process.noAsar;
+    process.noAsar = true;
 
-    return extract(zipPath, { dir: extractDefaultPath }).then(() => {
-        // If the zip contains an "electron.d.ts" file,
+    const distPath = process.env.ELECTRON_OVERRIDE_DIST_PATH || extractDefaultPath;
+    try {
+        await extract(zipPath, { dir: extractDefaultPath })        // If the zip contains an "electron.d.ts" file,
         // move that up
         const srcTypeDefPath = path.join(distPath, 'electron.d.ts');
         const targetTypeDefPath = path.join(__dirname, 'electron.d.ts');
@@ -48,17 +52,23 @@ function extractFile(zipPath: string) {
 
         const platformPath = getPlatformPath();
         // Write a "path.txt" file.
-        return fs.promises.writeFile(path.join(__dirname, 'path.txt'), platformPath);
-    });
+        /*return */fs.promises.writeFile(path.join(__dirname, 'path.txt'), platformPath);
+    } catch (err) {
+        console.error((err as any).stack);
+    } finally {
+        process.noAsar = noAsar;
+    }
+
+    return extractDefaultPath;
 }
 
-export async function downloadElectron() {
+export async function downloadElectron(): Promise<string> {
     if (process.env.ELECTRON_SKIP_BINARY_DOWNLOAD) {
-        return;
+        return extractDefaultPath;
     }
 
     if (isInstalled()) {
-        return;
+        return extractDefaultPath;
     }
 
     const platform = process.env.npm_config_platform || process.platform;
@@ -79,27 +89,16 @@ export async function downloadElectron() {
     }
 
     // downloads if not cached
-    const zipPath: string = await downloadArtifact({
+    /*const zipPath: string = */await downloadArtifact({
         version,
         artifactName: 'electron',
+        force: true,
         // force: process.env.force_no_cache === 'true',
         // cacheRoot: process.env.electron_config_cache,
         // checksums: process.env.electron_use_remote_checksums ? undefined : require('./checksums.json'),
         // platform,
         // arch
     })
-
-    // it is required to prevent error during archive extraction
-    // https://www.electronjs.org/docs/latest/tutorial/asar-archives
-    const noAsar = process.noAsar;
-    process.noAsar = true;
-    
-    try {
-        await extractFile(zipPath);
-    } catch(err) {
-        console.error((err as any).stack);
-        process.noAsar = noAsar;
-    }
 
     return extractDefaultPath;
 }

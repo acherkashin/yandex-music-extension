@@ -1,8 +1,9 @@
+import * as vscode from "vscode";
 import { EventEmitter } from "events";
 import { spawn, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
 import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
-import { downloadElectron } from "../electron/downloadElectron";
+import { downloadElectron, extractElectron } from "../electron/downloadElectron";
 import { join } from "path";
 
 export interface IPlayPayload {
@@ -27,7 +28,17 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    const path = await downloadElectron();
+    // const path = await downloadElectron();
+    const path = await vscode.window.withProgress({
+      location: vscode.ProgressLocation.Window,
+      title: "Downloading electron"
+    }, () => downloadElectron());
+
+    await vscode.window.withProgress({
+      location: vscode.ProgressLocation.Window,
+      title: "Extracting electron"
+    }, () => extractElectron(path));
+
     const pathToElectron = join(path, getElectronFileName());
 
     this.childProcess = spawn(pathToElectron, [getElectronAppPath()], {
