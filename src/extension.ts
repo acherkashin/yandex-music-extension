@@ -24,6 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   let isExplorerInitialized = false;
 
+  store.initPlayer();
+
   async function refreshExplorer() {
     const hasConnection = await isOnline();
     if (hasConnection) {
@@ -38,11 +40,11 @@ export function activate(context: vscode.ExtensionContext) {
         playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
           treeDataProvider: treeProvider,
         });
-    
+
         vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
         vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
         vscode.window.createTreeView("yandex-music-search", { treeDataProvider: searchProvider });
-    
+
         isExplorerInitialized = true;
       }
 

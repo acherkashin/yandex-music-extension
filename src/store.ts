@@ -85,10 +85,11 @@ export class Store {
     this.api = api;
   }
 
-  async init(authData?: IYandexMusicAuthData): Promise<void> {
-    //TODO, we need to do that just once
+  async initPlayer() {
     await this.player.init();
+  }
 
+  async init(authData?: IYandexMusicAuthData): Promise<void> {
     this.api.setup(authData);
 
     if (authData != null) {
