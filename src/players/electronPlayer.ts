@@ -29,15 +29,15 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
     // const path = await downloadElectron();
-    const path = await vscode.window.withProgress({
+    const zipPath = await vscode.window.withProgress({
       location: vscode.ProgressLocation.Window,
       title: "Downloading electron"
     }, () => downloadElectron());
 
-    await vscode.window.withProgress({
+    const path = await vscode.window.withProgress({
       location: vscode.ProgressLocation.Window,
       title: "Extracting electron"
-    }, () => extractElectron(path));
+    }, () => extractElectron(zipPath));
 
     const pathToElectron = join(path, getElectronFileName());
 

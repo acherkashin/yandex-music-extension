@@ -89,10 +89,9 @@ export async function downloadElectron(): Promise<string> {
     }
 
     // downloads if not cached
-    /*const zipPath: string = */await downloadArtifact({
+    const zipPath: string = await downloadArtifact({
         version,
         artifactName: 'electron',
-        force: true,
         // force: process.env.force_no_cache === 'true',
         // cacheRoot: process.env.electron_config_cache,
         // checksums: process.env.electron_use_remote_checksums ? undefined : require('./checksums.json'),
@@ -100,5 +99,5 @@ export async function downloadElectron(): Promise<string> {
         // arch
     })
 
-    return extractDefaultPath;
+    return zipPath;
 }
