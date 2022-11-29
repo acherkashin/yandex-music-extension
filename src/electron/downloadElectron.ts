@@ -38,21 +38,12 @@ export async function extractElectron(zipPath: string) {
     const noAsar = process.noAsar;
     process.noAsar = true;
 
-    const distPath = process.env.ELECTRON_OVERRIDE_DIST_PATH || extractDefaultPath;
     try {
-        await extract(zipPath, { dir: extractDefaultPath })        // If the zip contains an "electron.d.ts" file,
-        // move that up
-        const srcTypeDefPath = path.join(distPath, 'electron.d.ts');
-        const targetTypeDefPath = path.join(__dirname, 'electron.d.ts');
-        const hasTypeDefinitions = fs.existsSync(srcTypeDefPath);
-
-        if (hasTypeDefinitions) {
-            fs.renameSync(srcTypeDefPath, targetTypeDefPath);
-        }
+        await extract(zipPath, { dir: extractDefaultPath })
 
         const platformPath = getPlatformPath();
         // Write a "path.txt" file.
-        /*return */fs.promises.writeFile(path.join(__dirname, 'path.txt'), platformPath);
+        fs.promises.writeFile(path.join(__dirname, 'path.txt'), platformPath);
     } catch (err) {
         console.error((err as any).stack);
     } finally {
