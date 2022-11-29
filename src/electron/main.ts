@@ -9,12 +9,13 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            devTools: true,
+            // devTools: true,
         },
         width: 800,
         height: 600,
         title: 'Yandex Music',
-        show: true,
+        // TODO: Add ability to show/hide electron window via settings. It will be useful for debug.
+        show: false,
     });
 
     mainWindow.setMenu(null);
@@ -39,7 +40,7 @@ function createWindow() {
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
 
 // Hide electron icon from dock on macOs
-// app.dock?.hide();
+app.dock?.hide();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

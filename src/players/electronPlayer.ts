@@ -28,7 +28,6 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     delete spawn_env.ATOM_SHELL_INTERNAL_RUN_AS_NODE;
     delete spawn_env.ELECTRON_RUN_AS_NODE;
 
-    // const path = await downloadElectron();
     const zipPath = await vscode.window.withProgress({
       location: vscode.ProgressLocation.Window,
       title: "Downloading electron"
@@ -52,6 +51,7 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
     this.childProcess.on("exit", (code, sig) => {
       console.log(`exited with code: ${code} and signal: ${sig}`)
     });
+    // listen for events from 
     this.childProcess.on('message', (eventName) => {
       switch (eventName) {
         case "ended": this.emit('ended'); break;
