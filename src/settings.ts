@@ -1,6 +1,7 @@
 import { workspace, WorkspaceConfiguration, Disposable, ConfigurationChangeEvent, SecretStorage, ExtensionContext, window, commands } from "vscode";
 import { showLoginBox, showPasswordBox } from "./inputs";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { defaultTraceSource } from './logging/TraceSource';
 
 export type YandexMusicSettingsChangedCallback = (e: ConfigurationChangeEvent) => void;
 
@@ -85,16 +86,17 @@ export class YandexMusicSettings {
                 userName
             };
             this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
-    
+
         } catch (e) {
             window
                 .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
                 .then((a) => {
-                    if(a) {
+                    if (a) {
                         commands.executeCommand("yandexMusic.signIn");
                     }
                 });
             console.error(e);
+            defaultTraceSource.error("Cannot logging into account");
         }
     }
 

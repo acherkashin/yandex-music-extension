@@ -49,7 +49,7 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       this.emit('error', error);
     });
     this.childProcess.on("exit", (code, sig) => {
-      console.log(`exited with code: ${code} and signal: ${sig}`)
+      console.log(`exited with code: ${code} and signal: ${sig}`);
     });
     // listen for events from 
     this.childProcess.on('message', (eventName) => {

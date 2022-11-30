@@ -9,6 +9,8 @@ import { SearchTree } from './tree/searchTree';
 import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { OutputTraceListener } from "./logging/OutputTraceListener";
+import { defaultTraceSource } from './logging/TraceSource';
 
 export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
@@ -18,6 +20,10 @@ export function activate(context: vscode.ExtensionContext) {
   const recommendationProvider = new RecommendationTree(store);
   const searchProvider = new SearchTree(store);
   let playListTreeView: vscode.TreeView<any> | undefined = undefined;
+
+  const outputTraceListener = new OutputTraceListener('Visual Studio Yandex Music');
+  outputTraceListener.addOutputChannel();
+  defaultTraceSource.addTraceListener(outputTraceListener);
 
   YandexMusicSettings.init(context, api);
   const settings = YandexMusicSettings.instance;
