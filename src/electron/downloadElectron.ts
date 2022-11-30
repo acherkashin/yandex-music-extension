@@ -1,10 +1,7 @@
-// const { version } = require('./../../package');
-
-const childProcess = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const extract = require('extract-zip');
+import childProcess = require('child_process');
+import fs = require('fs');
+import path = require('path');
+import extract = require('extract-zip');
 import { downloadArtifact } from '@electron/get';
 import { defaultTraceSource } from '../logging/TraceSource';
 import { getElectronFileName as getPlatformPath } from './../utils/extensionUtils';
@@ -50,9 +47,11 @@ export async function extractElectron(zipPath: string | null): Promise<string> {
     process.noAsar = true;
 
     try {
-        defaultTraceSource.info("Started extracting of electron archive");
+        defaultTraceSource.info("Started extracting electron archive");
 
         await extract(zipPath, { dir: extractDefaultPath });
+
+        defaultTraceSource.info("Electron extraction completed");
 
         const platformPath = getPlatformPath();
         // Write a "path.txt" file.
@@ -71,10 +70,6 @@ export async function extractElectron(zipPath: string | null): Promise<string> {
  * @returns path to the downloaded archive or null if it was downloaded previously
  */
 export async function downloadElectron(): Promise<string | null> {
-    //     if (process.env.ELECTRON_SKIP_BINARY_DOWNLOAD) {
-    //         return extractDefaultPath;
-    //     }
-
     if (isInstalled()) {
         defaultTraceSource.info("Electron is installed already");
         return null;
@@ -97,17 +92,12 @@ export async function downloadElectron(): Promise<string | null> {
         }
     }
 
-    defaultTraceSource.info("Started downloading of electron archive");
+    defaultTraceSource.info("Started downloading electron archive");
 
     // downloads if not cached
     const zipPath: string = await downloadArtifact({
         version,
         artifactName: 'electron',
-        // force: process.env.force_no_cache === 'true',
-        // cacheRoot: process.env.electron_config_cache,
-        // checksums: process.env.electron_use_remote_checksums ? undefined : require('./checksums.json'),
-        // platform,
-        // arch
     });
 
     defaultTraceSource.info("Electron download completed");
