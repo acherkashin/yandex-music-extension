@@ -5,6 +5,7 @@ import { IPlayer } from "./player";
 import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
 import { downloadElectron, extractElectron } from "../electron/downloadElectron";
 import { join } from "path";
+import { defaultTraceSource } from "../logging/TraceSource";
 
 export interface IPlayPayload {
   url: string;
@@ -38,9 +39,11 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       title: "Extracting electron"
     }, () => extractElectron(zipPath));
 
-    const pathToElectron = join(path, getElectronFileName());
+    const electronPath = join(path, getElectronFileName());
+    const electronAppPath = getElectronAppPath();
+    defaultTraceSource.info(`Starting electron: "${electronPath} ${electronAppPath}"`);
 
-    this.childProcess = spawn(pathToElectron, [getElectronAppPath()], {
+    this.childProcess = spawn(electronPath, [electronAppPath], {
       env: spawn_env,
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
     });

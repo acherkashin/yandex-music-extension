@@ -11,6 +11,7 @@ import { isOnline } from "./utils/connectionUtils";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
 import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
+const packageJson = require('./../package');
 
 export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
@@ -24,6 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
   const outputTraceListener = new OutputTraceListener('Visual Studio Yandex Music');
   outputTraceListener.addOutputChannel();
   defaultTraceSource.addTraceListener(outputTraceListener);
+
+  defaultTraceSource.info(`Starting extension v${packageJson.version}`);
 
   YandexMusicSettings.init(context, api);
   const settings = YandexMusicSettings.instance;

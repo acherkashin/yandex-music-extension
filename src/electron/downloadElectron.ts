@@ -36,7 +36,7 @@ function isInstalled() {
  */
 export async function extractElectron(zipPath: string | null): Promise<string> {
     if (!zipPath) {
-        defaultTraceSource.info("Archive already extracted");
+        defaultTraceSource.info(`Archive already extracted: "${extractDefaultPath}"`);
         
         return extractDefaultPath;
     }
@@ -47,7 +47,7 @@ export async function extractElectron(zipPath: string | null): Promise<string> {
     process.noAsar = true;
 
     try {
-        defaultTraceSource.info("Started extracting electron archive");
+        defaultTraceSource.info(`Started extracting electron archive from "${zipPath}" to "${extractDefaultPath}"`);
 
         await extract(zipPath, { dir: extractDefaultPath });
 
@@ -92,7 +92,7 @@ export async function downloadElectron(): Promise<string | null> {
         }
     }
 
-    defaultTraceSource.info("Started downloading electron archive");
+    defaultTraceSource.info(`Started downloading electron v${version} archive. Platform: ${platform}, architecture: ${arch}`);
 
     // downloads if not cached
     const zipPath: string = await downloadArtifact({
@@ -100,7 +100,7 @@ export async function downloadElectron(): Promise<string | null> {
         artifactName: 'electron',
     });
 
-    defaultTraceSource.info("Electron download completed");
+    defaultTraceSource.info(`Electron downloaded to ${zipPath}`);
 
     return zipPath;
 }

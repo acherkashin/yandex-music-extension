@@ -14,6 +14,7 @@ import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
+import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -111,9 +112,10 @@ export class Store {
       this.next();
     });
 
-    this.player.on("error", (error) => {
+    this.player.on("error", (error: {message: string, stack: string}) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
+      defaultTraceSource.error(error.stack)
     });
   }
 
