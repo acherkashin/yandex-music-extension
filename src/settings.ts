@@ -115,11 +115,12 @@ export class YandexMusicSettings {
         this._rewindTime = configuration.get<number>("rewindTime") || 15;
     }
 
-    private initShowElectronSetting(){
+    private initShowElectronSetting() {
         try {
             const configuration: WorkspaceConfiguration = workspace.getConfiguration("yandexMusic");
-            this._showElectronApp = configuration.get<boolean>("showElectronApp") || false;
-        } finally {
+            this._showElectronApp = configuration.get<boolean>("showElectronApp") ?? false;
+        } catch (e) {
+            defaultTraceSource.error("Error reading yandexMusic.showElectronApp setting. Using default value - 'false'")
             this._showElectronApp = false;
         }
     }
