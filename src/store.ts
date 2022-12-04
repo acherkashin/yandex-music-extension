@@ -14,6 +14,7 @@ import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
+import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -85,6 +86,13 @@ export class Store {
     this.api = api;
   }
 
+  /**
+   * Downloads (if necessary) and runs electron to play music
+   */
+  async initPlayer() {
+    await this.player.init();
+  }
+
   async init(authData?: IYandexMusicAuthData): Promise<void> {
     this.api.setup(authData);
 
@@ -107,9 +115,10 @@ export class Store {
       this.next();
     });
 
-    this.player.on("error", (error) => {
+    this.player.on("error", (error: {message: string, stack: string}) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
+      defaultTraceSource.error(error.stack);
     });
   }
 
@@ -249,7 +258,8 @@ export class Store {
         id: track.id,
         albumId: track.albums[0].id,
       }), this.isLikedTrack(track.id));
-    } catch (ex) {
+    } catch (_ex) {
+      const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
         vscode.window
           .showErrorMessage(

@@ -9,8 +9,11 @@ import { SearchTree } from './tree/searchTree';
 import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { OutputTraceListener } from "./logging/OutputTraceListener";
+import { defaultTraceSource } from './logging/TraceSource';
+const packageJson = require('./../package');
 
-export async function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
   const store = new Store(api);
   const treeProvider = new PlayListTree(store);
@@ -19,10 +22,18 @@ export async function activate(context: vscode.ExtensionContext) {
   const searchProvider = new SearchTree(store);
   let playListTreeView: vscode.TreeView<any> | undefined = undefined;
 
+  const outputTraceListener = new OutputTraceListener('Yandex Music Extension');
+  outputTraceListener.addOutputChannel();
+  defaultTraceSource.addTraceListener(outputTraceListener);
+
+  defaultTraceSource.info(`Starting extension v${packageJson.version}`);
+
   YandexMusicSettings.init(context, api);
   const settings = YandexMusicSettings.instance;
 
   let isExplorerInitialized = false;
+
+  store.initPlayer();
 
   async function refreshExplorer() {
     const hasConnection = await isOnline();
@@ -38,11 +49,11 @@ export async function activate(context: vscode.ExtensionContext) {
         playListTreeView = vscode.window.createTreeView('yandex-music-play-lists', {
           treeDataProvider: treeProvider,
         });
-    
+
         vscode.window.createTreeView("yandex-music-chart", { treeDataProvider: chartProvider });
         vscode.window.createTreeView("yandex-music-recommendations", { treeDataProvider: recommendationProvider });
         vscode.window.createTreeView("yandex-music-search", { treeDataProvider: searchProvider });
-    
+
         isExplorerInitialized = true;
       }
 
@@ -58,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  await refreshExplorer();
+  refreshExplorer();
 
   context.subscriptions.push(
     vscode.commands.registerCommand("yandexMusic.refresh", refreshExplorer),
@@ -119,4 +130,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+  YandexMusicSettings.instance.dispose();
+ }

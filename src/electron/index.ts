@@ -10,6 +10,8 @@ window.onload = () => {
     ipcRenderer.on('play', (event, ...args) => {
         const payload = args[0];
 
+        console.log(JSON.stringify(payload));
+        
         if (payload) {
             const { url, ...mediaMetadataInit } = payload;
             audio != null ? audio.src = url : audio = new Audio(url);

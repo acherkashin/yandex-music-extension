@@ -480,7 +480,8 @@ export class YandexMusicApi {
 
       return results.data;
     } catch (error) {
-      return error;
+      console.error(error);
+      return {} as any;
     }
   }
 
@@ -509,7 +510,8 @@ export class YandexMusicApi {
 
       return tracks.data;
     } catch (error) {
-      return error;
+      console.error(error);
+      return {} as any;
     }
   }
 

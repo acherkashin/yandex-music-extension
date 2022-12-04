@@ -1,68 +1,62 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow, ipcMain } from 'electron';
-import * as readline from 'readline';
+import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import fs = require("fs");
 import * as path from "path";
 
+const startOptions = getStartOptions(process.argv[2]);
+
 function createWindow() {
+
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    const win = new BrowserWindow({
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            contextIsolation: false,
+            devTools: true,
         },
         width: 800,
         height: 600,
-        show: false,
+        title: 'Yandex Music',
+        show: startOptions.showElectronApp,
     });
 
-    mainWindow.setMenu(null);
-    loadAudioHtml(mainWindow);
-    mainWindow.webContents.openDevTools();
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
+    win.setMenu(null);
+    loadAudioHtml(win);
 
     process.on('message', (rawMessage) => {
         const message = JSON.parse(rawMessage);
 
         switch (message.command) {
-            case 'play': mainWindow.webContents.send('play', message.payload); break;
-            case 'pause': mainWindow.webContents.send('pause'); break;
-            case 'rewind': mainWindow.webContents.send('rewind', message.payload); break;
+            case 'play': win.webContents.send('play', message.payload); break;
+            case 'pause': win.webContents.send('pause'); break;
+            case 'rewind': win.webContents.send('rewind', message.payload); break;
         }
     });
 
     ipcMain.on('ended', () => {
         process.send?.('ended');
     });
+
+    if (startOptions.showElectronApp) {
+        win.webContents.openDevTools();
+    }
+    globalShortcut.register('CommandOrControl+Shift+K', () => {
+        win.webContents.openDevTools();
+    });
 }
 
-// Hide electrom icon from dock on macOs
-app.dock?.hide();
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+
+if (!startOptions.showElectronApp) {
+    // Hide electron icon from dock on macOs
+    app.dock?.hide();
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
-
-app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
-});
 
 function loadAudioHtml(window: BrowserWindow) {
     const filePath = path.join(__dirname, "index.html");
@@ -72,7 +66,7 @@ function loadAudioHtml(window: BrowserWindow) {
         </head>
         <body>
             <div id="title-bar">
-                <div id="title">Live Share</div>
+                <div id="title">Yandex Music Extension</div>
             </div>
             <div id='remoteVideo'></div>
         </body>
@@ -85,4 +79,10 @@ function loadAudioHtml(window: BrowserWindow) {
     });
 
     window.loadFile(filePath);
+}
+
+function getStartOptions(base64Data: string) {
+    const buffer = Buffer.from(base64Data, 'base64');
+    const startOptionsJson = buffer.toString('utf8');
+    return JSON.parse(startOptionsJson);
 }

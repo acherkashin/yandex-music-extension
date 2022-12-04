@@ -7,7 +7,7 @@
     "url": "https://github.com/acherkashin/yandex-music-extension"
   },
   "description": "Enjoy listening to YandexMusic right in your favorite code editor",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "preview": true,
   "engines": {
     "vscode": "^1.53.0"
@@ -23,14 +23,10 @@
     "configuration": {
       "title": "Yandex Music",
       "properties": {
-        "yandexMusic.credentials.username": {
-          "description": "Yandex Music user name",
-          "type": "string",
-          "scope": "application"
-        },
-        "yandexMusic.credentials.password": {
-          "description": "Yandex Music password",
-          "type": "string",
+        "yandexMusic.showElectronApp": {
+          "description": "Shows electron app for debugging (restart is required)",
+          "type": "boolean",
+          "default": false,
           "scope": "application"
         },
         "yandexMusic.rewindTime": {
@@ -258,7 +254,8 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "vsix": "vsce package"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
@@ -272,9 +269,10 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
+    "@electron/get": "^2.0.2",
     "axios": "^0.21.1",
     "crypto": "^1.0.1",
-    "electron": "^9.4.0",
+    "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
     "valid-url": "^1.0.9"

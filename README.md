@@ -3,6 +3,7 @@
 ![Visual Studio Code loves Yandex Music](images/vs-loves-yandex-music.png)
 
 Extension allows you enjoy listening to YandexMusic right in your favorite code editor.
+All operation systems are supported 🎉🎉🎉.
 
 ## Requirements
 
@@ -12,15 +13,13 @@ To use this extension you should have Yandex Music account.
 
 This extension contributes the following settings:
 
-- `yandexMusic.credentials.username` - Yandex Music user name
-- `yandexMusic.credentials.password` - Yandex Music password
 - `yandexMusic.rewindTime` - Rewind time (optional, by default is 15s)
+- `yandexMusic.showElectronApp` - shows electron app, which is used for playing audio (for debug purpose, by default is `false`)
 
 ```json
 {
-    "yandexMusic.credentials.username": "example@yandex.ru",
-    "yandexMusic.credentials.password": "12345",
-    "yandexMusic.rewindTime": 15
+    "yandexMusic.rewindTime": 15,
+    "yandexMusic.showElectronApp": false,
 }
 ```
 
@@ -34,11 +33,6 @@ This extension contributes the following settings:
 ## Contributing
 
 You can open an issue on a GitHub page or contact me at cherkalexander@gmail.com with any additional questions or feedback.
-
-## Known issues
-
-- Only Windows is currently supported 🙄
-- ...
 
 ## Support
 You can subscribe to [the author's telegram channel](https://t.me/cherkashindev) to support and motivate the author.
