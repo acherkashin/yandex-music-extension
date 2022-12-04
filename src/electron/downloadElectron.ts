@@ -71,7 +71,7 @@ export async function extractElectron(zipPath: string | null): Promise<string> {
  */
 export async function downloadElectron(): Promise<string | null> {
     if (isInstalled()) {
-        defaultTraceSource.info("Electron is installed already");
+        defaultTraceSource.info("Electron is already downloaded to default location. See https://github.com/electron/get#how-it-works");
         return null;
     }
 

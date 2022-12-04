@@ -86,6 +86,9 @@ export class Store {
     this.api = api;
   }
 
+  /**
+   * Downloads (if necessary) and runs electron to play music
+   */
   async initPlayer() {
     await this.player.init();
   }
@@ -115,7 +118,7 @@ export class Store {
     this.player.on("error", (error: {message: string, stack: string}) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
-      defaultTraceSource.error(error.stack)
+      defaultTraceSource.error(error.stack);
     });
   }
 
