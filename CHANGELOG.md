@@ -4,7 +4,15 @@ All notable changes to Yandex.Music extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## 0.10.0 - 2021-02-20
+## [0.11.0] - 2022-12-04
+
+### Added
+
+- Support for Linux and MacOs
+- Logging to the "Yandex Music Extension" output channel
+- Setting to show electron app for debug purpose
+
+## [0.10.0] - 2021-02-20
 
 ### Added 
 - Tracks, album, actors and podcasts search. [PR #4](https://github.com/acherkashin/yandex-music-extension/issues/4)
@@ -19,20 +27,20 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ![image](https://user-images.githubusercontent.com/9947582/108598359-50a5c400-739e-11eb-8e92-2e2cef1cb85a.png)
 
-## 0.9.0 - 2020-08-31
+## [0.9.0] - 2020-08-31
 
 ### Fixed
 
 - Fix playing audio after changing Yandex.Music API.
 
-## 0.8.0 - 2020-08-18
+## [0.8.0] - 2020-08-18
 
 ### Fixed
 
 - "Like" action for Chart tree item. 
 - Hide like/dislike actions from command pallete.
 
-## 0.7.0 - 2020-08-12
+## [0.7.0] - 2020-08-12
 
 - Show cover, title and actor of track when change volume in Windows.
 - Add ability to like tracks.
