@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
   const searchProvider = new SearchTree(store);
   let playListTreeView: vscode.TreeView<any> | undefined = undefined;
 
-  const outputTraceListener = new OutputTraceListener('Visual Studio Extension');
+  const outputTraceListener = new OutputTraceListener('Yandex Music Extension');
   outputTraceListener.addOutputChannel();
   defaultTraceSource.addTraceListener(outputTraceListener);
 
