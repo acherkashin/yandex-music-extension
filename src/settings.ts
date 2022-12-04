@@ -18,12 +18,17 @@ export class YandexMusicSettings {
     private api: YandexMusicApi;
     private storage: SecretStorage;
     private _rewindTime: number = 15;
+    private _showElectronApp: boolean = false;
 
     private workspaceSettingsChangedDisposable: Disposable;
     private onDidChangeSettingsHandlers: YandexMusicSettingsChangedCallback[] = [];
 
     get rewindTime() {
         return this._rewindTime;
+    }
+
+    get showElectronApp() {
+        return this._showElectronApp;
     }
 
     async getAuthData() {
@@ -48,6 +53,7 @@ export class YandexMusicSettings {
         });
 
         this.invalidateRewindTime();
+        this.initShowElectronSetting();
     }
 
     static init(context: ExtensionContext, api: YandexMusicApi) {
@@ -105,7 +111,16 @@ export class YandexMusicSettings {
     }
 
     private invalidateRewindTime() {
-        var configuration: WorkspaceConfiguration = workspace.getConfiguration("yandexMusic");
+        const configuration: WorkspaceConfiguration = workspace.getConfiguration("yandexMusic");
         this._rewindTime = configuration.get<number>("rewindTime") || 15;
+    }
+
+    private initShowElectronSetting(){
+        try {
+            const configuration: WorkspaceConfiguration = workspace.getConfiguration("yandexMusic");
+            this._showElectronApp = configuration.get<boolean>("showElectronApp") || false;
+        } finally {
+            this._showElectronApp = false;
+        }
     }
 }

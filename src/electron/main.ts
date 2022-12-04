@@ -1,39 +1,48 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import fs = require("fs");
 import * as path from "path";
 
+const startOptions = getStartOptions(process.argv[2]);
+
 function createWindow() {
+
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    const win = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            // devTools: true,
+            devTools: startOptions.showElectronApp,
         },
         width: 800,
         height: 600,
         title: 'Yandex Music',
-        // TODO: Add ability to show/hide electron window via settings. It will be useful for debug.
-        show: false,
+        show: startOptions.showElectronApp,
     });
-
-    mainWindow.setMenu(null);
-    loadAudioHtml(mainWindow);
-    mainWindow.webContents.openDevTools();
-
+    
+    win.setMenu(null);
+    loadAudioHtml(win);
+    
     process.on('message', (rawMessage) => {
         const message = JSON.parse(rawMessage);
-
+        
         switch (message.command) {
-            case 'play': mainWindow.webContents.send('play', message.payload); break;
-            case 'pause': mainWindow.webContents.send('pause'); break;
-            case 'rewind': mainWindow.webContents.send('rewind', message.payload); break;
+            case 'play': win.webContents.send('play', message.payload); break;
+            case 'pause': win.webContents.send('pause'); break;
+            case 'rewind': win.webContents.send('rewind', message.payload); break;
         }
     });
-
+    
     ipcMain.on('ended', () => {
         process.send?.('ended');
+    });
+    
+    // // For debugging:
+    // if () {
+    //     win.webContents.openDevTools();
+    // }
+    globalShortcut.register('CommandOrControl+Shift+K', () => {
+        win.webContents.openDevTools();
     });
 }
 
@@ -56,7 +65,7 @@ function loadAudioHtml(window: BrowserWindow) {
         </head>
         <body>
             <div id="title-bar">
-                <div id="title">Live Share</div>
+                <div id="title">Yandex Music Extension</div>
             </div>
             <div id='remoteVideo'></div>
         </body>
@@ -69,4 +78,10 @@ function loadAudioHtml(window: BrowserWindow) {
     });
 
     window.loadFile(filePath);
+}
+
+function getStartOptions(base64Data: string) {
+    const buffer = Buffer.from(base64Data, 'base64');
+    const startOptionsJson = buffer.toString('utf8');
+    return JSON.parse(startOptionsJson);
 }

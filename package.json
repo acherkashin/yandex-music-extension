@@ -23,14 +23,10 @@
     "configuration": {
       "title": "Yandex Music",
       "properties": {
-        "yandexMusic.credentials.username": {
-          "description": "Yandex Music user name",
-          "type": "string",
-          "scope": "application"
-        },
-        "yandexMusic.credentials.password": {
-          "description": "Yandex Music password",
-          "type": "string",
+        "yandexMusic.showElectronApp": {
+          "description": "Shows electron app for debugging (restart is required)",
+          "type": "boolean",
+          "default": false,
           "scope": "application"
         },
         "yandexMusic.rewindTime": {
