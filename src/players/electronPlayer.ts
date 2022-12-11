@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { EventEmitter } from "events";
-import { spawn, ChildProcess } from "child_process";
+import { spawn, exec, ChildProcess } from "child_process";
 import { IPlayer } from "./player";
 import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
 import { downloadElectron, extractElectron } from "../electron/downloadElectron";
@@ -18,10 +18,10 @@ export interface IPlayPayload {
 
 export class ElectronPlayer extends EventEmitter implements IPlayer {
   childProcess: ChildProcess | undefined;
+  killElectron: (() => void) | null = null;
 
   constructor() {
     super();
-
   }
 
   async init() {
@@ -49,7 +49,22 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       env: spawn_env,
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
     });
-
+    this.killElectron = () => {
+      // From VS Code's debugAdapter comments:
+      // when killing a process in windows its child
+      // processes are *not* killed but become root
+      // processes. Therefore we use TASKKILL.EXE
+      if (process.platform === 'win32') {
+        exec(`taskkill /F /T /PID ${this.childProcess!.pid}`, (err, stdout, stderr) => {
+          if (err) {
+            defaultTraceSource.error(`Error disposing electron: ${err}`);
+          }
+        });
+      }
+      else {
+        this.childProcess!.kill('SIGKILL');
+      }
+    };
     this.childProcess.on("error", (error) => {
       this.emit('error', error);
     });
@@ -84,6 +99,10 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       command: "rewind",
       payload: sec
     }));
+  }
+
+  dispose() {
+    this.killElectron?.();
   }
 
   private createStartOptions(): string {

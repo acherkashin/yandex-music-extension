@@ -25,6 +25,7 @@ export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
 export const SEARCH_TRACKS_PLAYLIST_ID = "SEARCH_TRACKS_PLAYLIST_ID";
+
 export class Store {
   private player = new ElectronPlayer();
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2001);
@@ -360,5 +361,9 @@ export class Store {
     }
 
     return tracks[index];
+  }
+
+  dispose() {
+    this.player?.dispose();
   }
 }

@@ -13,9 +13,11 @@ import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
 const packageJson = require('./../package');
 
+let store: Store = null as any;
+
 export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
-  const store = new Store(api);
+  store = new Store(api);
   const treeProvider = new PlayListTree(store);
   const chartProvider = new ChartTree(store);
   const recommendationProvider = new RecommendationTree(store);
@@ -132,4 +134,5 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
   YandexMusicSettings.instance.dispose();
+  store.dispose();
  }
