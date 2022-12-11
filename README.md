@@ -35,7 +35,9 @@ This extension contributes the following settings:
 You can open an issue on a GitHub page or contact me at cherkalexander@gmail.com with any additional questions or feedback.
 
 ## Support
-You can subscribe to [the author's telegram channel](https://t.me/cherkashindev) to support and motivate the author.
+
+- You can ask any questions about Yandex Music Api in [Telegram Chat](https://t.me/yandex_music_api)
+- You can subscribe to [the author's telegram channel](https://t.me/cherkashindev) to support and motivate the author.
 
 ## Running locally
 
@@ -43,3 +45,9 @@ You can subscribe to [the author's telegram channel](https://t.me/cherkashindev)
 2. Ensure you have locally installed `yarn` as it is used as package manager for this project.
 3. Run `yarn install` in your terminal;
 4. Open Visual Studio Code and press `F5`.
+
+
+## Thanks
+
+Thanks to [MarshalX](https://github.com/MarshalX/), [his project](https://github.com/MarshalX/yandex-music-api) was used as a foundation for [yandex-music-extension](https://github.com/acherkashin/yandex-music-extension) and [yandex-music-open-api](https://github.com/acherkashin/yandex-music-open-api).
+
