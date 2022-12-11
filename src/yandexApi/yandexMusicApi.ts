@@ -476,7 +476,9 @@ export class YandexMusicApi {
 
   async getLikedTracksIds(): Promise<LikedTracksResponse> {
     try {
-      const results = await this.apiClient.get<LikedTracksResponse>(`/users/${this._config.user.UID}/likes/tracks`);
+      const results = await this.apiClient.get<LikedTracksResponse>(`/users/${this._config.user.UID}/likes/tracks`, {
+        headers: this._getAuthHeader(),
+      });
 
       return results.data;
     } catch (error) {
