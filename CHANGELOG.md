@@ -4,6 +4,12 @@ All notable changes to Yandex.Music extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.11.1] - 2022-12-11
+
+### Fixed
+
+- Electron is not closed when vs code is closed
+
 ## [0.11.0] - 2022-12-04
 
 ### Added
