@@ -11,7 +11,7 @@ window.onload = () => {
         const payload = args[0];
 
         console.log(JSON.stringify(payload));
-        
+
         if (payload) {
             const { url, ...mediaMetadataInit } = payload;
             audio != null ? audio.src = url : audio = new Audio(url);
@@ -65,17 +65,13 @@ function pause() {
 
 function play() {
     audio.play();
-    ipcRenderer.send('played');
+    ipcRenderer.send('message', { command: 'played' });
 }
 
 function playNextTrack() {
-    ipcRenderer.send('nexttrack');
+    ipcRenderer.send('message', { command: 'nexttrack' });
 }
 
 function playPreviousTrack() {
-    ipcRenderer.send('previoustrack');
+    ipcRenderer.send('message', { command: 'previoustrack' });
 }
-
-// function play() {
-//     audio.
-// }

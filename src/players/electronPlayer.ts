@@ -74,10 +74,8 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       defaultTraceSource.info(message);
     });
     // listen for events from electron app
-    this.childProcess.on('message', (eventName) => {
-      switch (eventName) {
-        case "ended": this.emit('ended'); break;
-      }
+    this.childProcess.on('message', (command) => {
+      this.emit('message', command);
     });
   }
 

@@ -112,8 +112,13 @@ export class Store {
       vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
     });
 
-    this.player.on("ended", () => {
-      this.next();
+    this.player.on("message", (message) => {
+      switch(message.command) {
+        case 'nexttrack': this.next(); break;
+        case 'previoustrack': this.prev(); break;
+        case 'paused': this.isPlaying = false;
+        case 'played': this.isPlaying = true;
+      }
     });
 
     this.player.on("error", (error: {message: string, stack: string}) => {

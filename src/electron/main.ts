@@ -33,8 +33,8 @@ function createWindow() {
         }
     });
 
-    ipcMain.on('ended', () => {
-        process.send?.('ended');
+    ipcMain.on('message', (_, message)=> {
+        process.send?.(message);
     });
 
     if (startOptions.showElectronApp) {
