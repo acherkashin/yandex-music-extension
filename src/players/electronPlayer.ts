@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { EventEmitter } from "events";
 import { spawn, exec, ChildProcess } from "child_process";
-import { IPlayer } from "./player";
 import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
 import { downloadElectron, extractElectron } from "../electron/downloadElectron";
 import { join } from "path";
@@ -16,7 +15,7 @@ export interface IPlayPayload {
   coverUri: string;
 }
 
-export class ElectronPlayer extends EventEmitter implements IPlayer {
+export class ElectronPlayer extends EventEmitter {
   childProcess: ChildProcess | undefined;
   killElectron: (() => void) | null = null;
 
