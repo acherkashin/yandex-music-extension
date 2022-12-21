@@ -60,7 +60,7 @@ function rewind(seconds: number) {
 
 function pause() {
     audio.pause();
-    ipcRenderer.send('paused');
+    ipcRenderer.send('message', { command: 'paused' });
 }
 
 function play() {

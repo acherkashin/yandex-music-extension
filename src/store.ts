@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
-import { observable, autorun, computed } from "mobx";
+import { observable, autorun, computed, runInAction, action } from "mobx";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -113,15 +113,15 @@ export class Store {
     });
 
     this.player.on("message", (message) => {
-      switch(message.command) {
+      switch (message.command) {
         case 'nexttrack': this.next(); break;
         case 'previoustrack': this.prev(); break;
-        case 'paused': this.isPlaying = false;
-        case 'played': this.isPlaying = true;
+        case 'paused': this.isPlaying = false; break;
+        case 'played': this.isPlaying = true; break;
       }
     });
 
-    this.player.on("error", (error: {message: string, stack: string}) => {
+    this.player.on("error", (error: { message: string, stack: string }) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
       defaultTraceSource.error(error.stack);
