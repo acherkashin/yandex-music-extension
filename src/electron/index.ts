@@ -34,14 +34,34 @@ window.onload = () => {
     });
 
     ipcRenderer.on('pause', () => {
-        audio.pause();
+        pause();
     });
 
-    ipcRenderer.on('rewind', (event, sec) => {
-        audio.currentTime += sec;
+    ipcRenderer.on('rewind', (_, sec) => {
+        rewind(sec);
     });
+
+    // navigator.mediaSession?.setActionHandler('play', () => console.log('play'));
+    // navigator.mediaSession?.setActionHandler('pause', () => pause());
+    navigator.mediaSession?.setActionHandler('seekbackward', () => rewind(-15));
+    navigator.mediaSession?.setActionHandler('seekforward', () => rewind(15));
+    navigator.mediaSession?.setActionHandler('previoustrack', () => console.log('previoustrack'));
+    navigator.mediaSession?.setActionHandler('nexttrack', () => ipcRenderer.send('ended'));
 
     audio.addEventListener('ended', () => {
         ipcRenderer.send('ended');
     });
 };
+
+function rewind(seconds: number) {
+    //TODO need to use time from settings
+    audio.currentTime += seconds;
+}
+
+function pause() {
+    audio.pause();
+}
+
+// function play() {
+//     audio.
+// }
