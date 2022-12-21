@@ -41,15 +41,15 @@ window.onload = () => {
         rewind(sec);
     });
 
-    // navigator.mediaSession?.setActionHandler('play', () => console.log('play'));
-    // navigator.mediaSession?.setActionHandler('pause', () => pause());
+    navigator.mediaSession?.setActionHandler('play', () => play());
+    navigator.mediaSession?.setActionHandler('pause', () => pause());
     navigator.mediaSession?.setActionHandler('seekbackward', () => rewind(-15));
     navigator.mediaSession?.setActionHandler('seekforward', () => rewind(15));
-    navigator.mediaSession?.setActionHandler('previoustrack', () => console.log('previoustrack'));
-    navigator.mediaSession?.setActionHandler('nexttrack', () => ipcRenderer.send('ended'));
+    navigator.mediaSession?.setActionHandler('previoustrack', () => playPreviousTrack());
+    navigator.mediaSession?.setActionHandler('nexttrack', () => playNextTrack());
 
     audio.addEventListener('ended', () => {
-        ipcRenderer.send('ended');
+        playNextTrack();
     });
 };
 
@@ -60,6 +60,20 @@ function rewind(seconds: number) {
 
 function pause() {
     audio.pause();
+    ipcRenderer.send('paused');
+}
+
+function play() {
+    audio.play();
+    ipcRenderer.send('played');
+}
+
+function playNextTrack() {
+    ipcRenderer.send('nexttrack');
+}
+
+function playPreviousTrack() {
+    ipcRenderer.send('previoustrack');
 }
 
 // function play() {
