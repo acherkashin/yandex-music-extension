@@ -4,17 +4,30 @@ var window: any;
 var Audio: any;
 declare var navigator: Navigator;
 
-let audio = new Audio();
+class BrowserPlayer {
+    audio = new Audio();
 
-window.onload = () => {
-    ipcRenderer.on('play', (event, ...args) => {
-        const payload = args[0];
+    constructor() {
+        function playNextTrack() {
+            ipcRenderer.send('message', { command: 'nexttrack' });
+        }
 
-        console.log(JSON.stringify(payload));
+        navigator.mediaSession?.setActionHandler('play', () => this.resume());
+        navigator.mediaSession?.setActionHandler('pause', () => this.pause());
+        navigator.mediaSession?.setActionHandler('seekbackward', () => this.rewind(-15));
+        navigator.mediaSession?.setActionHandler('seekforward', () => this.rewind(15));
+        navigator.mediaSession?.setActionHandler('previoustrack', () => {
+            ipcRenderer.send('message', { command: 'previoustrack' });
+        });
+        navigator.mediaSession?.setActionHandler('nexttrack', playNextTrack);
 
+        this.audio.addEventListener('ended', playNextTrack);
+    }
+
+    play(payload) {
         if (payload) {
             const { url, ...mediaMetadataInit } = payload;
-            audio != null ? audio.src = url : audio = new Audio(url);
+            this.audio != null ? this.audio.src = url : this.audio = new Audio(url);
 
             if (navigator.mediaSession != null) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -30,48 +43,41 @@ window.onload = () => {
             }
         }
 
-        audio && audio.play();
+        this.audio.play?.();
+    }
+
+    rewind(seconds: number) {
+        //TODO need to use time from settings
+        this.audio.currentTime += seconds;
+    }
+    
+    pause() {
+        this.audio.pause();
+        ipcRenderer.send('message', { command: 'paused' });
+    }
+    
+    resume() {
+        this.audio.play();
+        ipcRenderer.send('message', { command: 'resumed' });
+    }
+}
+
+const player = new BrowserPlayer();
+
+window.onload = () => {
+    ipcRenderer.on('play', (_, ...args) => {
+        const payload = args[0];
+
+        console.log(JSON.stringify(payload));
+
+        player.play(payload);
     });
 
     ipcRenderer.on('pause', () => {
-        pause();
+        player.pause();
     });
 
     ipcRenderer.on('rewind', (_, sec) => {
-        rewind(sec);
-    });
-
-    navigator.mediaSession?.setActionHandler('play', () => play());
-    navigator.mediaSession?.setActionHandler('pause', () => pause());
-    navigator.mediaSession?.setActionHandler('seekbackward', () => rewind(-15));
-    navigator.mediaSession?.setActionHandler('seekforward', () => rewind(15));
-    navigator.mediaSession?.setActionHandler('previoustrack', () => playPreviousTrack());
-    navigator.mediaSession?.setActionHandler('nexttrack', () => playNextTrack());
-
-    audio.addEventListener('ended', () => {
-        playNextTrack();
+        player.rewind(sec);
     });
 };
-
-function rewind(seconds: number) {
-    //TODO need to use time from settings
-    audio.currentTime += seconds;
-}
-
-function pause() {
-    audio.pause();
-    ipcRenderer.send('message', { command: 'paused' });
-}
-
-function play() {
-    audio.play();
-    ipcRenderer.send('message', { command: 'played' });
-}
-
-function playNextTrack() {
-    ipcRenderer.send('message', { command: 'nexttrack' });
-}
-
-function playPreviousTrack() {
-    ipcRenderer.send('message', { command: 'previoustrack' });
-}

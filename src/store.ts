@@ -117,7 +117,7 @@ export class Store {
         case 'nexttrack': this.next(); break;
         case 'previoustrack': this.prev(); break;
         case 'paused': this.isPlaying = false; break;
-        case 'played': this.isPlaying = true; break;
+        case 'resumed': this.isPlaying = true; break;
       }
     });
 
@@ -299,7 +299,7 @@ export class Store {
   }
 
   prev() {
-    this.internalPlay((this.currentTrackIndex ?? 1) - 1);
+    this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
   isLikedTrack(id: string): boolean {
@@ -327,10 +327,15 @@ export class Store {
    * @param index Song index of current playList
    */
   private async internalPlay(index: number) {
-    this.currentTrackIndex = index;
+    if (!this.currentPlayListId) {
+      return;
+    }
 
-    if (this.currentPlayListId) {
-      const track = this.playLists.get(this.currentPlayListId)?.[index];
+    const playlist = this.playLists.get(this.currentPlayListId);
+
+    if (playlist != null && index >= 0 && index <= playlist.length) {
+      this.currentTrackIndex = index;
+      const track = playlist?.[index];
 
       if (track) {
         const url = await this.api.getTrackUrl(track.id);
