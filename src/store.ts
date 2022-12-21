@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
-import { observable, autorun, computed } from "mobx";
+import { observable, autorun, computed, runInAction, action } from "mobx";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -112,11 +112,16 @@ export class Store {
       vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
     });
 
-    this.player.on("ended", () => {
-      this.next();
+    this.player.on("message", (message) => {
+      switch (message.command) {
+        case 'nexttrack': this.next(); break;
+        case 'previoustrack': this.prev(); break;
+        case 'paused': this.isPlaying = false; break;
+        case 'resumed': this.isPlaying = true; break;
+      }
     });
 
-    this.player.on("error", (error: {message: string, stack: string}) => {
+    this.player.on("error", (error: { message: string, stack: string }) => {
       vscode.window.showErrorMessage(JSON.stringify(error));
       console.error(error);
       defaultTraceSource.error(error.stack);
@@ -294,7 +299,7 @@ export class Store {
   }
 
   prev() {
-    this.internalPlay((this.currentTrackIndex ?? 1) - 1);
+    this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
   isLikedTrack(id: string): boolean {
@@ -322,10 +327,15 @@ export class Store {
    * @param index Song index of current playList
    */
   private async internalPlay(index: number) {
-    this.currentTrackIndex = index;
+    if (!this.currentPlayListId) {
+      return;
+    }
 
-    if (this.currentPlayListId) {
-      const track = this.playLists.get(this.currentPlayListId)?.[index];
+    const playlist = this.playLists.get(this.currentPlayListId);
+
+    if (playlist != null && index >= 0 && index <= playlist.length) {
+      this.currentTrackIndex = index;
+      const track = playlist?.[index];
 
       if (track) {
         const url = await this.api.getTrackUrl(track.id);

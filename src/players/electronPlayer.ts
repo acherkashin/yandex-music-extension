@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { EventEmitter } from "events";
 import { spawn, exec, ChildProcess } from "child_process";
-import { IPlayer } from "./player";
 import { getElectronAppPath, getElectronFileName } from "../utils/extensionUtils";
 import { downloadElectron, extractElectron } from "../electron/downloadElectron";
 import { join } from "path";
@@ -16,7 +15,7 @@ export interface IPlayPayload {
   coverUri: string;
 }
 
-export class ElectronPlayer extends EventEmitter implements IPlayer {
+export class ElectronPlayer extends EventEmitter {
   childProcess: ChildProcess | undefined;
   killElectron: (() => void) | null = null;
 
@@ -73,11 +72,9 @@ export class ElectronPlayer extends EventEmitter implements IPlayer {
       console.log(message);
       defaultTraceSource.info(message);
     });
-    // listen for events from 
-    this.childProcess.on('message', (eventName) => {
-      switch (eventName) {
-        case "ended": this.emit('ended'); break;
-      }
+    // listen for events from electron app
+    this.childProcess.on('message', (command) => {
+      this.emit('message', command);
     });
   }
 
