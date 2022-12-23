@@ -15,6 +15,7 @@ import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
+import { YandexMusicClient } from 'yandex-music-api-client';
 
 export interface UserCredentials {
   username: string | undefined;
@@ -43,6 +44,7 @@ export class Store {
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
   private api: YandexMusicApi;
+  private newApi: YandexMusicClient;
 
   isAuthorized(): boolean {
     return this.api.isAutorized;
@@ -85,6 +87,7 @@ export class Store {
 
   constructor(api: YandexMusicApi) {
     this.api = api;
+    this.newApi = new YandexMusicClient();
   }
 
   /**
@@ -98,8 +101,8 @@ export class Store {
     this.api.setup(authData);
 
     if (authData != null) {
-      await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
-        this.landingBlocks = resp.data.result.blocks;
+      await this.newApi.landing.getLanding3(...ALL_LANDING_BLOCKS.join(",")).then((resp) => {
+        this.landingBlocks = resp?.result?.blocks ?? [];
       });
 
       // Need fetch liked tracks to show like/dislike button correctly
@@ -260,7 +263,7 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      await this.api.likeAction('track', createAlbumTrackId({
+      await this.api.user.getUsersLikesTracks('track', createAlbumTrackId({
         id: track.id,
         albumId: track.albums[0].id,
       }), this.isLikedTrack(track.id));
