@@ -9,7 +9,6 @@ import {
   GetTracksResponse,
   YandexMusicResponse,
   LandingResponse,
-  LandingBlockType,
   TrackDownloadInfo,
   ISearchOptions,
   SearchResponse,
@@ -25,6 +24,7 @@ import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse
 import { FullNewReleasesResponse } from "./responces/fullNewReleases";
 import { RecommendedPodcastsIdsResponse } from "./responces/recommendedPodcasts";
 import { IYandexMusicAuthData } from "../settings";
+import { LandingBlockType } from "yandex-music-api-client";
 const querystring = require("querystring");
 
 export interface Config {

@@ -15,7 +15,7 @@ import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
-import { YandexMusicClient } from 'yandex-music-api-client';
+import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
 export interface UserCredentials {
   username: string | undefined;
@@ -44,7 +44,7 @@ export class Store {
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
   private api: YandexMusicApi;
-  private newApi: YandexMusicClient;
+  private newApi: YandexMusicClient | undefined;
 
   isAuthorized(): boolean {
     return this.api.isAutorized;
@@ -87,7 +87,6 @@ export class Store {
 
   constructor(api: YandexMusicApi) {
     this.api = api;
-    this.newApi = new YandexMusicClient();
   }
 
   /**
@@ -100,10 +99,24 @@ export class Store {
   async init(authData?: IYandexMusicAuthData): Promise<void> {
     this.api.setup(authData);
 
-    if (authData != null) {
-      await this.newApi.landing.getLanding3(...ALL_LANDING_BLOCKS.join(",")).then((resp) => {
-        this.landingBlocks = resp?.result?.blocks ?? [];
+    if (authData) {
+      this.newApi = new YandexMusicClient({
+        BASE: "https://api.music.yandex.net:443",
+        HEADERS: {
+          'Authorization': `OAuth ${authData.token}`
+        }
       });
+    }
+
+    if (authData != null) {
+      try {
+        const allBlocks = ALL_LANDING_BLOCKS.join(",");
+        await this.newApi!.landing.getLanding3(allBlocks).then((resp) => {
+          this.landingBlocks = resp?.result?.blocks as any ?? [];
+        });
+      } catch (e) {
+        console.error(e);
+      }
 
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
@@ -263,7 +276,7 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      await this.api.user.getUsersLikesTracks('track', createAlbumTrackId({
+      await this.api.likeAction('track', createAlbumTrackId({
         id: track.id,
         albumId: track.albums[0].id,
       }), this.isLikedTrack(track.id));

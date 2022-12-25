@@ -2,6 +2,7 @@ import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
 import { PlayList } from "./playlist/playList";
+import { LandingBlockType } from "yandex-music-api-client";
 
 export interface GetPlayListsOptions {
   mixed?: boolean;
@@ -162,19 +163,6 @@ export interface YandexMusicResponse<T> {
   invocationInfo: InvocationInfo;
   result: T;
 }
-
-export type LandingBlockType =
-  | "personalplaylists"
-  | "promotions"
-  | "new-releases"
-  | "new-playlists"
-  | "mixes"
-  | "chart"
-  | "artists"
-  | "albums"
-  | "playlists"
-  | "play_contexts"
-  | "podcasts";
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
   "personalplaylists",

@@ -1,4 +1,5 @@
-import { YandexMusicResponse, LandingBlockType } from "../interfaces";
+import { LandingBlockType } from "yandex-music-api-client";
+import { YandexMusicResponse } from "../interfaces";
 
 export interface RecommendedPodcastsIdsResponse extends YandexMusicResponse<RecommendedPodcastsIdsResult> { }
 

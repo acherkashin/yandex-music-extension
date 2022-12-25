@@ -1,4 +1,4 @@
-import { LandingBlockType } from "../interfaces";
+import { LandingBlockType } from "yandex-music-api-client";
 
 export interface LandingBlockEntity<T> {
     id: string;
