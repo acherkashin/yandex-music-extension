@@ -1,7 +1,6 @@
-import { Playlist } from "yandex-music-api-client";
+import { Playlist, GeneratedPlaylistLandingBlock } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
-import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
 import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
 
@@ -20,7 +19,7 @@ export interface InitResponse {
 export interface FeedResponse {
   canGetMoreEvents: boolean;
   days: any[];
-  generatedPlaylists: GeneratedPlayListItem[];
+  generatedPlaylists: GeneratedPlaylistLandingBlock[];
   headlines: any[];
   isWizardPassed: boolean;
   pumpkin: boolean;

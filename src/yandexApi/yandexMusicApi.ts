@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, LandingBlockType } from "yandex-music-api-client";
+import { Playlist, VisibilityEnum, LandingBlockType, GeneratedPlaylist } from "yandex-music-api-client";
 import { createHash } from "crypto";
 
 import {
@@ -17,7 +17,6 @@ import {
   ArtistPopularTracksResponce,
 } from "./interfaces";
 import { createTrackAlbumIds } from "./apiUtils";
-import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
 import { IYandexMusicAuthData } from "../settings";
 const querystring = require("querystring");
@@ -111,7 +110,7 @@ export class YandexMusicApi {
     this._config.user.TOKEN = config?.token;
     this._config.user.UID = config?.userId;
   }
-  
+
   /**
    * Requests token
    * 
@@ -236,7 +235,7 @@ export class YandexMusicApi {
    * @param   {String} playlistKind The playlist ID.
    * @returns {Promise}
    */
-  getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<Response<GeneratedPlayList>>> {
+  getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<Response<GeneratedPlaylist>>> {
     return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/${playlistKind}`, {
       headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
     });
