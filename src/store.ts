@@ -13,9 +13,12 @@ import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
+import { FullNewPlayListsResponse } from "./yandexApi/responces/fullNewPlayLists";
+import { FullNewReleasesResponse } from "./yandexApi/responces/fullNewReleases";
+import { RecommendedPodcastsIdsResponse } from "./yandexApi/responces/recommendedPodcasts";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -190,22 +193,28 @@ export class Store {
     });
   }
 
-  getNewReleases(): Promise<Album[]> {
-    return this.api.getAllNewReleases().then((resp) => {
-      return resp.data.result;
-    });
+  async getNewReleases(): Promise<Album[]> {
+    const resp: FullNewReleasesResponse = await this.newApi!.landing.getLandingBlock("new-releases");
+    const albums = await this.api.getAlbums(resp.result.newReleases);
+
+    return albums.data.result;
   }
 
-  getNewPlayLists(): Promise<PlayList[]> {
-    return this.api.getAllNewPlayLists().then((resp) => {
-      return resp.data.result;
-    });
+  async getNewPlayLists(): Promise<PlayList[]> {
+    const resp: FullNewPlayListsResponse = await this.newApi!.landing.getLandingBlock("new-playlists");
+    const playListsResp = await this.api.getPlayLists(resp.result.newPlaylists);
+    // const playListsResp = await this.newApi!.playlists.getByIds({
+    //   playListIds: getPlayListsIds(resp.result.newPlaylists)
+    // });
+
+    return playListsResp.data.result;
   }
 
-  getActualPodcasts(): Promise<Album[]> {
-    return this.api.getActualPodcasts().then((resp) => {
-      return resp.data.result;
-    });
+  async getActualPodcasts(): Promise<Album[]> {
+    const resp: RecommendedPodcastsIdsResponse = await this.newApi!.landing.getLandingBlock("podcasts");
+    const podcasts = await this.api.getAlbums(resp.result.podcasts);
+
+    return podcasts.data.result;
   }
 
   getAlbumTracks(albumId: number): Promise<Track[]> {

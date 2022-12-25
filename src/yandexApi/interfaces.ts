@@ -2,7 +2,7 @@ import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
 import { PlayList } from "./playlist/playList";
-import { LandingBlockType } from "yandex-music-api-client";
+import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
 
 export interface GetPlayListsOptions {
   mixed?: boolean;
@@ -134,12 +134,6 @@ export interface DownloadInfo {
   ts: string;
   path: string;
   host: string;
-}
-
-export interface InvocationInfo {
-  hostname: string;
-  "req-id": string;
-  "exec-duration-mills": string;
 }
 
 export interface LikedTrack {

@@ -19,9 +19,7 @@ import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
 import { PlayList } from "./playlist/playList";
-import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
-import { FullNewReleasesResponse } from "./responces/fullNewReleases";
-import { RecommendedPodcastsIdsResponse } from "./responces/recommendedPodcasts";
+import { NewPlayListItem } from "./responces/fullNewPlayLists";
 import { IYandexMusicAuthData } from "../settings";
 import { LandingBlockType } from "yandex-music-api-client";
 const querystring = require("querystring");
@@ -180,41 +178,6 @@ export class YandexMusicApi {
     });
   }
 
-  getAllNewPlayListsIds(): Promise<AxiosResponse<AllNewPlayListsIdsResponse>> {
-    return this.getLandingBlock("new-playlists");
-  }
-
-  async getAllNewReleases(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
-    const resp = await this.getAllNewReleasesIds();
-    const albums = await this.getAlbums(resp.data.result.newReleases);
-
-    return albums;
-  }
-
-  /**
-   * Returns new released albums ids
-   */
-  getAllNewReleasesIds(): Promise<AxiosResponse<FullNewReleasesResponse>> {
-    return this.getLandingBlock("new-releases");
-  }
-
-  async getAllNewPlayLists(): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
-    const resp = await this.getAllNewPlayListsIds();
-    const playLists = await this.getPlayLists(resp.data.result.newPlaylists);
-
-    return playLists;
-  }
-
-  getActualPodcastsIds(): Promise<AxiosResponse<RecommendedPodcastsIdsResponse>> {
-    return this.getLandingBlock("podcasts");
-  }
-
-  async getActualPodcasts(): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
-    const resp = await this.getActualPodcastsIds();
-    const podcasts = await this.getAlbums(resp.data.result.podcasts);
-
-    return podcasts;
-  }
 
   getLandingBlock(block: LandingBlockType | string) {
     return this.apiClient.get(`/landing3/${block}`, {
