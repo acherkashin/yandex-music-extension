@@ -1,5 +1,5 @@
+import { NewPlaylistItem } from "yandex-music-api-client";
 import { Track } from "./interfaces";
-import { NewPlayListItem } from "./responces/fullNewPlayLists";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
   return tracks.map((track) => createAlbumTrackId(track));
@@ -12,7 +12,7 @@ export function createAlbumTrackId(track: { id: string | number, albumId: string
   return `${track.id}:${track.albumId}`;
 }
 
-export function getPlayListsIds(playLists: NewPlayListItem[]) {
+export function getPlayListsIds(playLists: NewPlaylistItem[]) {
   return playLists.map((item) => `${item.uid}:${item.kind}`);
 }
 

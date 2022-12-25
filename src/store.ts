@@ -17,8 +17,6 @@ import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
-import { FullNewPlayListsResponse } from "./yandexApi/responces/fullNewPlayLists";
-import { FullNewReleasesResponse } from "./yandexApi/responces/fullNewReleases";
 import { RecommendedPodcastsIdsResponse } from "./yandexApi/responces/recommendedPodcasts";
 
 export interface UserCredentials {
@@ -196,14 +194,14 @@ export class Store {
   }
 
   async getNewReleases(): Promise<Album[]> {
-    const resp: FullNewReleasesResponse = await this.newApi!.landing.getLandingBlock("new-releases");
+    const resp = await this.newApi!.landing.getNewReleases();
     const albums = await this.api.getAlbums(resp.result.newReleases);
 
     return albums.data.result;
   }
 
   async getNewPlayLists(): Promise<Playlist[]> {
-    const resp: FullNewPlayListsResponse = await this.newApi!.landing.getLandingBlock("new-playlists");
+    const resp = await this.newApi!.landing.getNewPlaylists();
     const ids = getPlayListsIds(resp.result.newPlaylists).join(",");
     const playListsResp = await this.newApi!.playlists.getByIds(ids);
 

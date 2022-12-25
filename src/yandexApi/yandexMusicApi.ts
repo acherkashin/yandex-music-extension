@@ -16,11 +16,9 @@ import {
   SearchResponse,
   ArtistPopularTracksResponce,
 } from "./interfaces";
-import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
+import { createTrackAlbumIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
-
-import { NewPlayListItem } from "./responces/fullNewPlayLists";
 import { IYandexMusicAuthData } from "../settings";
 const querystring = require("querystring");
 
@@ -229,20 +227,6 @@ export class YandexMusicApi {
     return this.apiClient.get<YandexMusicResponse<Playlist[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
       headers: this._getAuthHeader(),
     });
-  }
-
-  getPlayLists(playLists: NewPlayListItem[]): Promise<AxiosResponse<YandexMusicResponse<Playlist[]>>> {
-    return this.apiClient.post(
-      `/playlists/list/`,
-      querystring.stringify({
-        playlistIds: getPlayListsIds(playLists).join(","),
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
   }
 
   /**
