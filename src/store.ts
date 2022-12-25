@@ -223,7 +223,7 @@ export class Store {
   }
 
   async getArtistTracks(artistId: string): Promise<Track[]> {
-    const { artist, tracks: trackIds } = (await this.api.getPopularTracks(artistId)).data.result;
+    const { artist, tracks: trackIds } = (await this.newApi!.artists.getPopularTracks(artistId)).result;
     const tracks = (await this.api.getTracks(trackIds)).result;
     this.savePlaylist(artist.id.toString(), tracks);
     return tracks;

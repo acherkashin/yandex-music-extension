@@ -154,22 +154,6 @@ export class YandexMusicApi {
   }
 
   /**
-   * Returns landing page with new releases, charts, ...
-   */
-  getLanding(...blocks: LandingBlockType[]): Promise<AxiosResponse<LandingResponse>> {
-    return this.apiClient.get(`/landing3?blocks=${blocks.join(",")}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
-    });
-  }
-
-
-  getLandingBlock(block: LandingBlockType | string) {
-    return this.apiClient.get(`/landing3/${block}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
-    });
-  }
-
-  /**
      * GET: /search
      * Search artists, tracks, albums.
      * @param   {String} query     The search query.
@@ -421,16 +405,6 @@ export class YandexMusicApi {
       console.error(error);
       return {} as any;
     }
-  }
-
-  /**
-   * Returns popular tracks for an artist
-   * @param artistId Artist id
-   */
-  async getPopularTracks(artistId: string): Promise<AxiosResponse<ArtistPopularTracksResponce>> {
-    return await this.apiClient.get<ArtistPopularTracksResponce>(`/artists/${artistId}/track-ids-by-rating`, {
-      headers: this._getAuthHeader(),
-    });
   }
 
   async getTrackUrl(id: string): Promise<string> {
