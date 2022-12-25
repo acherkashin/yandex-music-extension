@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
-import { Playlist, TrackItem } from "yandex-music-api-client";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
+import { Playlist, TrackItem } from "yandex-music-api-client";
+import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
 import { Track, ALL_LANDING_BLOCKS, SearchResult } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -16,8 +17,6 @@ import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
-import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
-import { RecommendedPodcastsIdsResponse } from "./yandexApi/responces/recommendedPodcasts";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -112,7 +111,7 @@ export class Store {
 
     if (authData != null) {
       const allBlocks = ALL_LANDING_BLOCKS.join(",");
-      await this.newApi!.landing.getLanding3(allBlocks).then((resp) => {
+      await this.newApi!.landing.getLandingBlocks(allBlocks).then((resp) => {
         //TODO: remove any
         this.landingBlocks = resp?.result?.blocks as any ?? [];
       });
@@ -183,7 +182,7 @@ export class Store {
   }
 
   getChart(): Promise<ChartItem[]> {
-    return this.newApi!.landing.getLanding3Chart("russia").then((resp) => {
+    return this.newApi!.landing.getChart("russia").then((resp) => {
       const chartItems = resp.result.chart.tracks as ChartItem[];
       //TODO: remove any
       const tracks = this.exposeTracks(chartItems as any);
@@ -209,7 +208,7 @@ export class Store {
   }
 
   async getActualPodcasts(): Promise<Album[]> {
-    const resp: RecommendedPodcastsIdsResponse = await this.newApi!.landing.getLandingBlock("podcasts");
+    const resp = await this.newApi!.landing.getNewPodcasts();
     const podcasts = await this.api.getAlbums(resp.result.podcasts);
 
     return podcasts.data.result;
