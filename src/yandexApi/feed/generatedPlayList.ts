@@ -1,7 +1,7 @@
 import { Cover } from "../interfaces";
-import { PlayList } from "../playlist/playList";
+import { Playlist } from "yandex-music-api-client";
 
-export interface GeneratedPlayList extends PlayList {
+export interface GeneratedPlayList extends Playlist {
     animatedCoverUri: string;
     coverWithoutText: Cover;
     everPlayed: boolean;
@@ -12,4 +12,4 @@ export interface GeneratedPlayList extends PlayList {
     playCounter: any;
     uid: number;
     urlPart: string;
-  }
+}

@@ -1,7 +1,8 @@
-import { Track, TrackItem } from "../interfaces";
+import { TrackItem } from "yandex-music-api-client"
+import { Track } from "../interfaces";
 import { Chart } from "./chart";
 
-export interface ChartItem extends TrackItem {
+export type ChartItem = TrackItem & {
     track: Track;
     chart: Chart;
-}
+};

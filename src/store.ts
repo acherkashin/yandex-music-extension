@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
-import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResult } from "./yandexApi/interfaces";
+import { Playlist, TrackItem } from "yandex-music-api-client";
 import { observable, autorun, computed } from "mobx";
+import * as open from "open";
+
+import { Track, ALL_LANDING_BLOCKS, SearchResult } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import * as open from "open";
 import { Album } from "./yandexApi/album/album";
-import { PlayList } from "./yandexApi/playlist/playList";
 import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
@@ -170,7 +171,7 @@ export class Store {
     return this.landingBlocks.find((item) => item.type === type);
   }
 
-  getGeneratedPlayLists(): PlayList[] {
+  getGeneratedPlayLists(): Playlist[] {
     const block = this.getLandingBlock("personal-playlists");
     const playLists = (block?.entities ?? []) as LandingBlockEntity<GeneratedPlayListItem>[];
 
@@ -186,7 +187,8 @@ export class Store {
   getChart(): Promise<ChartItem[]> {
     return this.newApi!.landing.getLanding3Chart("russia").then((resp) => {
       const chartItems = resp.result.chart.tracks as ChartItem[];
-      const tracks = this.exposeTracks(chartItems);
+      //TODO: remove any
+      const tracks = this.exposeTracks(chartItems as any);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
       return chartItems;
@@ -200,14 +202,12 @@ export class Store {
     return albums.data.result;
   }
 
-  async getNewPlayLists(): Promise<PlayList[]> {
+  async getNewPlayLists(): Promise<Playlist[]> {
     const resp: FullNewPlayListsResponse = await this.newApi!.landing.getLandingBlock("new-playlists");
-    const playListsResp = await this.api.getPlayLists(resp.result.newPlaylists);
-    // const playListsResp = await this.newApi!.playlists.getByIds({
-    //   playListIds: getPlayListsIds(resp.result.newPlaylists)
-    // });
+    const ids = getPlayListsIds(resp.result.newPlaylists).join(",");
+    const playListsResp = await this.newApi!.playlists.getByIds(ids);
 
-    return playListsResp.data.result;
+    return playListsResp.result;
   }
 
   async getActualPodcasts(): Promise<Album[]> {

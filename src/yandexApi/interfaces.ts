@@ -1,7 +1,8 @@
+import { Playlist } from "yandex-music-api-client";
+
 import { LandingBlock } from "./landing/block";
 import { GeneratedPlayListItem } from "./feed/generatedPlayListItem";
 import { Album } from "./album/album";
-import { PlayList } from "./playlist/playList";
 import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
 
 export interface GetPlayListsOptions {
@@ -33,19 +34,6 @@ export interface LandingResult {
 }
 
 export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
-
-export type Visibility = "public" | "private";
-
-export interface TrackItem {
-  id: number;
-  playCount: number;
-  recent: boolean;
-  timestamp: string;
-  /**
-   * Null when tracks are not riched
-   */
-  track?: Track;
-}
 
 export interface Artist {
   composer: boolean;
@@ -191,7 +179,7 @@ export interface SearchResult {
   best: any;
   videos: any;
   tracks: SearchTypeResult<Track>;
-  playlists: SearchTypeResult<PlayList>;
+  playlists: SearchTypeResult<Playlist>;
   albums: SearchTypeResult<Album>;
   artists: SearchTypeResult<Artist>;
   podcasts: SearchTypeResult<any>;

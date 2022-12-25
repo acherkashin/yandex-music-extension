@@ -1,9 +1,11 @@
 import axios, { AxiosResponse } from "axios";
+import { Playlist, VisibilityEnum, LandingBlockType } from "yandex-music-api-client";
+import { createHash } from "crypto";
+
 import {
   InitResponse,
   FeedResponse,
   GetPlayListsOptions,
-  Visibility,
   DownloadInfo,
   LikedTracksResponse,
   GetTracksResponse,
@@ -14,14 +16,12 @@ import {
   SearchResponse,
   ArtistPopularTracksResponce,
 } from "./interfaces";
-import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
-import { PlayList } from "./playlist/playList";
+
 import { NewPlayListItem } from "./responces/fullNewPlayLists";
 import { IYandexMusicAuthData } from "../settings";
-import { LandingBlockType } from "yandex-music-api-client";
 const querystring = require("querystring");
 
 export interface Config {
@@ -225,13 +225,13 @@ export class YandexMusicApi {
    * @param   {String} userId The user ID, if null then equal to current user id
    * @returns {Promise}
    */
-  getAllUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
-    return this.apiClient.get<YandexMusicResponse<PlayList[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
+  getAllUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<Playlist[]>>> {
+    return this.apiClient.get<YandexMusicResponse<Playlist[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
       headers: this._getAuthHeader(),
     });
   }
 
-  getPlayLists(playLists: NewPlayListItem[]): Promise<AxiosResponse<YandexMusicResponse<PlayList[]>>> {
+  getPlayLists(playLists: NewPlayListItem[]): Promise<AxiosResponse<YandexMusicResponse<Playlist[]>>> {
     return this.apiClient.post(
       `/playlists/list/`,
       querystring.stringify({
@@ -286,7 +286,7 @@ export class YandexMusicApi {
    * @param   {Object} [options] Options: visibility {String} (public|private)
    * @returns {Promise}
    */
-  createPlaylist(name: string, options: { visibility: Visibility }) {
+  createPlaylist(name: string, options: { visibility: VisibilityEnum }) {
     const opts = options || {};
 
     return this.apiClient.post(`/users/${this._config.user.UID}/playlists/create`, {

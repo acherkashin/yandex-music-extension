@@ -1,11 +1,11 @@
 import { LandingPodcastItem, LandingBlockType } from 'yandex-music-api-client';
+import { Playlist } from "yandex-music-api-client";
 import { LandingBlockEntity } from "./blockentity";
 import { Promotion } from "./promotion";
 import { ChartItem } from "./chartitem";
 import { MixLink } from "./mixLink";
 import { GeneratedPlayListItem } from "../feed/generatedPlayListItem";
 import { Album } from "../album/album";
-import { PlayList } from "../playlist/playList";
 
 export interface LandingBlock {
     id: string;
@@ -16,5 +16,5 @@ export interface LandingBlock {
      */
     typeForFrom: LandingBlockType;
     description: string | undefined;
-    entities: Array<LandingBlockEntity<Promotion | Album | PlayList | ChartItem | MixLink | GeneratedPlayListItem> | LandingPodcastItem>;
+    entities: Array<LandingBlockEntity<Promotion | Album | Playlist | ChartItem | MixLink | GeneratedPlayListItem> | LandingPodcastItem>;
 }
