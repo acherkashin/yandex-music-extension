@@ -1,4 +1,4 @@
-import { Playlist, GeneratedPlaylistLandingBlock } from "yandex-music-api-client";
+import { Playlist, Cover } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
 import { Album } from "./album/album";
@@ -16,15 +16,6 @@ export interface InitResponse {
   uid: number;
 }
 
-export interface FeedResponse {
-  canGetMoreEvents: boolean;
-  days: any[];
-  generatedPlaylists: GeneratedPlaylistLandingBlock[];
-  headlines: any[];
-  isWizardPassed: boolean;
-  pumpkin: boolean;
-  today: string;
-}
 
 export interface LandingResult {
   pumpkin: boolean;
@@ -80,40 +71,6 @@ export interface Track {
   storageDir: string;
   title: string;
   type: string; //music
-}
-
-export interface Cover {
-  custom: boolean;
-  /**
-   * Exists when @field type = "pic"
-   */
-  dir?: string;
-  type: "pic" | "mosaic";
-  /**
-   * Exists when @field type = "mosaic"
-   */
-  itemsUri?: string[];
-  /**
-   * Exists when @field type = "pic"
-   */
-  uri?: string;
-  version?: string;
-}
-
-export interface Owner {
-  login: string;
-  name: string;
-  sex: string;
-  uid: number;
-  verified: boolean;
-}
-
-export interface TrackDownloadInfo {
-  bitrateInKbps: number;
-  codec: 'mp3' | 'aac';
-  gain: boolean;
-  preview: boolean;
-  downloadInfoUrl: string;
 }
 
 export interface DownloadInfo {

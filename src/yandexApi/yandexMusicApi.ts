@@ -1,17 +1,15 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, LandingBlockType, GeneratedPlaylist } from "yandex-music-api-client";
+import { Playlist, VisibilityEnum, LandingBlockType, GeneratedPlaylist, TrackDownloadInfo } from "yandex-music-api-client";
 import { createHash } from "crypto";
 
 import {
   InitResponse,
-  FeedResponse,
   GetPlayListsOptions,
   DownloadInfo,
   LikedTracksResponse,
   GetTracksResponse,
   YandexMusicResponse,
   LandingResponse,
-  TrackDownloadInfo,
   ISearchOptions,
   SearchResponse,
   ArtistPopularTracksResponce,
@@ -130,17 +128,6 @@ export class YandexMusicApi {
   }
 
   /**
-   * GET: /feed
-   * Get the user's feed
-   * @returns {Promise}
-   */
-  getFeed(): Promise<AxiosResponse<Response<FeedResponse>>> {
-    return this.apiClient.get(`/feed`, {
-      headers: this._getAuthHeader(),
-    });
-  }
-
-  /**
    * Returns album by id.
    * Podcasts represent album as well, so you can use this method to get podcast as well.
    * @param albumId Album id
@@ -179,17 +166,6 @@ export class YandexMusicApi {
   getLandingBlock(block: LandingBlockType | string) {
     return this.apiClient.get(`/landing3/${block}`, {
       headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
-    });
-  }
-
-  /**
-   * GET: /genres
-   * Get a list of music genres
-   * @returns {Promise}
-   */
-  getGenres(): Promise<AxiosResponse<any>> {
-    return this.apiClient.get(`/genres`, {
-      headers: this._getAuthHeader(),
     });
   }
 
