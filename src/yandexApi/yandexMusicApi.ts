@@ -18,7 +18,6 @@ import { createHash } from "crypto";
 import { createTrackAlbumIds, getPlayListsIds } from "./apiUtils";
 import { GeneratedPlayList } from "./feed/generatedPlayList";
 import { Album } from "./album/album";
-import { FullChartResponse } from "./responces/fullChart";
 import { PlayList } from "./playlist/playList";
 import { NewPlayListItem, FullNewPlayListsResponse as AllNewPlayListsIdsResponse } from "./responces/fullNewPlayLists";
 import { FullNewReleasesResponse } from "./responces/fullNewReleases";
@@ -136,17 +135,6 @@ export class YandexMusicApi {
   }
 
   /**
-   * GET: /account/status
-   * Get account status for curren user
-   * @returns {Promise}
-   */
-  getAccountStatus() {
-    return this.apiClient.get("/account/status", {
-      headers: this._getAuthHeader(),
-    });
-  }
-
-  /**
    * GET: /feed
    * Get the user's feed
    * @returns {Promise}
@@ -190,10 +178,6 @@ export class YandexMusicApi {
     return this.apiClient.get(`/landing3?blocks=${blocks.join(",")}`, {
       headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
     });
-  }
-
-  getAllChartTracks(chartType: "russia" | "world"): Promise<AxiosResponse<FullChartResponse>> {
-    return this.getLandingBlock(`chart/${chartType}`);
   }
 
   getAllNewPlayListsIds(): Promise<AxiosResponse<AllNewPlayListsIdsResponse>> {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
-import { observable, autorun, computed, runInAction, action } from "mobx";
+import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResult } from "./yandexApi/interfaces";
+import { observable, autorun, computed } from "mobx";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -109,14 +109,11 @@ export class Store {
     }
 
     if (authData != null) {
-      try {
-        const allBlocks = ALL_LANDING_BLOCKS.join(",");
-        await this.newApi!.landing.getLanding3(allBlocks).then((resp) => {
-          this.landingBlocks = resp?.result?.blocks as any ?? [];
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      const allBlocks = ALL_LANDING_BLOCKS.join(",");
+      await this.newApi!.landing.getLanding3(allBlocks).then((resp) => {
+        //TODO: remove any
+        this.landingBlocks = resp?.result?.blocks as any ?? [];
+      });
 
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
@@ -184,8 +181,8 @@ export class Store {
   }
 
   getChart(): Promise<ChartItem[]> {
-    return this.api.getAllChartTracks("russia").then((resp) => {
-      const chartItems = resp.data.result.chart.tracks as ChartItem[];
+    return this.newApi!.landing.getLanding3Chart("russia").then((resp) => {
+      const chartItems = resp.result.chart.tracks as ChartItem[];
       const tracks = this.exposeTracks(chartItems);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
