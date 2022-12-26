@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, LandingBlockType, GeneratedPlaylist, TrackDownloadInfo } from "yandex-music-api-client";
+import { Playlist, VisibilityEnum, GeneratedPlaylist, TrackDownloadInfo, Album } from "yandex-music-api-client";
 import { createHash } from "crypto";
 
 import {
@@ -9,10 +9,8 @@ import {
   LikedTracksResponse,
   GetTracksResponse,
   YandexMusicResponse,
-  ISearchOptions,
 } from "./interfaces";
 import { createTrackAlbumIds } from "./apiUtils";
-import { Album } from "./album/album";
 import { IYandexMusicAuthData } from "../settings";
 const querystring = require("querystring");
 

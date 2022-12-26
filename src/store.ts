@@ -1,14 +1,13 @@
 import * as vscode from "vscode";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
-import { Playlist, TrackItem, GeneratedPlaylistLandingBlock, Search } from "yandex-music-api-client";
+import { Playlist, TrackItem, GeneratedPlaylistLandingBlock, Search, Album } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
 import { Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import { Album } from "./yandexApi/album/album";
 import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { ElectronPlayer } from "./players/electronPlayer";
@@ -217,9 +216,11 @@ export class Store {
   getAlbumTracks(albumId: number): Promise<Track[]> {
     return this.api.getAlbum(albumId, true).then((resp) => {
       const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
-      this.savePlaylist(albumId.toString(), tracks);
+      //TODO: remove any
+      this.savePlaylist(albumId.toString(), tracks  as any);
 
-      return tracks;
+      //TODO: remove any
+      return tracks as any;
     });
   }
 

@@ -1,7 +1,6 @@
-import { Cover } from "yandex-music-api-client";
+import { Cover, Album } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
-import { Album } from "./album/album";
 import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
 
 export interface GetPlayListsOptions {
