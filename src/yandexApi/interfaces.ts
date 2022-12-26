@@ -1,4 +1,4 @@
-import { Cover, Track } from "yandex-music-api-client";
+import { Track, Artist } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
 import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
@@ -15,7 +15,6 @@ export interface InitResponse {
   uid: number;
 }
 
-
 export interface LandingResult {
   pumpkin: boolean;
   contentId: string;
@@ -24,22 +23,6 @@ export interface LandingResult {
 
 export interface LandingResponse extends YandexMusicResponse<LandingResult> { }
 
-export interface Artist {
-  composer: boolean;
-  cover?: Cover;
-  decomposed?: any[];
-  genres: any[];
-  // TODO: when use "yandexApi.search" id is "number", but when use "yandexApi.getPopularTracks" it is "string" 
-  id: string | number;
-  name: string;
-  various: boolean;
-  popularTracks?: Track[];
-  /**
-   * Имеются ли в продаже билеты на концерт
-   */
-  ticketsAvailable?: boolean;
-  regions?: string[];
-}
 
 export interface DownloadInfo {
   s: string;
