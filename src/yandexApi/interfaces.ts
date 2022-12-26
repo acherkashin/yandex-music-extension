@@ -1,4 +1,4 @@
-import { Cover, Album } from "yandex-music-api-client";
+import { Cover, Track } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
 import { InvocationInfo, LandingBlockType } from "yandex-music-api-client";
@@ -39,37 +39,6 @@ export interface Artist {
    */
   ticketsAvailable?: boolean;
   regions?: string[];
-}
-
-export interface Track {
-  albums: Album[];
-  artists: Artist[];
-  available: boolean;
-  availableForPremiumUsers: boolean;
-  availableFullWithoutPermission: boolean;
-  /**
-   * Cover uri template. To get cover uri with specified size use "getCoverUri" method
-   */
-  coverUri: string;
-  durationMs: number;
-  fileSize: number;
-  id: string;
-  lyricsAvailable: boolean;
-  major: {
-    id: number;
-    name: string;
-  };
-  normalization: {
-    gain: number;
-    peak: number;
-  };
-  ogImage: string;
-  previewDurationMs: number;
-  realId: string;
-  rememberPosition: boolean;
-  storageDir: string;
-  title: string;
-  type: string; //music
 }
 
 export interface DownloadInfo {

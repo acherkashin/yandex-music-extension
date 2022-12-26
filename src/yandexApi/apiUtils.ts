@@ -1,5 +1,4 @@
-import { NewPlaylistItem } from "yandex-music-api-client";
-import { Track } from "./interfaces";
+import { NewPlaylistItem, Track } from "yandex-music-api-client";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
   return tracks.map((track) => createAlbumTrackId(track));

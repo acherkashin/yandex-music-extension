@@ -1,5 +1,4 @@
-import { TrackItem, Chart } from "yandex-music-api-client";
-import { Track } from "../interfaces";
+import { TrackItem, Chart, Track } from "yandex-music-api-client";
 
 export type ChartItem = TrackItem & {
     track: Track;

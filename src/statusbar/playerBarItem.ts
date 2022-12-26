@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Store } from "../store";
 import { autorun } from "mobx";
 import { getTrackShortName, getTrackFullName } from "../yandexApi/apiUtils";
-import { Track } from "../yandexApi/interfaces";
+import { Track } from "yandex-music-api-client";
 
 export class PlayerBarItem {
   private prevButton: vscode.StatusBarItem;
