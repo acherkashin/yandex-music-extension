@@ -9,10 +9,7 @@ import {
   LikedTracksResponse,
   GetTracksResponse,
   YandexMusicResponse,
-  LandingResponse,
   ISearchOptions,
-  SearchResponse,
-  ArtistPopularTracksResponce,
 } from "./interfaces";
 import { createTrackAlbumIds } from "./apiUtils";
 import { Album } from "./album/album";
@@ -151,29 +148,6 @@ export class YandexMusicApi {
         },
       }
     );
-  }
-
-  /**
-     * GET: /search
-     * Search artists, tracks, albums.
-     * @param   {String} query     The search query.
-     * @param   {Object} [options] Options: type {String} (artist|album|track|all),
-                                            page {Int},
-                                            nococrrect {Boolean}
-     * @returns {Promise}
-     */
-  search(query: string, options?: ISearchOptions): Promise<AxiosResponse<SearchResponse>> {
-    const opts = options || {};
-
-    return this.apiClient.get(`/search`, {
-      params: {
-        type: opts?.type ?? "all",
-        text: query,
-        page: opts.page ?? 0,
-        nococrrect: opts.nococrrect ?? false,
-      },
-      headers: this._getAuthHeader(),
-    });
   }
 
   /**

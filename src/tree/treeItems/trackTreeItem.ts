@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
-import { Track } from "../../yandexApi/interfaces";
+import { Track } from "yandex-music-api-client";
 import { getArtists } from "../../yandexApi/apiUtils";
 import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
 
 export class TrackTreeItem extends vscode.TreeItem {
   constructor(private store: Store, public readonly track: Track, public readonly playListId: string | number) {
-    super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
+    // TODO: remove any
+    super(`${track.title} - ${getArtists(track as any)}`, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",
       title: "Play Track",

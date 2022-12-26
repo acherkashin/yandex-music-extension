@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
-import { Playlist, TrackItem, GeneratedPlaylistLandingBlock } from "yandex-music-api-client";
+import { Playlist, TrackItem, GeneratedPlaylistLandingBlock, Search } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
-import { Track, ALL_LANDING_BLOCKS, SearchResult } from "./yandexApi/interfaces";
+import { Track, ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -39,7 +39,7 @@ export class Store {
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | undefined;
   private searchText = '';
-  @observable searchResult: SearchResult | undefined;
+  @observable searchResult: Search | undefined;
 
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
@@ -144,10 +144,11 @@ export class Store {
   async doSearch(searchText: string) {
     try {
       this.searchText = searchText;
-      this.searchResult = (await this.api.search(this.searchText)).data.result;
+      const resp = (await this.newApi!.search.search(this.searchText, 0, 'all'));
+      this.searchResult = resp.result;
       vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
       if (this.searchResult.tracks) {
-        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
+        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results as any);
       } else {
         this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
       }

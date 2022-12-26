@@ -93,20 +93,23 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.likeTrack", async (node: TrackTreeItem) => {
       if (node.track != null) {
-        store.toggleLikeTrack(node.track);
+        // TODO: remove any
+        store.toggleLikeTrack(node.track as any);
         await refreshExplorer();
       }
     }),
     vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
       if (node.track != null) {
-        store.toggleLikeTrack(node.track);
+        //TODO: remove any
+        store.toggleLikeTrack(node.track as any);
         await refreshExplorer();
       }
     }),
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => store.rewind(settings.rewindTime)),
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => store.rewind(settings.rewindTime * (-1))),
     vscode.commands.registerCommand("yandexMusic.downloadTrack", (node: TrackTreeItem) => {
-      store.downloadTrack(node.track);
+      //TODO: remove any
+      store.downloadTrack(node.track as any);
     }),
     vscode.commands.registerCommand("yandexMusic.signIn", async () => {
       await settings.signIn();

@@ -8,8 +8,8 @@ export interface Album {
      */
     error?: string;
     title: string;
-    type: "single" | "podcast" | string;
-    metaType: "single" | "podcast" | "music" | string;
+    type: "single" | "podcast";
+    metaType: "single" | "podcast" | "music";
     /**
      * Release year
      */
@@ -48,5 +48,5 @@ export interface Album {
     /**
      *  Треки альбома, разделенные по дискам.
      */
-    volumes?: Track[][];
+    volumes: Track[][] | null;
 }

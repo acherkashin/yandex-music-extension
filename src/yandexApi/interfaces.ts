@@ -1,4 +1,4 @@
-import { Playlist, Cover } from "yandex-music-api-client";
+import { Cover } from "yandex-music-api-client";
 
 import { LandingBlock } from "./landing/block";
 import { Album } from "./album/album";
@@ -120,48 +120,6 @@ export interface ISearchOptions {
   type?: 'artist' | 'album' | 'track' | 'podcast' | 'all';
   page?: number;
   nococrrect?: boolean;
-}
-
-export interface SearchResponse extends YandexMusicResponse<SearchResult> { }
-
-export interface SearchResult {
-  misspellCorrected: boolean;
-  nocorrect: boolean;
-  searchRequestId: string;
-  text: string;
-  /**
-   * The best result
-   */
-  best: any;
-  videos: any;
-  tracks: SearchTypeResult<Track>;
-  playlists: SearchTypeResult<Playlist>;
-  albums: SearchTypeResult<Album>;
-  artists: SearchTypeResult<Artist>;
-  podcasts: SearchTypeResult<any>;
-}
-
-
-/**
- * Represents search result for tracks, playlists, albums, ...
- */
-export interface SearchTypeResult<T> {
-  /**
-   * Results count
-   */
-  total: number;
-  /**
-   * Maximum results count on the page
-   */
-  perPage: number;
-  /**
-   * Block position
-   */
-  order: number;
-  /**
-   * Search results
-   */
-  results: T[];
 }
 
 export interface ArtistPopularTracksResponce extends YandexMusicResponse<{
