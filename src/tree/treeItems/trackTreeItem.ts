@@ -6,8 +6,7 @@ import { Store } from "../../store";
 
 export class TrackTreeItem extends vscode.TreeItem {
   constructor(private store: Store, public readonly track: Track, public readonly playListId: string | number) {
-    // TODO: remove any
-    super(`${track.title} - ${getArtists(track as any)}`, vscode.TreeItemCollapsibleState.None);
+    super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",
       title: "Play Track",

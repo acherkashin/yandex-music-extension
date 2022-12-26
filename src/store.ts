@@ -147,7 +147,7 @@ export class Store {
       this.searchResult = resp.result;
       vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
       if (this.searchResult.tracks) {
-        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results as any);
+        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
       } else {
         this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
       }
@@ -183,8 +183,7 @@ export class Store {
   getChart(): Promise<ChartItem[]> {
     return this.newApi!.landing.getChart("russia").then((resp) => {
       const chartItems = resp.result.chart.tracks as ChartItem[];
-      //TODO: remove any
-      const tracks = this.exposeTracks(chartItems as any);
+      const tracks = this.exposeTracks(chartItems);
       this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
       return chartItems;
@@ -216,11 +215,9 @@ export class Store {
   getAlbumTracks(albumId: number): Promise<Track[]> {
     return this.api.getAlbum(albumId, true).then((resp) => {
       const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
-      //TODO: remove any
-      this.savePlaylist(albumId.toString(), tracks as any);
+      this.savePlaylist(albumId.toString(), tracks);
 
-      //TODO: remove any
-      return tracks as any;
+      return tracks;
     });
   }
 
