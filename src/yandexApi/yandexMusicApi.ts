@@ -134,19 +134,19 @@ export class YandexMusicApi {
     });
   }
 
-  getAlbums(ids: number[]): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
-    return this.apiClient.post(
-      `/albums`,
-      querystring.stringify({
-        "album-ids": ids.join(","),
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-  }
+  // getAlbums(ids: number[]): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
+  //   return this.apiClient.post(
+  //     `/albums`,
+  //     querystring.stringify({
+  //       "album-ids": ids.join(","),
+  //     }),
+  //     {
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //     }
+  //   );
+  // }
 
   /**
    * GET: /users/[user_id]/playlists/list

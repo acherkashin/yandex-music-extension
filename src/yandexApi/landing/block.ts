@@ -1,7 +1,6 @@
-import { LandingPodcastItem, LandingBlockType, GeneratedPlaylistLandingBlock } from 'yandex-music-api-client';
+import { LandingPodcastItem, LandingBlockType, GeneratedPlaylistLandingBlock, Promotion } from 'yandex-music-api-client';
 import { Playlist, Album } from "yandex-music-api-client";
 import { LandingBlockEntity } from "./blockentity";
-import { Promotion } from "./promotion";
 import { ChartItem } from "./chartitem";
 import { MixLink } from "./mixLink";
 
