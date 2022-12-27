@@ -192,9 +192,10 @@ export class Store {
 
   async getNewReleases(): Promise<Album[]> {
     const resp = await this.newApi!.landing.getNewReleases();
-    const albums = await this.api.getAlbums(resp.result.newReleases);
+    const albumIds = resp.result.newReleases.join(",");
+    const albums = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
 
-    return albums.data.result;
+    return albums.result;
   }
 
   async getNewPlayLists(): Promise<Playlist[]> {
@@ -207,9 +208,12 @@ export class Store {
 
   async getActualPodcasts(): Promise<Album[]> {
     const resp = await this.newApi!.landing.getNewPodcasts();
-    const podcasts = await this.api.getAlbums(resp.result.podcasts);
+    const albumIds = resp.result.podcasts.join(",");
+    // https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1000
+    //TODO: need to limit amount of podcasts we receive, 100 at maximum. Currently we load 6000+ podcasts at time.
+    const podcasts = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
 
-    return podcasts.data.result;
+    return podcasts.result;
   }
 
   getAlbumTracks(albumId: number): Promise<Track[]> {
