@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, Album } from "yandex-music-api-client";
+import { Playlist, VisibilityEnum, Album, Track, LandingBlock } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
-import { InitResponse } from "./interfaces";
+import { ALL_LANDING_BLOCKS, InitResponse } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
-import { createTrackURL, getDownloadInfo, getPlayListsIds, Headers } from "./apiUtils";
+import { createAlbumTrackId, createTrackURL, getDownloadInfo, getPlayListsIds, Headers } from "./apiUtils";
 const querystring = require("querystring");
 
 export interface Config {
@@ -304,6 +304,34 @@ export class YandexMusicApi {
     const podcasts = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
 
     return podcasts.result;
+  }
+
+  async getUserPlaylists() {
+    return this.newApi!.playlists.getPlayLists(this._config!.user.UID!);
+  }
+
+  async likeAction(track: Track, action: 'like' | 'remove-like') {
+    if (action === 'remove-like') {
+      this.newApi!.tracks.removeLikedTracks(this._config.user!.UID!, {
+        "track-ids": [createAlbumTrackId({
+          id: track.id,
+          albumId: track.albums[0].id,
+        })]
+      });
+    } else {
+      await this.newApi!.tracks.likeTracks(this._config.user!.UID!, {
+        "track-ids": [createAlbumTrackId({
+          id: track.id,
+          albumId: track.albums[0].id,
+        })]
+      });
+    }
+  }
+
+  async getLandingBlocks(): Promise<LandingBlock[]> {
+    const allBlocks = ALL_LANDING_BLOCKS.join(",");
+    const resp = await this.newApi!.landing.getLandingBlocks(allBlocks);
+    return resp.result.blocks ?? [];
   }
 
   // async likeAction(objectType: 'track' | 'artist' | 'playlist' | 'album', ids: number | string | number[] | string[], remove = false): Promise<any> {

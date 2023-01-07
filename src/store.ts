@@ -111,11 +111,8 @@ export class Store {
     }
 
     if (authData != null) {
-      const allBlocks = ALL_LANDING_BLOCKS.join(",");
-      await this.newApi!.landing.getLandingBlocks(allBlocks).then((resp) => {
-        this.landingBlocks = resp?.result?.blocks ?? [];
-      });
-
+      this.landingBlocks = await this.api.getLandingBlocks();
+      
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
     }
@@ -174,10 +171,6 @@ export class Store {
     const playLists = (block?.entities ?? []) as LandingBlockItem[];
 
     return playLists.map((item) => (item.data as GeneratedPlaylistLandingBlock).data);
-  }
-
-  async getUserPlaylists() {
-    return this.newApi!.playlists.getPlayLists(this.authData!.userId);
   }
 
   async getChart(): Promise<ChartItem[]> {
@@ -254,21 +247,7 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      if (this.isLikedTrack(track.id)) {
-        this.newApi!.tracks.removeLikedTracks(this.authData!.userId, {
-          "track-ids": [createAlbumTrackId({
-            id: track.id,
-            albumId: track.albums[0].id,
-          })]
-        });
-      } else {
-        await this.newApi!.tracks.likeTracks(this.authData!.userId, {
-          "track-ids": [createAlbumTrackId({
-            id: track.id,
-            albumId: track.albums[0].id,
-          })]
-        });
-      }
+      this.api.likeAction(track, this.isLikedTrack(track.id) ? 'remove-like': 'like');
     } catch (_ex) {
       const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
