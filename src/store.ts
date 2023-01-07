@@ -1,14 +1,13 @@
 import * as vscode from "vscode";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
-import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock } from "yandex-music-api-client";
+import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock, LandingBlockItem } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
 import { ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, createTrackAlbumIds, exposeTracks } from "./yandexApi/apiUtils";
@@ -172,9 +171,9 @@ export class Store {
 
   getGeneratedPlayLists(): Playlist[] {
     const block = this.getLandingBlock("personal-playlists");
-    const playLists = (block?.entities ?? []) as LandingBlockEntity<GeneratedPlaylistLandingBlock>[];
+    const playLists = (block?.entities ?? []) as LandingBlockItem[];
 
-    return playLists.map((item) => item.data.data);
+    return playLists.map((item) => (item.data as GeneratedPlaylistLandingBlock).data);
   }
 
   async getUserPlaylists() {
