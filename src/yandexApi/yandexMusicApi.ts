@@ -270,19 +270,19 @@ export class YandexMusicApi {
     );
   }
 
-  async likeAction(objectType: 'track' | 'artist' | 'playlist' | 'album', ids: number | string | number[] | string[], remove = false): Promise<any> {
-    const action = remove ? 'remove' : 'add-multiple';
-    const result = await this.apiClient.post<GetTracksResponse>(`/users/${this._config.user.UID}/likes/${objectType}s/${action}`,
-      querystring.stringify({
-        [`${objectType}-ids`]: Array.isArray(ids) ? ids.join(",") : ids,
-      }),
-      {
-        headers: this.getHeaders({
-          "Content-Type": "application/x-www-form-urlencoded",
-        }),
-      }
-    );
+  // async likeAction(objectType: 'track' | 'artist' | 'playlist' | 'album', ids: number | string | number[] | string[], remove = false): Promise<any> {
+  //   const action = remove ? 'remove' : 'add-multiple';
+  //   const result = await this.apiClient.post<GetTracksResponse>(`/users/${this._config.user.UID}/likes/${objectType}s/${action}`,
+  //     querystring.stringify({
+  //       [`${objectType}-ids`]: Array.isArray(ids) ? ids.join(",") : ids,
+  //     }),
+  //     {
+  //       headers: this.getHeaders({
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       }),
+  //     }
+  //   );
 
-    return result;
-  }
+  //   return result;
+  // }
 }

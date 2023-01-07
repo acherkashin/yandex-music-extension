@@ -288,10 +288,21 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      await this.api.likeAction('track', createAlbumTrackId({
-        id: track.id,
-        albumId: track.albums[0].id,
-      }), this.isLikedTrack(track.id));
+      if (this.isLikedTrack(track.id)) {
+        this.newApi!.tracks.removeLikedTracks(this.authData!.userId, {
+          "track-ids": [createAlbumTrackId({
+            id: track.id,
+            albumId: track.albums[0].id,
+          })]
+        });
+      } else {
+        await this.newApi!.tracks.likeTracks(this.authData!.userId, {
+          "track-ids": [createAlbumTrackId({
+            id: track.id,
+            albumId: track.albums[0].id,
+          })]
+        });
+      }
     } catch (_ex) {
       const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
