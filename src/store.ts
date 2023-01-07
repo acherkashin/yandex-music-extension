@@ -4,7 +4,7 @@ import * as open from "open";
 import { Playlist, TrackItem, GeneratedPlaylistLandingBlock, Search, Album, Track } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
-import { ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
+import { ALL_LANDING_BLOCKS, GetTracksResponse } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -13,7 +13,7 @@ import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds, Headers, getDownloadInfo, createTrackURL } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds, Headers, getDownloadInfo, createTrackURL, createTrackAlbumIds } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {
@@ -45,6 +45,7 @@ export class Store {
   private api: YandexMusicApi;
   private newApi: YandexMusicClient | undefined;
   private headers: Headers | undefined;
+  private authData: IYandexMusicAuthData | undefined;
 
   isAuthorized(): boolean {
     return this.api.isAutorized;
@@ -98,8 +99,9 @@ export class Store {
 
   async init(authData?: IYandexMusicAuthData): Promise<void> {
     this.api.setup(authData);
-
+    
     if (authData) {
+      this.authData = authData;
       this.headers = {
         'Authorization': `OAuth ${authData.token}`
       };
@@ -251,10 +253,13 @@ export class Store {
   }
 
   async refreshLikedTracks(): Promise<Track[]> {
-    const resp = await this.api.getLikedTracks();
-    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
+    const result = await this.newApi!.tracks.getLikedTracksIds(this.authData!.userId);
+    const ids = createTrackAlbumIds(result.result.library.tracks);
+    const tracks = await this.api.getTracks(ids);
 
-    return resp.result;
+    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks.result);
+
+    return tracks.result;
   }
 
   play(track?: { itemId: string; playListId: string }) {

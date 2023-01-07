@@ -336,27 +336,6 @@ export class YandexMusicApi {
     return result;
   }
 
-  async getLikedTracksIds(): Promise<LikedTracksResponse> {
-    try {
-      const results = await this.apiClient.get<LikedTracksResponse>(`/users/${this._config.user.UID}/likes/tracks`, {
-        headers: this._getAuthHeader(),
-      });
-
-      return results.data;
-    } catch (error) {
-      console.error(error);
-      return {} as any;
-    }
-  }
-
-  async getLikedTracks(): Promise<GetTracksResponse> {
-    const result = await this.getLikedTracksIds();
-    const ids = createTrackAlbumIds(result.result.library.tracks);
-    const tracks = await this.getTracks(ids);
-
-    return tracks;
-  }
-
   async getTracks(trackIds: string[], withPositions?: boolean): Promise<GetTracksResponse> {
     try {
       const tracks = await this.apiClient.post<GetTracksResponse>(
