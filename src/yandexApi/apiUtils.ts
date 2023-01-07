@@ -1,4 +1,7 @@
-import { NewPlaylistItem, Track } from "yandex-music-api-client";
+import axios from "axios";
+import { createHash } from "crypto";
+import { NewPlaylistItem, Track, TrackDownloadInfo } from "yandex-music-api-client";
+import { DownloadInfo } from "./interfaces";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
   return tracks.map((track) => createAlbumTrackId(track));
@@ -64,4 +67,27 @@ export function getTrackShortName(name: string) {
     displayName = name;
   }
   return displayName.trim();
+}
+
+export type Headers = Record<string, string>;
+
+export async function getDownloadInfo(trackInfo: TrackDownloadInfo[], headers?: Headers): Promise<DownloadInfo> {
+  const info = !!headers ? trackInfo.find((item) => item.codec === 'mp3' && !item.preview) : trackInfo[0];
+
+  const downloadInfo = await axios.request<DownloadInfo>({
+    url: `${info!.downloadInfoUrl}&format=json`,
+    headers,
+  });
+
+  return downloadInfo.data;
+}
+
+export function createTrackURL(info: DownloadInfo) {
+  const trackUrl = `XGRlBW9FXlekgbPrRHuSiA${info.path.substr(1)}${info.s}`;
+
+  const hashedUrl = createHash("md5").update(trackUrl).digest("hex");
+
+  const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
+
+  return link;
 }

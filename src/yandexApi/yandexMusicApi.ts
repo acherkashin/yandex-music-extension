@@ -378,35 +378,4 @@ export class YandexMusicApi {
       return {} as any;
     }
   }
-
-  async getTrackUrl(id: string): Promise<string> {
-    const downloadInfo = await this.getDownloadInfo(id);
-    const url = await this.createTrackURL(downloadInfo);
-    return url;
-  }
-
-  async getDownloadInfo(trackId: string): Promise<DownloadInfo> {
-    const result = (await this.apiClient.get<YandexMusicResponse<TrackDownloadInfo[]>>(`/tracks/${trackId}/download-info`, {
-      headers: this._getAuthHeader(),
-    })).data.result;
-
-    const info = this.isAutorized ? result.find((item) => item.codec === 'mp3' && !item.preview) : result[0];
-
-    const downloadInfo = await axios.request<DownloadInfo>({
-      url: `${info!.downloadInfoUrl}&format=json`,
-      headers: this._getAuthHeader(),
-    });
-
-    return downloadInfo.data;
-  }
-
-  async createTrackURL(info: DownloadInfo) {
-    const trackUrl = `XGRlBW9FXlekgbPrRHuSiA${info.path.substr(1)}${info.s}`;
-
-    const hashedUrl = createHash("md5").update(trackUrl).digest("hex");
-
-    const link = `https://${info.host}/get-mp3/${hashedUrl}/${info.ts}${info.path}`;
-
-    return link;
-  }
 }

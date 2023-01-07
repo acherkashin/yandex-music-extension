@@ -13,7 +13,7 @@ import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, getPlayListsIds, Headers, getDownloadInfo, createTrackURL } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {
@@ -44,6 +44,7 @@ export class Store {
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
   private api: YandexMusicApi;
   private newApi: YandexMusicClient | undefined;
+  private headers: Headers | undefined;
 
   isAuthorized(): boolean {
     return this.api.isAutorized;
@@ -99,11 +100,12 @@ export class Store {
     this.api.setup(authData);
 
     if (authData) {
+      this.headers = {
+        'Authorization': `OAuth ${authData.token}`
+      };
       this.newApi = new YandexMusicClient({
         BASE: "https://api.music.yandex.net:443",
-        HEADERS: {
-          'Authorization': `OAuth ${authData.token}`
-        }
+        HEADERS: this.headers,
       });
     }
 
@@ -338,8 +340,16 @@ export class Store {
     return this.currentTrack != null && this.isLikedTrack(this.currentTrack.id);
   }
 
+  async getTrackUrl(trackId: string) {
+    const trackInfo = await this.newApi!.tracks.getDownloadInfo(trackId);
+    const downloadInfo = await getDownloadInfo(trackInfo.result, this.headers);
+    const url = createTrackURL(downloadInfo);
+
+    return url;
+  }
+
   async downloadTrack(track: Track) {
-    const url = await this.api.getTrackUrl(track.id);
+    const url = await this.getTrackUrl(track.id);
     open(url);
   }
 
@@ -359,7 +369,7 @@ export class Store {
       const track = playlist?.[index];
 
       if (track) {
-        const url = await this.api.getTrackUrl(track.id);
+        const url = await this.getTrackUrl(track.id);
         this.player.play({
           url,
           album: getAlbums(track),
