@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createHash } from "crypto";
-import { NewPlaylistItem, Track, TrackDownloadInfo } from "yandex-music-api-client";
+import { NewPlaylistItem, Track, TrackDownloadInfo, TrackItem } from "yandex-music-api-client";
 import { DownloadInfo } from "./interfaces";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
@@ -28,6 +28,10 @@ export function getAlbums(track: Track): string {
 
 export function getTrackFullName(track: Track): string {
   return `${track.title} - ${getArtists(track)}`;
+}
+
+export function exposeTracks(tracks: TrackItem[]): Track[] {
+  return tracks.map((item) => <Track>item.track);
 }
 
 export type CoverSize = 30 | 50 | 100 | 150 | 200 | 300 | 400 | 700 | 800 | 1000;

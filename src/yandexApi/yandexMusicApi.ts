@@ -1,13 +1,10 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, GeneratedPlaylist, TrackDownloadInfo, Album } from "yandex-music-api-client";
-import { createHash } from "crypto";
+import { Playlist, VisibilityEnum, Album } from "yandex-music-api-client";
+import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
-import {
-  InitResponse,
-  GetTracksResponse,
-  YandexMusicResponse,
-} from "./interfaces";
+import { InitResponse } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
+import { createTrackURL, getDownloadInfo, getPlayListsIds, Headers } from "./apiUtils";
 const querystring = require("querystring");
 
 export interface Config {
@@ -45,9 +42,11 @@ export class YandexMusicApi {
     baseURL: `https://oauth.yandex.ru`,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
+  private newApi: YandexMusicClient | undefined;
+  private headers: Headers | undefined;
 
   get isAutorized(): boolean {
-    return this._config.user.TOKEN != null && this._config.user.UID != null;
+    return !!this.newApi;
   }
 
   _config: Config = {
@@ -74,13 +73,6 @@ export class YandexMusicApi {
     return this.isAutorized ? { Authorization: "OAuth " + this._config.user.TOKEN } : undefined;
   }
 
-  private getHeaders(additionalHeaders: { [key: string]: any }): { [key: string]: any } {
-    return {
-      ...this._getAuthHeader(),
-      ...additionalHeaders,
-    };
-  }
-
   /**
    * Applies provided configuration
    * 
@@ -89,6 +81,16 @@ export class YandexMusicApi {
   setup(config?: IYandexMusicAuthData) {
     this._config.user.TOKEN = config?.token;
     this._config.user.UID = config?.userId;
+
+    if (config) {
+      this.headers = {
+        'Authorization': `OAuth ${config.token}`
+      };
+      this.newApi = new YandexMusicClient({
+        BASE: "https://api.music.yandex.net:443",
+        HEADERS: this.headers,
+      });
+    }
   }
 
   /**
@@ -268,6 +270,40 @@ export class YandexMusicApi {
         headers: this._getAuthHeader(),
       }
     );
+  }
+
+  async getTrackUrl(trackId: string) {
+    const trackInfo = await this.newApi!.tracks.getDownloadInfo(trackId);
+    const downloadInfo = await getDownloadInfo(trackInfo.result, this._getAuthHeader());
+    const url = createTrackURL(downloadInfo);
+
+    return url;
+  }
+
+  async getNewReleases(): Promise<Album[]> {
+    const resp = await this.newApi!.landing.getNewReleases();
+    const albumIds = resp.result.newReleases.join(",");
+    const albums = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
+
+    return albums.result;
+  }
+
+  async getNewPlayLists(): Promise<Playlist[]> {
+    const resp = await this.newApi!.landing.getNewPlaylists();
+    const ids = getPlayListsIds(resp.result.newPlaylists).join(",");
+    const playListsResp = await this.newApi!.playlists.getByIds(ids);
+
+    return playListsResp.result;
+  }
+
+  async getActualPodcasts(): Promise<Album[]> {
+    const resp = await this.newApi!.landing.getNewPodcasts();
+    const albumIds = resp.result.podcasts.join(",");
+    // https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1000
+    //TODO: need to limit amount of podcasts we receive, 100 at maximum. Currently we load 6000+ podcasts at time.
+    const podcasts = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
+
+    return podcasts.result;
   }
 
   // async likeAction(objectType: 'track' | 'artist' | 'playlist' | 'album', ids: number | string | number[] | string[], remove = false): Promise<any> {

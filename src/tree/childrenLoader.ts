@@ -7,7 +7,7 @@ import { ArtistTreeItem } from './treeItems/artistTreeItem';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {
-        return store.getNewPlayLists().then((playLists) => {
+        return store.api.getNewPlayLists().then((playLists) => {
             return playLists.map((item) => new PlayListTreeItem(item));
         });
     }
@@ -19,7 +19,7 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
     }
 
     if (element instanceof NewReleasesTreeItem) {
-        return store.getNewReleases().then((albums) => {
+        return store.api.getNewReleases().then((albums) => {
             return albums.map((item) => new AlbumTreeItem(item));
         });
     }
@@ -37,7 +37,7 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
     }
 
     if (element instanceof ActualPodcastsTreeItem) {
-        return store.getActualPodcasts().then((albums) => {
+        return store.api.getActualPodcasts().then((albums) => {
             return albums.map((item) => new AlbumTreeItem(item));
         });
     }
