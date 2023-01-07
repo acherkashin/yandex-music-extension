@@ -1,18 +1,16 @@
 import * as vscode from "vscode";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
-import { Playlist, GeneratedPlaylistLandingBlock, Search, Track } from "yandex-music-api-client";
+import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock } from "yandex-music-api-client";
 import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
 
 import { ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import { LandingBlock } from "./yandexApi/landing/block";
 import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
-import { ChartItem } from "./yandexApi/landing/chartitem";
 import { getAlbums, getArtists, getCoverUri, createAlbumTrackId, createTrackAlbumIds, exposeTracks } from "./yandexApi/apiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 
@@ -116,8 +114,7 @@ export class Store {
     if (authData != null) {
       const allBlocks = ALL_LANDING_BLOCKS.join(",");
       await this.newApi!.landing.getLandingBlocks(allBlocks).then((resp) => {
-        //TODO: remove any
-        this.landingBlocks = resp?.result?.blocks as any ?? [];
+        this.landingBlocks = resp?.result?.blocks ?? [];
       });
 
       // Need fetch liked tracks to show like/dislike button correctly
@@ -177,9 +174,7 @@ export class Store {
     const block = this.getLandingBlock("personal-playlists");
     const playLists = (block?.entities ?? []) as LandingBlockEntity<GeneratedPlaylistLandingBlock>[];
 
-    return playLists.map(
-      (item) => item.data.data
-    );
+    return playLists.map((item) => item.data.data);
   }
 
   async getUserPlaylists() {

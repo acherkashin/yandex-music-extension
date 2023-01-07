@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { getArtists } from "../../yandexApi/apiUtils";
-import { ChartItem } from "../../yandexApi/landing/chartitem";
 import { TrackTreeItem } from "../treeItems/trackTreeItem";
 import { Store } from "../../store";
+import { ChartItem } from "yandex-music-api-client";
 
 export class ChartTreeItem extends TrackTreeItem {
   constructor(store: Store, item: ChartItem, public readonly playListId: string | number) {
