@@ -276,6 +276,6 @@
     "mobx": "^5.15.4",
     "open": "^7.0.3",
     "valid-url": "^1.0.9",
-    "yandex-music-api-client": "file:../yandex-music-open-api/lib"
+    "yandex-music-client": "0.0.2"
   }
 }

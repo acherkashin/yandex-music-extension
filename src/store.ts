@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { observable, autorun, computed } from "mobx";
 import * as open from "open";
-import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock, LandingBlockItem } from "yandex-music-api-client";
-import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
+import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock, LandingBlockItem } from "yandex-music-client";
+import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
 import { ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
@@ -112,7 +112,7 @@ export class Store {
 
     if (authData != null) {
       this.landingBlocks = await this.api.getLandingBlocks();
-      
+
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
     }

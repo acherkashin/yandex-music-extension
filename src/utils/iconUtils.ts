@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { Playlist } from "yandex-music-api-client";
+import { Playlist } from "yandex-music-client";
 import { getExtensionPath } from "./extensionUtils";
 import { getCoverUri } from "../yandexApi/apiUtils";
 

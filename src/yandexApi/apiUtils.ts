@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createHash } from "crypto";
-import { NewPlaylistItem, Track, TrackDownloadInfo, TrackItem } from "yandex-music-api-client";
+import { NewPlaylistItem, Track, TrackDownloadInfo, TrackItem } from "yandex-music-client";
 import { DownloadInfo } from "./interfaces";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {

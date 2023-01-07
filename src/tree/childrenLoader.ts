@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Track } from 'yandex-music-api-client';
+import { Track } from 'yandex-music-client';
 import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeItem, AlbumTreeItem, LikedTracksTreeItem } from './treeItems';
 import { Store, LIKED_TRACKS_PLAYLIST_ID } from '../store';
 import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';

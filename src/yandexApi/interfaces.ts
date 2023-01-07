@@ -1,4 +1,4 @@
-import { LandingBlockType } from "yandex-music-api-client";
+import { LandingBlockType } from "yandex-music-client";
 
 export interface InitResponse {
   access_token: string;

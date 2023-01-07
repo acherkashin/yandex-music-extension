@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Playlist } from "yandex-music-api-client";
+import { Playlist } from "yandex-music-client";
 import { getPlayListIcon } from "../../utils/iconUtils";
 import { getCoverUri } from "../../yandexApi/apiUtils";
 

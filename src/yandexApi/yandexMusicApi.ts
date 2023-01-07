@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, Album, Track, LandingBlock } from "yandex-music-api-client";
-import { YandexMusicClient } from 'yandex-music-api-client/YandexMusicClient';
+import { Playlist, VisibilityEnum, Album, Track, LandingBlock } from "yandex-music-client";
+import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
 import { ALL_LANDING_BLOCKS, InitResponse } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
