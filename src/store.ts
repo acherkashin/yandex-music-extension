@@ -236,9 +236,9 @@ export class Store {
     return tracks;
   }
 
-  getTracks(userId: string | number | undefined, playListId: string | number) {
-    return this.api.getPlaylist(userId, playListId).then((result) => {
-      this.savePlaylist(playListId.toString(), this.exposeTracks(result.data.result.tracks));
+  getTracks(userId: number, playListId: number) {
+    return this.newApi!.playlists.getPlaylistById(userId, playListId).then((result) => {
+      this.savePlaylist(playListId.toString(), this.exposeTracks(result.result.tracks));
 
       return result;
     });

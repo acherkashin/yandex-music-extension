@@ -4,13 +4,9 @@ import { createHash } from "crypto";
 
 import {
   InitResponse,
-  GetPlayListsOptions,
-  DownloadInfo,
-  LikedTracksResponse,
   GetTracksResponse,
   YandexMusicResponse,
 } from "./interfaces";
-import { createTrackAlbumIds } from "./apiUtils";
 import { IYandexMusicAuthData } from "../settings";
 const querystring = require("querystring");
 
@@ -33,15 +29,6 @@ export interface Config {
 export interface ICredentials {
   username: string;
   password: string;
-}
-
-export interface Response<T> {
-  invocationInfo: {
-    "exec-duration-millis": number;
-    hostname: string;
-    "req-id": number;
-  };
-  result: T;
 }
 
 // Some API will not work without this header if you are not logged in
@@ -161,19 +148,6 @@ export class YandexMusicApi {
   }
 
   /**
-   * GET: /users/[user_id]/playlists/[playlist_kind]
-   * Get a playlist without tracks
-   * @param   {String} userId       The user ID, if null then equal to current user id
-   * @param   {String} playlistKind The playlist ID.
-   * @returns {Promise}
-   */
-  getPlaylist(userId: number | string | undefined, playlistKind: string | number): Promise<AxiosResponse<Response<GeneratedPlaylist>>> {
-    return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists/${playlistKind}`, {
-      headers: this.isAutorized ? this._getAuthHeader() : winAppHeader,
-    });
-  }
-
-  /**
    * GET: /users/[user_id]/playlists
    * Get an array of playlists with tracks
    * @param   {String} userId       The user ID, if null then equal to current user id
@@ -181,18 +155,18 @@ export class YandexMusicApi {
    * @param   {Object} [options]    Options: mixed {Boolean}, rich-tracks {Boolean}
    * @returns {Promise}
    */
-  getUserPlaylists(userId: string | undefined, playlists: string[], options: GetPlayListsOptions): Promise<AxiosResponse<any[]>> {
-    const opts = options || {};
+  // getUserPlaylists(userId: string | undefined, playlists: string[], options: GetPlayListsOptions): Promise<AxiosResponse<any[]>> {
+  //   const opts = options || {};
 
-    return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists`, {
-      headers: this._getAuthHeader(),
-      params: {
-        kinds: playlists.join(),
-        mixed: opts["mixed"] || false,
-        "rich-tracks": opts["rich-tracks"] || false,
-      },
-    });
-  }
+  //   return this.apiClient.get(`/users/${userId || this._config.user.UID}/playlists`, {
+  //     headers: this._getAuthHeader(),
+  //     params: {
+  //       kinds: playlists.join(),
+  //       mixed: opts["mixed"] || false,
+  //       "rich-tracks": opts["rich-tracks"] || false,
+  //     },
+  //   });
+  // }
 
   /**
    * POST: /users/[user_id]/playlists/create
