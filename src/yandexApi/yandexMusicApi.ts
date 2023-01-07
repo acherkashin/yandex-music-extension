@@ -109,18 +109,6 @@ export class YandexMusicApi {
     );
   }
 
-  /**
-   * Returns album by id.
-   * Podcasts represent album as well, so you can use this method to get podcast as well.
-   * @param albumId Album id
-   * @param withTracks whether to include tracks in the response
-   */
-  getAlbum(albumId: number, withTracks: boolean): Promise<AxiosResponse<YandexMusicResponse<Album>>> {
-    return this.apiClient.get(`/albums/${albumId}/${withTracks ? `with-tracks` : ``}`, {
-      headers: this._getAuthHeader(),
-    });
-  }
-
   // getAlbums(ids: number[]): Promise<AxiosResponse<YandexMusicResponse<Album[]>>> {
   //   return this.apiClient.post(
   //     `/albums`,
@@ -134,18 +122,6 @@ export class YandexMusicApi {
   //     }
   //   );
   // }
-
-  /**
-   * GET: /users/[user_id]/playlists/list
-   * Get a user's playlists.
-   * @param   {String} userId The user ID, if null then equal to current user id
-   * @returns {Promise}
-   */
-  getAllUserPlaylists(userId?: string): Promise<AxiosResponse<YandexMusicResponse<Playlist[]>>> {
-    return this.apiClient.get<YandexMusicResponse<Playlist[]>>(`/users/${userId || this._config.user.UID}/playlists/list`, {
-      headers: this._getAuthHeader(),
-    });
-  }
 
   /**
    * GET: /users/[user_id]/playlists
@@ -308,27 +284,5 @@ export class YandexMusicApi {
     );
 
     return result;
-  }
-
-  async getTracks(trackIds: string[], withPositions?: boolean): Promise<GetTracksResponse> {
-    try {
-      const tracks = await this.apiClient.post<GetTracksResponse>(
-        `/tracks/`,
-        querystring.stringify({
-          "track-ids": trackIds.join(","),
-          "with-positions": withPositions || false,
-        }),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      return tracks.data;
-    } catch (error) {
-      console.error(error);
-      return {} as any;
-    }
   }
 }

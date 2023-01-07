@@ -99,7 +99,7 @@ export class Store {
 
   async init(authData?: IYandexMusicAuthData): Promise<void> {
     this.api.setup(authData);
-    
+
     if (authData) {
       this.authData = authData;
       this.headers = {
@@ -181,7 +181,7 @@ export class Store {
   }
 
   async getUserPlaylists() {
-    return this.api.getAllUserPlaylists();
+    return this.newApi!.playlists.getPlayLists(this.authData!.userId);
   }
 
   getChart(): Promise<ChartItem[]> {
@@ -221,8 +221,8 @@ export class Store {
   }
 
   getAlbumTracks(albumId: number): Promise<Track[]> {
-    return this.api.getAlbum(albumId, true).then((resp) => {
-      const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
+    return this.newApi!.albums.getAlbumsWithTracks(albumId).then((resp) => {
+      const tracks = (resp.result.volumes || []).reduce((a, b) => a.concat(b));
       this.savePlaylist(albumId.toString(), tracks);
 
       return tracks;
@@ -231,7 +231,7 @@ export class Store {
 
   async getArtistTracks(artistId: string): Promise<Track[]> {
     const { artist, tracks: trackIds } = (await this.newApi!.artists.getPopularTracks(artistId)).result;
-    const tracks = (await this.api.getTracks(trackIds)).result;
+    const tracks = (await this.newApi!.tracks.getTracks({ "track-ids": trackIds })).result;
     this.savePlaylist(artist.id.toString(), tracks);
     return tracks;
   }
@@ -255,7 +255,7 @@ export class Store {
   async refreshLikedTracks(): Promise<Track[]> {
     const result = await this.newApi!.tracks.getLikedTracksIds(this.authData!.userId);
     const ids = createTrackAlbumIds(result.result.library.tracks);
-    const tracks = await this.api.getTracks(ids);
+    const tracks = await this.newApi!.tracks.getTracks({ "track-ids": ids });
 
     this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks.result);
 
