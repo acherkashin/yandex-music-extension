@@ -46,7 +46,7 @@ export class YandexMusicApi {
   async getNewReleases(): Promise<Album[]> {
     const resp = await this.client!.landing.getNewReleases();
     const albumIds = resp.result.newReleases.join(",");
-    const albums = await this.client!.albums.getByIds({ 'album-ids': albumIds });
+    const albums = await this.client!.albums.getAlbumsByIds({ 'album-ids': albumIds });
 
     return albums.result;
   }
@@ -54,7 +54,7 @@ export class YandexMusicApi {
   async getNewPlayLists(): Promise<Playlist[]> {
     const resp = await this.client!.landing.getNewPlaylists();
     const ids = getPlayListsIds(resp.result.newPlaylists);
-    const playListsResp = await this.client!.playlists.getByIds({ playlistIds: ids });
+    const playListsResp = await this.client!.playlists.getPlaylistsByIds({ playlistIds: ids });
 
     return playListsResp.result;
   }
@@ -63,7 +63,7 @@ export class YandexMusicApi {
     const resp = await this.client!.landing.getNewPodcasts();
     const albumIds = resp.result.podcasts.join(",");
     //TODO: need to limit amount of podcasts we receive, 100 at maximum. Currently we load 6000+ podcasts at time.
-    const podcasts = await this.client!.albums.getByIds({ 'album-ids': albumIds });
+    const podcasts = await this.client!.albums.getAlbumsByIds({ 'album-ids': albumIds });
 
     return podcasts.result;
   }
