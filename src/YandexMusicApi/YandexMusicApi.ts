@@ -4,7 +4,7 @@ import { getTrackUrl } from 'yandex-music-client/trackUrl';
 import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
 import { IYandexMusicAuthData } from "../settings";
-import { createAlbumTrackId, createTrackAlbumIds, exposeTracks, getPlayListsIds } from "./apiUtils";
+import { createAlbumTrackId, createTrackAlbumIds, exposeTracks, getPlayListsIds } from "./ApiUtils";
 
 export class YandexMusicApi {
   private client: YandexMusicClient | undefined;

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Store } from "../store";
 import { autorun } from "mobx";
-import { getTrackShortName, getTrackFullName } from "../yandexApi/apiUtils";
+import { getTrackShortName, getTrackFullName } from "../YandexMusicApi/ApiUtils";
 import { Track } from "yandex-music-client";
 
 export class PlayerBarItem {

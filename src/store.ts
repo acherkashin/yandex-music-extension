@@ -5,10 +5,10 @@ import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, Land
 
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
-import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
-import { getAlbums, getArtists, getCoverUri } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {

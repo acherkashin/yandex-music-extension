@@ -1,6 +1,6 @@
 import { workspace, WorkspaceConfiguration, Disposable, ConfigurationChangeEvent, SecretStorage, ExtensionContext, window, commands } from "vscode";
 import { showLoginBox, showPasswordBox } from "./inputs";
-import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { defaultTraceSource } from './logging/TraceSource';
 
 export type YandexMusicSettingsChangedCallback = (e: ConfigurationChangeEvent) => void;

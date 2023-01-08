@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Album } from "yandex-music-client";
 import { getThemeIcon } from "../../utils/iconUtils";
-import { getCoverUri } from "../../yandexApi/apiUtils";
+import { getCoverUri } from "../../YandexMusicApi/ApiUtils";
 
 export class AlbumTreeItem extends vscode.TreeItem {
   constructor(public readonly album: Album) {

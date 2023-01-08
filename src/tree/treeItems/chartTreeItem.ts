@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getArtists } from "../../yandexApi/apiUtils";
+import { getArtists } from "../../YandexMusicApi/ApiUtils";
 import { TrackTreeItem } from "../treeItems/trackTreeItem";
 import { Store } from "../../store";
 import { ChartItem } from "yandex-music-client";

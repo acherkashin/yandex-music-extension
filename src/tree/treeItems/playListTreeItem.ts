@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Playlist } from "yandex-music-client";
 import { getPlayListIcon } from "../../utils/iconUtils";
-import { getCoverUri } from "../../yandexApi/apiUtils";
+import { getCoverUri } from "../../YandexMusicApi/ApiUtils";
 
 export class PlayListTreeItem extends vscode.TreeItem {
   constructor(public readonly playList: Playlist) {
