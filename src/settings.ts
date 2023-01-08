@@ -85,7 +85,7 @@ export class YandexMusicSettings {
             return;
         }
         try {
-            const responce = await this.api.getToken({ username: userName, password });
+            const responce = await this.api.getToken(userName, password);
             const authData: IYandexMusicAuthData = {
                 userId: responce.data.uid,
                 token: responce.data.access_token,
@@ -102,7 +102,7 @@ export class YandexMusicSettings {
                     }
                 });
             console.error(e);
-            defaultTraceSource.error("Cannot logging into account");
+            defaultTraceSource.error(`Cannot logging into account: ${e?.toString()}`);
         }
     }
 

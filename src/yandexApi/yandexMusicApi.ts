@@ -1,33 +1,19 @@
-import axios, { AxiosResponse } from "axios";
 import { Playlist, Album, Track, LandingBlock } from "yandex-music-client";
+import { getToken } from 'yandex-music-client/token';
 import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
-import { ALL_LANDING_BLOCKS, InitResponse } from "./interfaces";
+import { ALL_LANDING_BLOCKS } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
 import { createAlbumTrackId, createTrackURL, getDownloadInfo, getPlayListsIds, Headers } from "./apiUtils";
-import { URLSearchParams } from "url";
 
 export interface Config {
-  ouath_code: {
-    CLIENT_ID: string;
-    CLIENT_SECRET: string;
-  };
   user: {
     TOKEN?: string;
     UID?: number;
   };
 }
 
-export interface ICredentials {
-  username: string;
-  password: string;
-}
-
 export class YandexMusicApi {
-  private authClient = axios.create({
-    baseURL: `https://oauth.yandex.ru`,
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  });
   private newApi: YandexMusicClient | undefined;
   private headers: Headers | undefined;
 
@@ -36,11 +22,6 @@ export class YandexMusicApi {
   }
 
   _config: Config = {
-    ouath_code: {
-      CLIENT_ID: "23cabbbdc6cd418abb4b39c32c41195d",
-      CLIENT_SECRET: "53bc75238f0c4d08a118e51fe9203300",
-    },
-
     user: {
       TOKEN: undefined,
       UID: undefined,
@@ -73,25 +54,7 @@ export class YandexMusicApi {
     }
   }
 
-  /**
-   * Requests token
-   * 
-   * @param credentials credentials information
-   */
-  getToken(credentials: ICredentials): Promise<AxiosResponse<InitResponse>> {
-    const params = new URLSearchParams({
-      "grant_type": "password",
-      "client_id": this._config.ouath_code.CLIENT_ID,
-      "client_secret": this._config.ouath_code.CLIENT_SECRET,
-      "username": credentials.username,
-      "password": credentials.password,
-    }).toString();
-
-    return this.authClient.post(
-      `token`,
-      params
-    );
-  }
+  getToken = getToken;
 
   async getTrackUrl(trackId: string) {
     const trackInfo = await this.newApi!.tracks.getDownloadInfo(trackId);

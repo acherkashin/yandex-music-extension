@@ -1269,10 +1269,10 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-yandex-music-client@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/yandex-music-client/-/yandex-music-client-0.0.3.tgz#827d4c32cc977202a29a8b257787bb3611fc960c"
-  integrity sha512-ppnp/z+Fd0X0DZr7FK9ajJ9dWS7DkbIRqih94QgWw8qcOd9dAjcJO1QD9IO7yXuY8ntDyqDcMKmBHcqskcbKmQ==
+yandex-music-client@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/yandex-music-client/-/yandex-music-client-0.0.5.tgz#fd89711a92f541fa608ca0b5d5b797bb3f8aaff8"
+  integrity sha512-/3ffeZoqxARG07n8OzfrdDwOH31HmiJe8IU7PhHbg3iqqIlfEf476ktWopdjKSTYGRoGkCNp1tOvOgxk9hSCAw==
   dependencies:
     form-data "^4.0.0"
 

@@ -4,7 +4,6 @@ import * as open from "open";
 import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock, LandingBlockItem } from "yandex-music-client";
 import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
-import { ALL_LANDING_BLOCKS } from "./yandexApi/interfaces";
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
@@ -154,6 +153,7 @@ export class Store {
       vscode.window
         .showErrorMessage("Не удалось выполнить поиск.");
       console.error(e);
+      defaultTraceSource.error(`Не удалось выполнить поиск: ${e?.toString()}`);
     }
   }
 
