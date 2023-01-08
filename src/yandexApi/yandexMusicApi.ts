@@ -28,16 +28,7 @@ export interface ICredentials {
   password: string;
 }
 
-// Some API will not work without this header if you are not logged in
-// It is how Win App works
-const winAppHeader = {
-  "X-Yandex-Music-Device": "os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown",
-};
-
 export class YandexMusicApi {
-  private apiClient = axios.create({
-    baseURL: `https://api.music.yandex.net:443`,
-  });
   private authClient = axios.create({
     baseURL: `https://oauth.yandex.ru`,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -108,46 +99,6 @@ export class YandexMusicApi {
         username: credentials.username,
         password: credentials.password,
       })
-    );
-  }
-
-  /**
-     * POST: /users/[user_id]/playlists/[playlist_kind]/change-relative
-     * Remove tracks from the playlist
-     * @param   {String}   playlistKind The playlist's ID.
-     * @param   {Object[]} tracks       An array of objects containing a track info:
-                                        track id and album id for the track.
-                                        Example: [{id:'20599729', albumId:'2347459'}]
-     * @param   {String}   revision     Operation id for that request
-     * @param   {Object}   [options]    Options: from {Int},
-                                                 to {Int}
-     * @returns {Promise}
-     */
-
-  removeTracksFromPlaylist(
-    playlistKind: string,
-    tracks: Array<{ id: string; albumId: string }>,
-    revision: string,
-    options: { from: number; to: number }
-  ) {
-    const opts = options || {};
-
-    return this.apiClient.post(
-      `/users/${this._config.user.UID}/playlists/${playlistKind}/change-relative`,
-      {
-        diff: JSON.stringify([
-          {
-            op: "delete",
-            from: opts["from"] || 0,
-            to: opts["to"] || tracks.length,
-            tracks: tracks,
-          },
-        ]),
-        revision: revision,
-      },
-      {
-        headers: this._getAuthHeader(),
-      }
     );
   }
 
