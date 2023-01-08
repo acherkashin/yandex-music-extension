@@ -91,6 +91,21 @@ export class Store {
    */
   async initPlayer() {
     await this.player.init();
+
+    this.player.on("message", (message) => {
+      switch (message.command) {
+        case 'nexttrack': this.next(); break;
+        case 'previoustrack': this.prev(); break;
+        case 'paused': this.isPlaying = false; break;
+        case 'resumed': this.isPlaying = true; break;
+      }
+    });
+
+    this.player.on("error", (error: { message: string, stack: string }) => {
+      vscode.window.showErrorMessage(JSON.stringify(error));
+      console.error(error);
+      defaultTraceSource.error(error.stack);
+    });
   }
 
   async init(authData?: IYandexMusicAuthData): Promise<void> {
@@ -107,21 +122,6 @@ export class Store {
 
     autorun(() => {
       vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
-    });
-
-    this.player.on("message", (message) => {
-      switch (message.command) {
-        case 'nexttrack': this.next(); break;
-        case 'previoustrack': this.prev(); break;
-        case 'paused': this.isPlaying = false; break;
-        case 'resumed': this.isPlaying = true; break;
-      }
-    });
-
-    this.player.on("error", (error: { message: string, stack: string }) => {
-      vscode.window.showErrorMessage(JSON.stringify(error));
-      console.error(error);
-      defaultTraceSource.error(error.stack);
     });
   }
 

@@ -32,7 +32,7 @@ export class YandexMusicSettings {
     }
 
     async getAuthData() {
-        var authDataString = await this.storage.get(this._yandexMusicKey);
+        const authDataString = await this.storage.get(this._yandexMusicKey);
         if (authDataString != null) {
             return JSON.parse(authDataString) as IYandexMusicAuthData;
         }
@@ -85,14 +85,13 @@ export class YandexMusicSettings {
             return;
         }
         try {
-            const responce = await this.api.getToken(userName, password);
+            const response = await this.api.getToken(userName, password);
             const authData: IYandexMusicAuthData = {
-                userId: responce.data.uid,
-                token: responce.data.access_token,
+                userId: response.data.uid,
+                token: response.data.access_token,
                 userName
             };
-            this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
-
+            await this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
         } catch (e) {
             window
                 .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")

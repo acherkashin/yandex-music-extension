@@ -29,6 +29,7 @@ export class YandexMusicApi {
    */
   setup(config?: IYandexMusicAuthData) {
     if (!config) {
+      this.newApi = undefined;
       return;
     }
 
