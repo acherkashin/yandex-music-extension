@@ -1,9 +1,8 @@
-import { Playlist, Album, Track, LandingBlock, ChartItem } from "yandex-music-client";
+import { Playlist, Album, Track, LandingBlock, ChartItem, LandingBlockType } from "yandex-music-client";
 import { getToken } from 'yandex-music-client/token';
 import { getTrackUrl } from 'yandex-music-client/trackUrl';
 import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
-import { ALL_LANDING_BLOCKS } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
 import { createAlbumTrackId, createTrackAlbumIds, exposeTracks, getPlayListsIds } from "./apiUtils";
 
@@ -138,3 +137,17 @@ export class YandexMusicApi {
     return exposeTracks(tracks);
   }
 }
+
+export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
+  "personalplaylists",
+  "promotions",
+  "new-releases",
+  "new-playlists",
+  "mixes",
+  "chart",
+  "artists",
+  "albums",
+  "playlists",
+  "play_contexts",
+  "podcasts",
+];
