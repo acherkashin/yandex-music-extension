@@ -120,8 +120,8 @@ export class YandexMusicApi {
 
   async getNewPlayLists(): Promise<Playlist[]> {
     const resp = await this.newApi!.landing.getNewPlaylists();
-    const ids = getPlayListsIds(resp.result.newPlaylists).join(",");
-    const playListsResp = await this.newApi!.playlists.getByIds(ids);
+    const ids = getPlayListsIds(resp.result.newPlaylists);
+    const playListsResp = await this.newApi!.playlists.getByIds({ playlistIds: ids });
 
     return playListsResp.result;
   }
@@ -129,7 +129,6 @@ export class YandexMusicApi {
   async getActualPodcasts(): Promise<Album[]> {
     const resp = await this.newApi!.landing.getNewPodcasts();
     const albumIds = resp.result.podcasts.join(",");
-    // https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1000
     //TODO: need to limit amount of podcasts we receive, 100 at maximum. Currently we load 6000+ podcasts at time.
     const podcasts = await this.newApi!.albums.getByIds({ 'album-ids': albumIds });
 
