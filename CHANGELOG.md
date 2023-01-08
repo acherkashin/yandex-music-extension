@@ -4,6 +4,12 @@ All notable changes to Yandex.Music extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.12.0] - 2023-01-08
+
+### Changed
+
+- Move YandexMusicApi to separate [package](https://www.npmjs.com/package/yandex-music-client?activeTab=readme) generated based on [Open API schema](https://github.com/acherkashin/yandex-music-open-api)
+
 ## [0.11.2] - 2022-12-11
 
 ### Fixed
