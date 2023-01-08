@@ -85,7 +85,7 @@ export class YandexMusicSettings {
             return;
         }
         try {
-            const responce = await this.api.authenticate({ username: userName, password });
+            const responce = await this.api.getToken({ username: userName, password });
             const authData: IYandexMusicAuthData = {
                 userId: responce.data.uid,
                 token: responce.data.access_token,

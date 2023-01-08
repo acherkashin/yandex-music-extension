@@ -1,21 +1,16 @@
 import axios, { AxiosResponse } from "axios";
-import { Playlist, VisibilityEnum, Album, Track, LandingBlock } from "yandex-music-client";
+import { Playlist, Album, Track, LandingBlock } from "yandex-music-client";
 import { YandexMusicClient } from 'yandex-music-client/YandexMusicClient';
 
 import { ALL_LANDING_BLOCKS, InitResponse } from "./interfaces";
 import { IYandexMusicAuthData } from "../settings";
 import { createAlbumTrackId, createTrackURL, getDownloadInfo, getPlayListsIds, Headers } from "./apiUtils";
-const querystring = require("querystring");
+import { URLSearchParams } from "url";
 
 export interface Config {
   ouath_code: {
     CLIENT_ID: string;
     CLIENT_SECRET: string;
-  };
-  fake_device: {
-    DEVICE_ID: string;
-    UUID: string;
-    PACKAGE_NAME: string;
   };
   user: {
     TOKEN?: string;
@@ -44,12 +39,6 @@ export class YandexMusicApi {
     ouath_code: {
       CLIENT_ID: "23cabbbdc6cd418abb4b39c32c41195d",
       CLIENT_SECRET: "53bc75238f0c4d08a118e51fe9203300",
-    },
-
-    fake_device: {
-      DEVICE_ID: "377c5ae26b09fccd72deae0a95425559",
-      UUID: "3cfccdaf75dcf98b917a54afe50447ba",
-      PACKAGE_NAME: "ru.yandex.music",
     },
 
     user: {
@@ -89,16 +78,18 @@ export class YandexMusicApi {
    * 
    * @param credentials credentials information
    */
-  authenticate(credentials: ICredentials): Promise<AxiosResponse<InitResponse>> {
+  getToken(credentials: ICredentials): Promise<AxiosResponse<InitResponse>> {
+    const params = new URLSearchParams({
+      "grant_type": "password",
+      "client_id": this._config.ouath_code.CLIENT_ID,
+      "client_secret": this._config.ouath_code.CLIENT_SECRET,
+      "username": credentials.username,
+      "password": credentials.password,
+    }).toString();
+
     return this.authClient.post(
       `token`,
-      querystring.stringify({
-        grant_type: "password",
-        client_id: this._config.ouath_code.CLIENT_ID,
-        client_secret: this._config.ouath_code.CLIENT_SECRET,
-        username: credentials.username,
-        password: credentials.password,
-      })
+      params
     );
   }
 
