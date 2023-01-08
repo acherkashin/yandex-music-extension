@@ -271,10 +271,9 @@
   "dependencies": {
     "@electron/get": "^2.0.2",
     "axios": "^0.21.2",
-    "crypto": "^1.0.1",
     "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
-    "yandex-music-client": "0.0.5"
+    "yandex-music-client": "0.0.6"
   }
 }
