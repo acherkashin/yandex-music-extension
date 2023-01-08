@@ -44,7 +44,7 @@ export class Store {
   }
 
   isAuthorized(): boolean {
-    return this._api.isAutorized;
+    return this._api.isAuthorized;
   }
 
   @computed get currentTrack(): Track | null {

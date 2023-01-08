@@ -10,7 +10,7 @@ export class YandexMusicApi {
   private client: YandexMusicClient | undefined;
   private userId: number | undefined;
 
-  get isAutorized(): boolean {
+  get isAuthorized(): boolean {
     return !!this.client;
   }
 
