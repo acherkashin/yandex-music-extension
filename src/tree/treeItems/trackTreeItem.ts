@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { Track } from "../../yandexApi/interfaces";
-import { getArtists } from "../../yandexApi/apiUtils";
+import { Track } from "yandex-music-client";
+import { getArtists } from "../../YandexMusicApi/ApiUtils";
 import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
 

@@ -8,7 +8,7 @@ import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
 import { YandexMusicSettings } from "./settings";
 import { isOnline } from "./utils/connectionUtils";
-import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
+import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
 const packageJson = require('./../package');

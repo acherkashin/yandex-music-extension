@@ -1,19 +1,14 @@
 import * as vscode from "vscode";
-import { TrackItem, Track, ALL_LANDING_BLOCKS, SearchResponse, SearchResult } from "./yandexApi/interfaces";
-import { observable, autorun, computed, runInAction, action } from "mobx";
+import { observable, autorun, computed } from "mobx";
+import * as open from "open";
+import { Playlist, GeneratedPlaylistLandingBlock, Search, Track, ChartItem, LandingBlock, LandingBlockItem } from "yandex-music-client";
+
 import { PlayerBarItem } from "./statusbar/playerBarItem";
 import { RewindBarItem } from "./statusbar/rewindBarItem";
-import { YandexMusicApi } from "./yandexApi/yandexMusicApi";
-import * as open from "open";
-import { Album } from "./yandexApi/album/album";
-import { PlayList } from "./yandexApi/playlist/playList";
-import { LandingBlock } from "./yandexApi/landing/block";
-import { LandingBlockEntity } from "./yandexApi/landing/blockentity";
-import { GeneratedPlayListItem } from "./yandexApi/feed/generatedPlayListItem";
+import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
-import { ChartItem } from "./yandexApi/landing/chartitem";
-import { getAlbums, getArtists, getCoverUri, createAlbumTrackId } from "./yandexApi/apiUtils";
+import { getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 
 export interface UserCredentials {
@@ -38,14 +33,18 @@ export class Store {
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | undefined;
   private searchText = '';
-  @observable searchResult: SearchResult | undefined;
+  @observable searchResult: Search | undefined;
 
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
-  private api: YandexMusicApi;
+  private _api: YandexMusicApi;
+
+  get api(): YandexMusicApi {
+    return this._api;
+  }
 
   isAuthorized(): boolean {
-    return this.api.isAutorized;
+    return this._api.isAuthorized;
   }
 
   @computed get currentTrack(): Track | null {
@@ -84,7 +83,7 @@ export class Store {
   }
 
   constructor(api: YandexMusicApi) {
-    this.api = api;
+    this._api = api;
   }
 
   /**
@@ -92,25 +91,6 @@ export class Store {
    */
   async initPlayer() {
     await this.player.init();
-  }
-
-  async init(authData?: IYandexMusicAuthData): Promise<void> {
-    this.api.setup(authData);
-
-    if (authData != null) {
-      await this.api.getLanding(...ALL_LANDING_BLOCKS).then((resp) => {
-        this.landingBlocks = resp.data.result.blocks;
-      });
-
-      // Need fetch liked tracks to show like/dislike button correctly
-      await this.refreshLikedTracks();
-    }
-
-    vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());
-
-    autorun(() => {
-      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
-    });
 
     this.player.on("message", (message) => {
       switch (message.command) {
@@ -128,10 +108,28 @@ export class Store {
     });
   }
 
+  async init(authData?: IYandexMusicAuthData): Promise<void> {
+    this._api.setup(authData);
+
+    if (authData != null) {
+      this.landingBlocks = await this.api.getLandingBlocks();
+
+      // Need fetch liked tracks to show like/dislike button correctly
+      await this.refreshLikedTracks();
+    }
+
+    vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());
+
+    autorun(() => {
+      vscode.commands.executeCommand("setContext", "yandexMusic.isPlaying", this.isPlaying);
+    });
+  }
+
   async doSearch(searchText: string) {
     try {
       this.searchText = searchText;
-      this.searchResult = (await this.api.search(this.searchText)).data.result;
+      const resp = await this.api.search(this.searchText);
+      this.searchResult = resp.result;
       vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
       if (this.searchResult.tracks) {
         this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
@@ -142,6 +140,7 @@ export class Store {
       vscode.window
         .showErrorMessage("Не удалось выполнить поиск.");
       console.error(e);
+      defaultTraceSource.error(`Не удалось выполнить поиск: ${e?.toString()}`);
     }
   }
 
@@ -154,69 +153,39 @@ export class Store {
     return this.landingBlocks.find((item) => item.type === type);
   }
 
-  getGeneratedPlayLists(): PlayList[] {
+  getGeneratedPlayLists(): Playlist[] {
     const block = this.getLandingBlock("personal-playlists");
-    const playLists = (block?.entities ?? []) as LandingBlockEntity<GeneratedPlayListItem>[];
+    const playLists = (block?.entities ?? []) as LandingBlockItem[];
 
-    return playLists.map(
-      (item) => item.data.data
-    );
+    return playLists.map((item) => (item.data as GeneratedPlaylistLandingBlock).data);
   }
 
-  async getUserPlaylists() {
-    return this.api.getAllUserPlaylists();
+  async getChart(): Promise<ChartItem[]> {
+    const { tracks, chartItems } = await this.api.getChartTracks();
+    this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
+
+    return chartItems;
   }
 
-  getChart(): Promise<ChartItem[]> {
-    return this.api.getAllChartTracks("russia").then((resp) => {
-      const chartItems = resp.data.result.chart.tracks as ChartItem[];
-      const tracks = this.exposeTracks(chartItems);
-      this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
+  async getAlbumTracks(albumId: number): Promise<Track[]> {
+    const tracks = await this.api.getAlbumTracks(albumId);
+    this.savePlaylist(albumId, tracks);
 
-      return chartItems;
-    });
-  }
-
-  getNewReleases(): Promise<Album[]> {
-    return this.api.getAllNewReleases().then((resp) => {
-      return resp.data.result;
-    });
-  }
-
-  getNewPlayLists(): Promise<PlayList[]> {
-    return this.api.getAllNewPlayLists().then((resp) => {
-      return resp.data.result;
-    });
-  }
-
-  getActualPodcasts(): Promise<Album[]> {
-    return this.api.getActualPodcasts().then((resp) => {
-      return resp.data.result;
-    });
-  }
-
-  getAlbumTracks(albumId: number): Promise<Track[]> {
-    return this.api.getAlbum(albumId, true).then((resp) => {
-      const tracks = (resp.data.result.volumes || []).reduce((a, b) => a.concat(b));
-      this.savePlaylist(albumId.toString(), tracks);
-
-      return tracks;
-    });
-  }
-
-  async getArtistTracks(artistId: string): Promise<Track[]> {
-    const { artist, tracks: trackIds } = (await this.api.getPopularTracks(artistId)).data.result;
-    const tracks = (await this.api.getTracks(trackIds)).result;
-    this.savePlaylist(artist.id.toString(), tracks);
     return tracks;
   }
 
-  getTracks(userId: string | number | undefined, playListId: string | number) {
-    return this.api.getPlaylist(userId, playListId).then((result) => {
-      this.savePlaylist(playListId.toString(), this.exposeTracks(result.data.result.tracks));
+  async getArtistTracks(artistId: string): Promise<Track[]> {
+    const tracks = await this.api.getArtistTracks(artistId);
+    this.savePlaylist(artistId, tracks);
 
-      return result;
-    });
+    return tracks;
+  }
+
+  async getTracks(userId: number, playListId: number) {
+    const result = await this.api.getPlaylistTracks(userId, playListId);
+    this.savePlaylist(playListId, result);
+
+    return result;
   }
 
   async getLikedTracks(): Promise<Track[]> {
@@ -228,10 +197,10 @@ export class Store {
   }
 
   async refreshLikedTracks(): Promise<Track[]> {
-    const resp = await this.api.getLikedTracks();
-    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, resp.result);
+    const tracks = await this.api.getLikedTracks();
+    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks.result);
 
-    return resp.result;
+    return tracks.result;
   }
 
   play(track?: { itemId: string; playListId: string }) {
@@ -260,10 +229,7 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      await this.api.likeAction('track', createAlbumTrackId({
-        id: track.id,
-        albumId: track.albums[0].id,
-      }), this.isLikedTrack(track.id));
+      this.api.likeAction(track, this.isLikedTrack(track.id) ? 'remove-like' : 'like');
     } catch (_ex) {
       const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
@@ -318,7 +284,7 @@ export class Store {
   }
 
   async downloadTrack(track: Track) {
-    const url = await this.api.getTrackUrl(track.id);
+    const url = await this._api.getTrackUrl(track.id);
     open(url);
   }
 
@@ -338,7 +304,7 @@ export class Store {
       const track = playlist?.[index];
 
       if (track) {
-        const url = await this.api.getTrackUrl(track.id);
+        const url = await this._api.getTrackUrl(track.id);
         this.player.play({
           url,
           album: getAlbums(track),
@@ -351,12 +317,8 @@ export class Store {
     }
   }
 
-  private exposeTracks(tracks: TrackItem[]): Track[] {
-    return tracks.map((item) => <Track>item.track);
-  }
-
-  private savePlaylist(playListId: string, tracks: Track[]) {
-    this.playLists.set(playListId, tracks);
+  private savePlaylist(playListId: string | number, tracks: Track[]) {
+    this.playLists.set(playListId.toString(), tracks);
   }
 
   private removePlaylist(playListId: string) {

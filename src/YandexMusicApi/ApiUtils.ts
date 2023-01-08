@@ -1,5 +1,4 @@
-import { Track } from "./interfaces";
-import { NewPlayListItem } from "./responces/fullNewPlayLists";
+import { NewPlaylistItem, Track, TrackItem } from "yandex-music-client";
 
 export function createTrackAlbumIds(tracks: { id: string | number, albumId: string | number }[]): string[] {
   return tracks.map((track) => createAlbumTrackId(track));
@@ -12,7 +11,7 @@ export function createAlbumTrackId(track: { id: string | number, albumId: string
   return `${track.id}:${track.albumId}`;
 }
 
-export function getPlayListsIds(playLists: NewPlayListItem[]) {
+export function getPlayListsIds(playLists: NewPlaylistItem[]) {
   return playLists.map((item) => `${item.uid}:${item.kind}`);
 }
 
@@ -26,6 +25,10 @@ export function getAlbums(track: Track): string {
 
 export function getTrackFullName(track: Track): string {
   return `${track.title} - ${getArtists(track)}`;
+}
+
+export function exposeTracks(tracks: TrackItem[]): Track[] {
+  return tracks.map((item) => <Track>item.track);
 }
 
 export type CoverSize = 30 | 50 | 100 | 150 | 200 | 300 | 400 | 700 | 800 | 1000;

@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { PlayList } from "../yandexApi/playlist/playList";
+import { Playlist } from "yandex-music-client";
 import { getExtensionPath } from "./extensionUtils";
-import { getCoverUri } from "../yandexApi/apiUtils";
+import { getCoverUri } from "../YandexMusicApi/ApiUtils";
 
 export function getThemeIcon(iconFileName: string) {
     return {
@@ -15,9 +15,9 @@ export function getResourceIcon(iconFileName: string): string {
     return path.join(getExtensionPath(), "resources", iconFileName);
 }
 
-export function getPlayListIcon(playList: PlayList) {
-    if (playList.coverWithoutText != undefined) {
-        return vscode.Uri.parse(getCoverUri(playList.coverWithoutText.uri ?? '', 30));
+export function getPlayListIcon(playList: Playlist) {
+    if (playList.cover?.uri) {
+        return vscode.Uri.parse(getCoverUri(playList.cover.uri, 30));
     }
 
     return getThemeIcon("playlist.svg");
