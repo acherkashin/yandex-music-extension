@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import { Track } from 'yandex-music-client';
 import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeItem, AlbumTreeItem, LikedTracksTreeItem } from './treeItems';
-import { Store, LIKED_TRACKS_PLAYLIST_ID } from '../store';
+import { Store, LIKED_TRACKS_PLAYLIST_ID, LIKED_PODCASTS_PLAYLIST_ID } from '../store';
 import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
 import { ArtistTreeItem } from './treeItems/artistTreeItem';
+import { LikedPodcastsTreeItem } from './treeItems/likedPodcastsTreeItem';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {
@@ -33,6 +34,12 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
     if (element instanceof LikedTracksTreeItem) {
         return store.getLikedTracks().then((tracks) => {
             return tracks.map((item) => new TrackTreeItem(store, <Track>item, LIKED_TRACKS_PLAYLIST_ID));
+        });
+    }
+
+    if (element instanceof LikedPodcastsTreeItem) {
+        return store.getLikedPodcasts().then((tracks) => {
+            return tracks.map((item) => new TrackTreeItem(store, <Track>item, LIKED_PODCASTS_PLAYLIST_ID));
         });
     }
 

@@ -3,6 +3,7 @@ import { Store } from "../store";
 import { PlayListTreeItem, LikedTracksTreeItem } from "./treeItems";
 import { getChildren } from "./childrenLoader";
 import { DividerTreeItem } from "./treeItems/dividerTreeItem";
+import { LikedPodcastsTreeItem } from "./treeItems/likedPodcastsTreeItem";
 
 export class PlayListTree implements vscode.TreeDataProvider<vscode.TreeItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -39,6 +40,7 @@ async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
     nodes.push(...usersPlayLists.result.map((item) => new PlayListTreeItem(item)));
     nodes.push(new DividerTreeItem());
     nodes.push(new LikedTracksTreeItem());
+    nodes.push(new LikedPodcastsTreeItem());
   }
 
   return nodes;

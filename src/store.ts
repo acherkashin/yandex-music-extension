@@ -17,6 +17,7 @@ export interface UserCredentials {
 }
 
 export const LIKED_TRACKS_PLAYLIST_ID = "LIKED_TRACKS_PLAYLIST_ID";
+export const LIKED_PODCASTS_PLAYLIST_ID = "LIKED_PODCASTS_PLAYLIST_ID";
 export const CHART_TRACKS_PLAYLIST_ID = "CHART_TRACKS_PLAYLIST_ID";
 export const NEW_RELEASES_PLAYLIST_ID = "NEW_RELEASES_PLAYLIST_ID";
 export const SEARCH_TRACKS_PLAYLIST_ID = "SEARCH_TRACKS_PLAYLIST_ID";
@@ -193,14 +194,35 @@ export class Store {
       return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? []);
     }
 
-    return this.refreshLikedTracks();
+    await this.refreshLikedTracks();
+
+    return this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
   }
 
-  async refreshLikedTracks(): Promise<Track[]> {
-    const tracks = await this.api.getLikedTracks();
-    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks.result);
+  async getLikedPodcasts(): Promise<Track[]> {
+    if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && (this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.length ?? 0) > 0) {
+      return Promise.resolve(this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? []);
+    }
 
-    return tracks.result;
+    await this.refreshLikedTracks();
+
+    return this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? [];
+  }
+
+  private likesPromise: ReturnType<typeof this.api.getLikedTracks> | null = null;
+  async refreshLikedTracks(): Promise<void> {
+    if (this.likesPromise) {
+      await this.likesPromise;
+      return;
+    }
+
+    const { result } = await (this.likesPromise = this.api.getLikedTracks());
+    const podcasts = result.filter(item => item.type === 'podcast-episode');
+    const tracks = result.filter(item => item.type === 'music');
+    this.savePlaylist(LIKED_PODCASTS_PLAYLIST_ID, podcasts);
+    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks);
+
+    this.likesPromise = null;
   }
 
   play(track?: { itemId: string; playListId: string }) {
