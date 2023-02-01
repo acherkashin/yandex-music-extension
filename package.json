@@ -274,6 +274,6 @@
     "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
-    "yandex-music-client": "0.0.7"
+    "yandex-music-client": "0.0.9"
   }
 }
