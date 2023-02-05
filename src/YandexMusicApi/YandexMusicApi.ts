@@ -136,6 +136,10 @@ export class YandexMusicApi {
 
     return exposeTracks(tracks);
   }
+
+  async getStationTracks(stationId: string) {
+    return ((await this.client!.rotor.getStationTracks(stationId, true)).result);
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

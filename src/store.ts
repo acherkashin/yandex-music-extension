@@ -189,6 +189,14 @@ export class Store {
     return result;
   }
 
+  async getStationTracks(radioId: string){
+    const result = await this.api.getStationTracks(radioId);
+    const tracks = result.sequence.map(item => item.track);
+    this.savePlaylist(radioId, tracks);
+
+    return tracks;
+  }
+
   async getLikedTracks(): Promise<Track[]> {
     if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.length ?? 0) > 0) {
       return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? []);
