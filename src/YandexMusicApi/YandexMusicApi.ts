@@ -136,6 +136,16 @@ export class YandexMusicApi {
 
     return exposeTracks(tracks);
   }
+
+  async addTrackToPlaylist(kingPlaylist: number, revision: number, track: Track) {
+    // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
+    const payload = JSON.stringify({ "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] });
+    // const payload = { "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] } as any;
+    return this.client!.playlists.changePlaylistTracks(this.userId!, kingPlaylist, {
+      diff: payload,
+      revision: revision.toString(),
+    });
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

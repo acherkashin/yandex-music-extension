@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import { Playlist } from "yandex-music-client";
+import { Store } from "./store";
 
 export async function showLoginBox(): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
@@ -38,4 +40,19 @@ export async function showSearchBox() {
   });
 
   return name;
+}
+
+export async function showPlaylists(store: Store): Promise<Playlist | undefined> {
+  const resp = await store.api.getUserPlaylists();
+  const names = resp.result.map<vscode.QuickPickItem & { playlist: Playlist }>(item => ({
+    label: item.title,
+    description: item.description,
+    playlist: item
+  }));
+  const selected = await vscode.window.showQuickPick(names, {
+    canPickMany: false,
+    placeHolder: "Название плейлиста",
+  });
+
+  return selected?.playlist;
 }

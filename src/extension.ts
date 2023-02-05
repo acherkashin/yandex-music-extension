@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showSearchBox } from "./inputs";
+import { showPlaylists, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
@@ -97,6 +97,17 @@ export function activate(context: vscode.ExtensionContext) {
         await refreshExplorer();
       }
     }),
+    vscode.commands.registerCommand("yandexMusic.addToPlaylist", async (node: TrackTreeItem) => {
+      const playlist = await showPlaylists(store);
+      if (playlist) {
+        try {
+          const result = await store.api.addTrackToPlaylist(playlist.kind, playlist.revision, node.track);
+          refreshExplorer();
+        } catch (ex) {
+          defaultTraceSource.error((ex as any).body.error);
+        }
+      }
+    }),
     vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
       if (node.track != null) {
         store.toggleLikeTrack(node.track);
@@ -135,4 +146,4 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   YandexMusicSettings.instance.dispose();
   store.dispose();
- }
+}

@@ -120,6 +120,11 @@
         "category": "Yandex Music",
         "title": "Clear Search Result",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "yandexMusic.addToPlaylist",
+        "category": "Yandex Music",
+        "title": "Add To Playlist"
       }
     ],
     "menus": {
@@ -160,6 +165,10 @@
           "command": "yandexMusic.dislikeTrack",
           "group": "inline",
           "when": "viewItem == likedTrack"
+        },
+        {
+          "command": "yandexMusic.addToPlaylist",
+          "when": "viewItem == track || viewItem == likedTrack"
         }
       ],
       "commandPalette": [
