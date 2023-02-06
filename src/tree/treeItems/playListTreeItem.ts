@@ -18,3 +18,7 @@ export class PlayListTreeItem extends vscode.TreeItem {
     }
   }
 }
+
+export class UserPlayListTreeItem extends PlayListTreeItem {
+  
+}

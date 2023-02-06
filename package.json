@@ -125,6 +125,11 @@
         "command": "yandexMusic.addToPlaylist",
         "category": "Yandex Music",
         "title": "Add To Playlist"
+      },
+      {
+        "command": "yandexMusic.removeFromPlaylist",
+        "category": "Yandex Music",
+        "title": "Remove from Playlist"
       }
     ],
     "menus": {
@@ -154,21 +159,25 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
-          "when": "viewItem == track || viewItem == likedTrack"
+          "when": "viewItem =~ /track/"
         },
         {
           "command": "yandexMusic.likeTrack",
           "group": "inline",
-          "when": "viewItem == track"
+          "when": "viewItem =~ /canlike/"
         },
         {
           "command": "yandexMusic.dislikeTrack",
           "group": "inline",
-          "when": "viewItem == likedTrack"
+          "when": "viewItem =~ /cannotlike/"
         },
         {
           "command": "yandexMusic.addToPlaylist",
-          "when": "viewItem == track || viewItem == likedTrack"
+          "when": "viewItem =~ /track/"
+        },
+        {
+          "command": "yandexMusic.removeFromPlaylist",
+          "when": "viewItem =~ /in-user-playlist/"
         }
       ],
       "commandPalette": [

@@ -14,7 +14,7 @@ export class UserTrackTreeItem extends vscode.TreeItem {
       arguments: [this],
     };
 
-    const contexts = ["track", "user"];
+    const contexts = ["track", "in-user-playlist"];
     if(store.isLikedTrack(this.track.id)) {
         contexts.push("liked");
     }
