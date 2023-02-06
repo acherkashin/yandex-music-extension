@@ -45,7 +45,7 @@ export async function showSearchBox() {
 export async function showPlaylists(store: Store): Promise<Playlist | undefined> {
   const resp = await store.api.getUserPlaylists();
   const names = resp.result.map<vscode.QuickPickItem & { playlist: Playlist }>(item => ({
-    label: item.title,
+    label: `$(debug-start) ${item.title}`,
     description: item.description,
     playlist: item
   }));

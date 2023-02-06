@@ -103,6 +103,11 @@ export function activate(context: vscode.ExtensionContext) {
         await store.api.addTrackToPlaylist(playlist, node.track);
       }
     }),
+    vscode.commands.registerCommand("yandexMusic.removeFromPlaylist", async (node: TrackTreeItem) => {
+      // if (node.track) {
+      //   await store.api.removeTracksFromPlaylist(playlist, node.track);
+      // }
+    }),
     vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
       if (node.track != null) {
         store.toggleLikeTrack(node.track);
