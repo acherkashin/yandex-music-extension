@@ -1,14 +1,11 @@
 import * as vscode from "vscode";
-import { Track } from "yandex-music-client";
+import { Playlist, Track } from "yandex-music-client";
 import { getArtists } from "../../YandexMusicApi/ApiUtils";
 import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
 
-/**
- * TODO: create UserPlayListTrackTreeItem
- */
-export class TrackTreeItem extends vscode.TreeItem {
-  constructor(private store: Store, public readonly track: Track, public readonly playListId: string | number) {
+export class UserTrackTreeItem extends vscode.TreeItem {
+  constructor(private store: Store, public readonly track: Track, public readonly playlist: Playlist) {
     super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
     this.command = {
       command: "yandexMusic.play",
@@ -17,11 +14,9 @@ export class TrackTreeItem extends vscode.TreeItem {
       arguments: [this],
     };
 
-    const contexts = ["track"];
-    if (store.isLikedTrack(this.track.id)) {
-      contexts.push("cannotlike");
-    } else {
-      contexts.push("canlike");
+    const contexts = ["track", "user"];
+    if(store.isLikedTrack(this.track.id)) {
+        contexts.push("liked");
     }
 
     this.iconPath = getThemeIcon("track.svg");
