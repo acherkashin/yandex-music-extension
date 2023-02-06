@@ -1,3 +1,5 @@
+import axios from "axios";
+import { URLSearchParams } from "url";
 import { Playlist, Album, Track, LandingBlock, ChartItem, LandingBlockType } from "yandex-music-client";
 import { getToken } from 'yandex-music-client/token';
 import { getTrackUrl } from 'yandex-music-client/trackUrl';
@@ -7,8 +9,12 @@ import { IYandexMusicAuthData } from "../settings";
 import { createAlbumTrackId, createTrackAlbumIds, exposeTracks, getPlayListsIds } from "./ApiUtils";
 
 export class YandexMusicApi {
+  private axiosClient = axios.create({
+    baseURL: `https://api.music.yandex.net:443`,
+  });
   private client: YandexMusicClient | undefined;
   private userId: number | undefined;
+  private token: string | undefined;
 
   get isAuthorized(): boolean {
     return !!this.client;
@@ -28,6 +34,7 @@ export class YandexMusicApi {
     }
 
     this.userId = config.userId;
+    this.token = config.token;
 
     this.client = new YandexMusicClient({
       BASE: "https://api.music.yandex.net:443",
@@ -137,14 +144,68 @@ export class YandexMusicApi {
     return exposeTracks(tracks);
   }
 
-  async addTrackToPlaylist(kingPlaylist: number, revision: number, track: Track) {
-    // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
-    const payload = JSON.stringify({ "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] });
-    // const payload = { "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] } as any;
-    return this.client!.playlists.changePlaylistTracks(this.userId!, kingPlaylist, {
-      diff: payload,
-      revision: revision.toString(),
+  //TODO: in generated API form-data is used and it breaks api for some reason, so currently self-written methods are used to add/remove track from playlist
+  // async addTrackToPlaylist(kingPlaylist: number, revision: number, track: Track) {
+  //   // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
+  //   // const payload = JSON.stringify({ "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] });
+  //   const payload = { "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] } as any;
+  //   return this.client!.playlists.changePlaylistTracks(this.userId!, kingPlaylist, {
+  //     diff: payload,
+  //     revision: revision.toString(),
+  //   });
+  // }
+
+  addTrackToPlaylist(playlist: Playlist, track: Track) {
+    const params = new URLSearchParams({
+      'diff': JSON.stringify([
+        {
+          op: "insert",
+          at: 0,
+          tracks: [{
+            id: track.id,
+            albumId: track.albums[0].id
+          }],
+        },
+      ]),
+      'revision': playlist.revision.toString()
     });
+    return this.axiosClient.post(
+      `/users/${this.userId}/playlists/${playlist.kind}/change-relative`,
+      params,
+      {
+        headers: {
+          'Authorization': `OAuth ${this.token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+  }
+
+  removeTracksFromPlaylist(playlist: Playlist, track: Track) {
+    const params = new URLSearchParams({
+      'diff': JSON.stringify([
+        {
+          op: "delete",
+          from: 0,
+          to: 1,
+          tracks: [{
+            id: track.id,
+            albumId: track.albums[0].id,
+          }],
+        },
+      ]),
+      'revision': playlist.revision.toString()
+    });
+    return this.axiosClient.post(
+      `/users/${this.userId}/playlists/${playlist.kind}/change-relative`,
+      params,
+      {
+        headers: {
+          'Authorization': `OAuth ${this.token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
   }
 }
 

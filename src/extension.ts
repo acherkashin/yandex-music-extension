@@ -100,12 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.addToPlaylist", async (node: TrackTreeItem) => {
       const playlist = await showPlaylists(store);
       if (playlist) {
-        try {
-          const result = await store.api.addTrackToPlaylist(playlist.kind, playlist.revision, node.track);
-          refreshExplorer();
-        } catch (ex) {
-          defaultTraceSource.error((ex as any).body.error);
-        }
+        await store.api.addTrackToPlaylist(playlist, node.track);
       }
     }),
     vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
