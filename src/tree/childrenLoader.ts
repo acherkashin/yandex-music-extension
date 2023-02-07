@@ -18,7 +18,7 @@ export function getChildren(store: Store, element?: vscode.TreeItem): vscode.Pro
     if (element instanceof UserPlayListTreeItem) {
         const playlist = element.playList;
         return store.getTracks(playlist.owner.uid, playlist.kind).then((tracks) => {
-            return tracks.map((track) => new UserTrackTreeItem(store, track, playlist));
+            return tracks.map((track, index) => new UserTrackTreeItem(store, track, playlist, index));
         });
     }
 

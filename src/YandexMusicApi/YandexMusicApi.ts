@@ -181,17 +181,17 @@ export class YandexMusicApi {
     );
   }
 
-  removeTracksFromPlaylist(playlist: Playlist, track: Track) {
+  removeTracksFromPlaylist(playlist: Playlist, track: Track, index: number) {
     const params = new URLSearchParams({
       'diff': JSON.stringify([
         {
           op: "delete",
-          // need to provide correct from/to for correct removal
-          from: 0,
-          to: 1,
+          from: index,
+          to: index + 1,
           tracks: [{
             id: track.id,
-            albumId: track.albums[0].id,
+            // It seems it is not necessary to pass albumId
+            // albumId: track.albums[0].id,
           }],
         },
       ]),

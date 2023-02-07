@@ -1,28 +1,19 @@
-import * as vscode from "vscode";
 import { Playlist, Track } from "yandex-music-client";
-import { getArtists } from "../../YandexMusicApi/ApiUtils";
-import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
+import { TrackTreeItem } from "./trackTreeItem";
 
 /**
  * Track from user's playlist
  */
-export class UserTrackTreeItem extends vscode.TreeItem {
-  constructor(private store: Store, public readonly track: Track, public readonly playlist: Playlist) {
-    super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
-    this.command = {
-      command: "yandexMusic.play",
-      title: "Play Track",
-      tooltip: `Play ${this.label}`,
-      arguments: [this],
-    };
+export class UserTrackTreeItem extends TrackTreeItem {
+  constructor(store: Store, track: Track, public readonly playlist: Playlist, public readonly index: number) {
+    super(store, track, playlist.kind);
 
     const contexts = ["track", "in-user-playlist"];
     if(store.isLikedTrack(this.track.id)) {
         contexts.push("liked");
     }
 
-    this.iconPath = getThemeIcon("track.svg");
     this.contextValue = contexts.join(",");
   }
 }

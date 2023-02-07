@@ -112,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.removeFromPlaylist", async (node: UserTrackTreeItem) => {
       errorLogger(async () => {
         if (node.track) {
-          await store.api.removeTracksFromPlaylist(node.playlist, node.track);
+          await store.api.removeTracksFromPlaylist(node.playlist, node.track, node.index);
           await refreshExplorer();
         }
       }, "Remove from playlist");
