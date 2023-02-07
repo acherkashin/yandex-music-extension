@@ -186,6 +186,7 @@ export class YandexMusicApi {
       'diff': JSON.stringify([
         {
           op: "delete",
+          // need to provide correct from/to for correct removal
           from: 0,
           to: 1,
           tracks: [{

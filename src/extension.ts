@@ -11,6 +11,7 @@ import { isOnline } from "./utils/connectionUtils";
 import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
+import { UserTrackTreeItem } from "./tree/treeItems/userTrackTreeItem";
 const packageJson = require('./../package');
 
 let store: Store = null as any;
@@ -91,28 +92,38 @@ export function activate(context: vscode.ExtensionContext) {
         await refreshExplorer();
       }
     }),
-    vscode.commands.registerCommand("yandexMusic.likeTrack", async (node: TrackTreeItem) => {
-      if (node.track != null) {
-        store.toggleLikeTrack(node.track);
-        await refreshExplorer();
-      }
+    vscode.commands.registerCommand("yandexMusic.likeTrack", (node: TrackTreeItem) => {
+      errorLogger(async () => {
+        if (node.track != null) {
+          store.toggleLikeTrack(node.track);
+          await refreshExplorer();
+        }
+      }, "Like track");
     }),
     vscode.commands.registerCommand("yandexMusic.addToPlaylist", async (node: TrackTreeItem) => {
-      const playlist = await showPlaylists(store);
-      if (playlist) {
-        await store.api.addTrackToPlaylist(playlist, node.track);
-      }
+      errorLogger(async () => {
+        const playlist = await showPlaylists(store);
+        if (playlist) {
+          await store.api.addTrackToPlaylist(playlist, node.track);
+          await refreshExplorer();
+        }
+      }, "Add to playlist");
     }),
-    vscode.commands.registerCommand("yandexMusic.removeFromPlaylist", async (node: TrackTreeItem) => {
-      // if (node.track) {
-      //   await store.api.removeTracksFromPlaylist(playlist, node.track);
-      // }
+    vscode.commands.registerCommand("yandexMusic.removeFromPlaylist", async (node: UserTrackTreeItem) => {
+      errorLogger(async () => {
+        if (node.track) {
+          await store.api.removeTracksFromPlaylist(node.playlist, node.track);
+          await refreshExplorer();
+        }
+      }, "Remove from playlist");
     }),
     vscode.commands.registerCommand("yandexMusic.dislikeTrack", async (node: TrackTreeItem) => {
-      if (node.track != null) {
-        store.toggleLikeTrack(node.track);
-        await refreshExplorer();
-      }
+      errorLogger(async () => {
+        if (node.track != null) {
+          store.toggleLikeTrack(node.track);
+          await refreshExplorer();
+        }
+      }, "Remove from liked tracks");
     }),
     vscode.commands.registerCommand("yandexMusic.rewindForward", () => store.rewind(settings.rewindTime)),
     vscode.commands.registerCommand("yandexMusic.rewindBackward", () => store.rewind(settings.rewindTime * (-1))),
@@ -140,7 +151,19 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-
+async function errorLogger(callback: () => void | Promise<void>, logPrefix: string) {
+  try {
+    await callback();
+  } catch (_ex) {
+    const ex = _ex as any;
+    if (ex?.response?.data?.error?.message) {
+      // TODO: logging doesn't work here for some reason
+      defaultTraceSource.info(`${logPrefix} ${ex.response.data.error.message}`);
+    } else {
+      defaultTraceSource.info(`${logPrefix} ${JSON.stringify(ex)}`);
+    }
+  }
+}
 
 // this method is called when your extension is deactivated
 export function deactivate() {
