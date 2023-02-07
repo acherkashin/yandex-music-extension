@@ -4,11 +4,17 @@ import { getPlayListIcon } from "../../utils/iconUtils";
 import { getCoverUri } from "../../YandexMusicApi/ApiUtils";
 
 export class PlayListTreeItem extends vscode.TreeItem {
-  constructor(public readonly playList: Playlist) {
-    super(playList.title, vscode.TreeItemCollapsibleState.Collapsed);
+  constructor(public playList: Playlist) {
+    super('');
+    this.update(playList);
+  }
 
+  update(playList: Playlist) {
+    this.playList = playList;
+    this.label = playList.title;
     this.description = playList.description;
-    this.tooltip = `${playList.title}. ${playList.description}`;
+    this.tooltip = [playList.title, playList.description].join('. ');
+    this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 
     if (playList.cover?.uri) {
       const uri = getCoverUri(playList.cover.uri, 50);
@@ -20,5 +26,9 @@ export class PlayListTreeItem extends vscode.TreeItem {
 }
 
 export class UserPlayListTreeItem extends PlayListTreeItem {
-  
+  constructor(playList: Playlist) {
+    super(playList);
+
+    this.contextValue = 'user-playlist';
+  }
 }

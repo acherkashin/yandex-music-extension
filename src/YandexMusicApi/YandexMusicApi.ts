@@ -208,6 +208,12 @@ export class YandexMusicApi {
       }
     );
   }
+
+  renamePlaylist(playListKind: number, newName: string) {
+    return this.client!.playlists.renamePlaylist(this.userId!, playListKind, {
+      value: newName
+    });
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

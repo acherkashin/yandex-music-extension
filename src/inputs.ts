@@ -42,6 +42,17 @@ export async function showSearchBox() {
   return name;
 }
 
+export async function showPlaylistName(playlistName: string) {
+  return await vscode.window.showInputBox({
+    value: playlistName,
+    prompt: "Название плейлиста",
+    placeHolder: "Введите название плейлиста",
+    validateInput: text => {
+      return !text ? "Значение должно быть не пустым!" : null;
+    }
+  });
+}
+
 export async function showPlaylists(store: Store): Promise<Playlist | undefined> {
   const resp = await store.api.getUserPlaylists();
   const names = resp.result.map<vscode.QuickPickItem & { playlist: Playlist }>(item => ({

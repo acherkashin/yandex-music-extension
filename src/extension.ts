@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showPlaylists, showSearchBox } from "./inputs";
+import { showPlaylistName, showPlaylists, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
@@ -12,6 +12,7 @@ import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
 import { UserTrackTreeItem } from "./tree/treeItems/userTrackTreeItem";
+import { UserPlayListTreeItem } from "./tree/treeItems/playListTreeItem";
 const packageJson = require('./../package');
 
 let store: Store = null as any;
@@ -147,6 +148,16 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.clearSearchResult", async () => {
       store.clearSearchResult();
+    }),
+    vscode.commands.registerCommand("yandexMusic.renamePlaylist", async (node: UserPlayListTreeItem) => {
+      errorLogger(async () => {
+        const newName = await showPlaylistName(node.playList.title);
+        if (newName) {
+          const { result } = await store.api.renamePlaylist(node.playList.kind, newName);
+          node.update(result);
+          treeProvider.refresh(node);
+        }
+      }, "Rename playlist");
     })
   );
 }
