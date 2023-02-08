@@ -13,6 +13,7 @@ import { OutputTraceListener } from "./logging/OutputTraceListener";
 import { defaultTraceSource } from './logging/TraceSource';
 import { UserTrackTreeItem } from "./tree/treeItems/userTrackTreeItem";
 import { UserPlayListTreeItem } from "./tree/treeItems/playListTreeItem";
+import { Playlist } from "yandex-music-client";
 const packageJson = require('./../package');
 
 let store: Store = null as any;
@@ -73,6 +74,17 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
+  async function createPlaylist(): Promise<Playlist | undefined> {
+    const playlistName = await showPlaylistNameBox();
+    let playlist: Playlist | undefined;
+    if (playlistName) {
+      playlist = (await store.api.createPlaylist(playlistName)).result;
+      await refreshExplorer();
+    }
+
+    return playlist;
+  }
+
   refreshExplorer();
 
   context.subscriptions.push(
@@ -104,10 +116,13 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.addToPlaylist", async (node: TrackTreeItem) => {
       errorLogger(async () => {
         const selected = await showPlaylists(store);
+        let playlist = selected?.playlist;
         if (selected?.id === 'add-playlist') {
-          vscode.commands.executeCommand("yandexMusic.createPlaylist");
-        } else if (selected?.playlist) {
-          await store.api.addTrackToPlaylist(selected.playlist, node.track);
+          playlist = await createPlaylist();
+        }
+
+        if (playlist) {
+          await store.api.addTrackToPlaylist(playlist, node.track);
           await refreshExplorer();
         }
       }, "Add to playlist");
@@ -162,13 +177,7 @@ export function activate(context: vscode.ExtensionContext) {
       }, "Rename playlist");
     }),
     vscode.commands.registerCommand("yandexMusic.createPlaylist", () => {
-      errorLogger(async () => {
-        const playlistName = await showPlaylistNameBox();
-        if (playlistName) {
-          await store.api.createPlaylist(playlistName);
-          await refreshExplorer();
-        }
-      }, "Create playlist");
+      errorLogger(() => { createPlaylist(); }, "Create playlist");
     }),
     vscode.commands.registerCommand("yandexMusic.deletePlaylist", (node: UserPlayListTreeItem) => {
       errorLogger(async () => {
