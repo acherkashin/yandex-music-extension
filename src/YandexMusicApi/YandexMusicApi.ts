@@ -39,7 +39,8 @@ export class YandexMusicApi {
     this.client = new YandexMusicClient({
       BASE: "https://api.music.yandex.net:443",
       HEADERS: {
-        'Authorization': `OAuth ${config.token}`
+        'Authorization': `OAuth ${config.token}`,
+        'Accept-Language': 'ru'
       },
     });
   }
