@@ -42,7 +42,7 @@ export async function showSearchBox() {
   return name;
 }
 
-export async function showPlaylistName(playlistName: string = '') {
+export async function showPlaylistNameBox(playlistName: string = '') {
   return await vscode.window.showInputBox({
     value: playlistName,
     prompt: "Название плейлиста",
