@@ -1,13 +1,13 @@
 import { defaultTraceSource } from "./TraceSource";
 
 interface LogFunc<TResult, Params extends any[]> {
-  (...parameters: Params): Promise<TResult> | TResult;
+  (...parameters: Params): TResult;
 }
 
 export function errorLogger<TResult, Params extends any[]>(callback: LogFunc<TResult, Params>, logPrefix = '') {
-  const wrappedFunc: LogFunc<TResult | undefined, Params> = async (...parameters) => {
+  const wrappedFunc: LogFunc<TResult | undefined, Params> = (...parameters) => {
     try {
-      return await callback(...parameters);
+      return callback(...parameters);
     } catch (_ex) {
       const ex = _ex as any;
       if (ex?.response?.data?.error?.message) {
