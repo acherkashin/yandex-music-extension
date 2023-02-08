@@ -218,6 +218,13 @@ export class YandexMusicApi {
   deletePlaylist(playListKind: number) {
     return this.client!.playlists.deletePlaylist(this.userId!, playListKind);
   }
+
+  createPlaylist(name: string) {
+    return this.client!.playlists.createPlaylist(this.userId!, {
+      title: name,
+      visibility: 'private'
+    })
+  } 
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

@@ -140,6 +140,12 @@
         "command": "yandexMusic.deletePlaylist",
         "category": "Yandex Music",
         "title": "Delete playlist"
+      },
+      {
+        "command": "yandexMusic.createPlaylist",
+        "category": "Yandex Music",
+        "title": "Create playlist",
+        "icon": "$(add)"
       }
     ],
     "menus": {
@@ -151,6 +157,11 @@
         },
         {
           "command": "yandexMusic.signOut",
+          "group": "navigation",
+          "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
+        },
+        {
+          "command": "yandexMusic.createPlaylist",
           "group": "navigation",
           "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
         },

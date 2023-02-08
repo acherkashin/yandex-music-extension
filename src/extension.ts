@@ -159,7 +159,16 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }, "Rename playlist");
     }),
-    vscode.commands.registerCommand("yandexMusic.deletePlaylist", async (node: UserPlayListTreeItem) => {
+    vscode.commands.registerCommand("yandexMusic.createPlaylist", () => {
+      errorLogger(async () => {
+        const playlistName = await showPlaylistName();
+        if (playlistName) {
+          await store.api.createPlaylist(playlistName);
+          await refreshExplorer();
+        }
+      }, "Create playlist");
+    }),
+    vscode.commands.registerCommand("yandexMusic.deletePlaylist", (node: UserPlayListTreeItem) => {
       errorLogger(async () => {
         const result = await showPrompt(`Вы действительно хотите удалить плейлист "${node.label}"?`);
         if (result) {
