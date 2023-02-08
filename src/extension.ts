@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showPlaylistNameBox, showPlaylists as showPlaylistsBox, showPrompt, showSearchBox } from "./inputs";
+import { showPlaylistNameBox, showPlaylistsBox, showPrompt, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';

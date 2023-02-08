@@ -58,7 +58,7 @@ type ShowPlaylistResult = vscode.QuickPickItem & {
   playlist?: Playlist;
 };
 
-export async function showPlaylists(store: Store): Promise<ShowPlaylistResult | undefined> {
+export async function showPlaylistsBox(store: Store): Promise<ShowPlaylistResult | undefined> {
   const resp = await store.api.getUserPlaylists();
 
   const names = resp.result.map<ShowPlaylistResult>(item => ({
