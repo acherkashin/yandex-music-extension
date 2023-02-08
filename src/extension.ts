@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showPlaylistName, showPlaylists, showPrompt, showSearchBox } from "./inputs";
+import { showPlaylistName as showPlaylistNameBox, showPlaylists, showPrompt, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
@@ -103,9 +103,11 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.addToPlaylist", async (node: TrackTreeItem) => {
       errorLogger(async () => {
-        const playlist = await showPlaylists(store);
-        if (playlist) {
-          await store.api.addTrackToPlaylist(playlist, node.track);
+        const selected = await showPlaylists(store);
+        if (selected?.id === 'add-playlist') {
+          vscode.commands.executeCommand("yandexMusic.createPlaylist");
+        } else if (selected?.playlist) {
+          await store.api.addTrackToPlaylist(selected.playlist, node.track);
           await refreshExplorer();
         }
       }, "Add to playlist");
@@ -151,7 +153,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.renamePlaylist", (node: UserPlayListTreeItem) => {
       errorLogger(async () => {
-        const newName = await showPlaylistName(node.playList.title);
+        const newName = await showPlaylistNameBox(node.playList.title);
         if (newName) {
           const { result } = await store.api.renamePlaylist(node.playList.kind, newName);
           node.update(result);
@@ -161,7 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.createPlaylist", () => {
       errorLogger(async () => {
-        const playlistName = await showPlaylistName();
+        const playlistName = await showPlaylistNameBox();
         if (playlistName) {
           await store.api.createPlaylist(playlistName);
           await refreshExplorer();

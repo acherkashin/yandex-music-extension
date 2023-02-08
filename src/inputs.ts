@@ -53,19 +53,29 @@ export async function showPlaylistName(playlistName: string = '') {
   });
 }
 
-export async function showPlaylists(store: Store): Promise<Playlist | undefined> {
+type ShowPlaylistResult = vscode.QuickPickItem & {
+  id: string;
+  playlist?: Playlist;
+};
+
+export async function showPlaylists(store: Store): Promise<ShowPlaylistResult | undefined> {
   const resp = await store.api.getUserPlaylists();
-  const names = resp.result.map<vscode.QuickPickItem & { playlist: Playlist }>(item => ({
+
+  const names = resp.result.map<ShowPlaylistResult>(item => ({
+    id: item.kind.toString(),
     label: `$(debug-start) ${item.title}`,
     description: item.description,
     playlist: item
   }));
+
+  names.unshift({ id: 'add-playlist', label: "$(add) Добавить плейлист" });
+
   const selected = await vscode.window.showQuickPick(names, {
     canPickMany: false,
     placeHolder: "Название плейлиста",
   });
 
-  return selected?.playlist;
+  return selected;
 }
 
 export async function showPrompt(title: string): Promise<boolean> {
