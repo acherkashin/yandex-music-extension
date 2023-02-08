@@ -130,6 +130,16 @@
         "command": "yandexMusic.removeFromPlaylist",
         "category": "Yandex Music",
         "title": "Remove from Playlist"
+      },
+      {
+        "command": "yandexMusic.renamePlaylist",
+        "category": "Yandex Music",
+        "title": "Rename playlist"
+      },
+      {
+        "command": "yandexMusic.deletePlaylist",
+        "category": "Yandex Music",
+        "title": "Delete playlist"
       }
     ],
     "menus": {
@@ -178,6 +188,14 @@
         {
           "command": "yandexMusic.removeFromPlaylist",
           "when": "viewItem =~ /in-user-playlist/"
+        },
+        {
+          "command": "yandexMusic.renamePlaylist",
+          "when": "viewItem =~ /user-playlist/"
+        },
+        {
+          "command": "yandexMusic.deletePlaylist",
+          "when": "viewItem =~ /user-playlist/"
         }
       ],
       "commandPalette": [

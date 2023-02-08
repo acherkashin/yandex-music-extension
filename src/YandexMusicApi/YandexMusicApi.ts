@@ -214,6 +214,10 @@ export class YandexMusicApi {
       value: newName
     });
   }
+
+  deletePlaylist(playListKind: number) {
+    return this.client!.playlists.deletePlaylist(this.userId!, playListKind);
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

@@ -149,7 +149,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.clearSearchResult", async () => {
       store.clearSearchResult();
     }),
-    vscode.commands.registerCommand("yandexMusic.renamePlaylist", async (node: UserPlayListTreeItem) => {
+    vscode.commands.registerCommand("yandexMusic.renamePlaylist", (node: UserPlayListTreeItem) => {
       errorLogger(async () => {
         const newName = await showPlaylistName(node.playList.title);
         if (newName) {
@@ -158,6 +158,14 @@ export function activate(context: vscode.ExtensionContext) {
           treeProvider.refresh(node);
         }
       }, "Rename playlist");
+    }),
+    vscode.commands.registerCommand("yandexMusic.deletePlaylist", async (node: UserPlayListTreeItem) => {
+      errorLogger(async () => {
+        //TODO: ask whether use really wants to remove playlist
+        
+        await store.api.deletePlaylist(node.playList.kind);
+        await refreshExplorer();
+      }, "Delete playlist");
     })
   );
 }
