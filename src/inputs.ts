@@ -67,3 +67,8 @@ export async function showPlaylists(store: Store): Promise<Playlist | undefined>
 
   return selected?.playlist;
 }
+
+export async function showPrompt(title: string): Promise<boolean> {
+  const result = await vscode.window.showInformationMessage(title, "Да", "Нет");
+  return result === "Да";
+}

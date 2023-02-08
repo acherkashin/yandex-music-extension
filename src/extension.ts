@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
 import { TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
-import { showPlaylistName, showPlaylists, showSearchBox } from "./inputs";
+import { showPlaylistName, showPlaylists, showPrompt, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
 import { RecommendationTree } from "./tree/recommendationTree";
 import { SearchTree } from './tree/searchTree';
@@ -161,10 +161,11 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("yandexMusic.deletePlaylist", async (node: UserPlayListTreeItem) => {
       errorLogger(async () => {
-        //TODO: ask whether use really wants to remove playlist
-        
-        await store.api.deletePlaylist(node.playList.kind);
-        await refreshExplorer();
+        const result = await showPrompt(`Вы действительно хотите удалить плейлист "${node.label}"?`);
+        if (result) {
+          await store.api.deletePlaylist(node.playList.kind);
+          await refreshExplorer();
+        }
       }, "Delete playlist");
     })
   );
