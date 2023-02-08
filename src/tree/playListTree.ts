@@ -38,8 +38,10 @@ async function getPlayListsNodes(store: Store): Promise<vscode.TreeItem[]> {
     nodes.push(...generatedPlaylists.map((item) => new PlayListTreeItem(item)));
     nodes.push(new DividerTreeItem());
     const usersPlayLists = await store.api.getUserPlaylists();
-    nodes.push(...usersPlayLists.result.map((item) => new UserPlayListTreeItem(item)));
-    nodes.push(new DividerTreeItem());
+    if (usersPlayLists.result.length !== 0) {
+      nodes.push(...usersPlayLists.result.map((item) => new UserPlayListTreeItem(item)));
+      nodes.push(new DividerTreeItem());
+    }
     nodes.push(new LikedTracksTreeItem());
     nodes.push(new LikedPodcastsTreeItem());
   }
