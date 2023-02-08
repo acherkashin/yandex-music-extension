@@ -4,9 +4,6 @@ import { getArtists } from "../../YandexMusicApi/ApiUtils";
 import { getThemeIcon } from "../../utils/iconUtils";
 import { Store } from "../../store";
 
-/**
- * TODO: create UserPlayListTrackTreeItem
- */
 export class TrackTreeItem extends vscode.TreeItem {
   constructor(private store: Store, public readonly track: Track, public readonly playListId: string | number) {
     super(`${track.title} - ${getArtists(track)}`, vscode.TreeItemCollapsibleState.None);
