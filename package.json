@@ -120,6 +120,32 @@
         "category": "Yandex Music",
         "title": "Clear Search Result",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "yandexMusic.addToPlaylist",
+        "category": "Yandex Music",
+        "title": "Add To Playlist"
+      },
+      {
+        "command": "yandexMusic.removeFromPlaylist",
+        "category": "Yandex Music",
+        "title": "Remove from Playlist"
+      },
+      {
+        "command": "yandexMusic.renamePlaylist",
+        "category": "Yandex Music",
+        "title": "Rename playlist"
+      },
+      {
+        "command": "yandexMusic.deletePlaylist",
+        "category": "Yandex Music",
+        "title": "Delete playlist"
+      },
+      {
+        "command": "yandexMusic.createPlaylist",
+        "category": "Yandex Music",
+        "title": "Create playlist",
+        "icon": "$(add)"
       }
     ],
     "menus": {
@@ -131,6 +157,11 @@
         },
         {
           "command": "yandexMusic.signOut",
+          "group": "navigation",
+          "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
+        },
+        {
+          "command": "yandexMusic.createPlaylist",
           "group": "navigation",
           "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
         },
@@ -149,17 +180,33 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
-          "when": "viewItem == track || viewItem == likedTrack"
+          "when": "viewItem =~ /track/"
         },
         {
           "command": "yandexMusic.likeTrack",
           "group": "inline",
-          "when": "viewItem == track"
+          "when": "viewItem =~ /canlike/"
         },
         {
           "command": "yandexMusic.dislikeTrack",
           "group": "inline",
-          "when": "viewItem == likedTrack"
+          "when": "viewItem =~ /cannotlike/"
+        },
+        {
+          "command": "yandexMusic.addToPlaylist",
+          "when": "viewItem =~ /track/"
+        },
+        {
+          "command": "yandexMusic.removeFromPlaylist",
+          "when": "viewItem =~ /in-user-playlist/"
+        },
+        {
+          "command": "yandexMusic.renamePlaylist",
+          "when": "viewItem =~ /user-playlist/"
+        },
+        {
+          "command": "yandexMusic.deletePlaylist",
+          "when": "viewItem =~ /user-playlist/"
         }
       ],
       "commandPalette": [

@@ -235,7 +235,7 @@ export class Store {
           this.internalPlay(index);
         }
       } else {
-        console.error(`playlist ${track?.itemId} is not found`);
+        defaultTraceSource.error(`playlist ${track?.itemId} is not found`);
       }
       // update current song
     } else {
