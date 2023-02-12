@@ -4,9 +4,7 @@ import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeI
 import { Store, LIKED_TRACKS_PLAYLIST_ID, LIKED_PODCASTS_PLAYLIST_ID } from '../store';
 import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
 import { ArtistTreeItem } from './treeItems/artistTreeItem';
-import { LikedPodcastsTreeItem } from './treeItems/likedPodcastsTreeItem';
-import { UserPlayListTreeItem } from './treeItems/playListTreeItem';
-import { UserTrackTreeItem } from './treeItems/userTrackTreeItem';
+import { UserPlayListTreeItem, UserTrackTreeItem, LikedPodcastsTreeItem } from './treeItems';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {

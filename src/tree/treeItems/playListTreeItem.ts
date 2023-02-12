@@ -24,11 +24,3 @@ export class PlayListTreeItem extends vscode.TreeItem {
     }
   }
 }
-
-export class UserPlayListTreeItem extends PlayListTreeItem {
-  constructor(playList: Playlist) {
-    super(playList);
-
-    this.contextValue = 'user-playlist';
-  }
-}
