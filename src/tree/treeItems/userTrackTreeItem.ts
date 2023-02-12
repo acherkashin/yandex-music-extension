@@ -9,11 +9,6 @@ export class UserTrackTreeItem extends TrackTreeItem {
   constructor(store: Store, track: Track, public readonly playlist: Playlist, public readonly index: number) {
     super(store, track, playlist.kind);
 
-    const contexts = ["track", "in-user-playlist"];
-    if(store.isLikedTrack(this.track.id)) {
-        contexts.push("liked");
-    }
-
-    this.contextValue = contexts.join(",");
+    this.contextValue = [this.contextValue, "in-user"].join(",");
   }
 }
