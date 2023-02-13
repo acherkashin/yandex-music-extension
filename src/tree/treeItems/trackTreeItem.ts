@@ -15,7 +15,7 @@ export class TrackTreeItem extends vscode.TreeItem {
     };
 
     const contexts = ["track"];
-    if (store.isLikedTrack(this.track.id)) {
+    if (store.isLikedTrack(this.track.id, this.track.type)) {
       contexts.push("cannotlike");
     } else {
       contexts.push("canlike");

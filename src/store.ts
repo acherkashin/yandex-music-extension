@@ -251,7 +251,7 @@ export class Store {
 
   async toggleLikeTrack(track: Track): Promise<void> {
     try {
-      this.api.likeAction(track, this.isLikedTrack(track.id) ? 'remove-like' : 'like');
+      this.api.likeAction(track, this.isLikedTrack(track.id, track.type) ? 'remove-like' : 'like');
     } catch (_ex) {
       const ex = _ex as ({ response: { status: number } });
       if (ex.response.status === 401) {
@@ -290,9 +290,14 @@ export class Store {
     this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
-  isLikedTrack(id: string): boolean {
-    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID)) {
+  isLikedTrack(id: string, trackType: string): boolean {
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && trackType === 'music') {
       const tracks = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
+      const track = tracks.find((track) => track.id === id);
+
+      return track != null;
+    } else if(this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && trackType === 'podcast-episode') {
+      const tracks = this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? [];
       const track = tracks.find((track) => track.id === id);
 
       return track != null;
@@ -302,7 +307,7 @@ export class Store {
   }
 
   isLikedCurrentTrack(): boolean {
-    return this.currentTrack != null && this.isLikedTrack(this.currentTrack.id);
+    return this.currentTrack != null && this.isLikedTrack(this.currentTrack.id, this.currentTrack.type);
   }
 
   async downloadTrack(track: Track) {
