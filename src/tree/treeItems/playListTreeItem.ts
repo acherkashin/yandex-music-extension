@@ -22,5 +22,7 @@ export class PlayListTreeItem extends vscode.TreeItem {
     } else {
       this.iconPath = getPlayListIcon(playList);
     }
+
+    this.contextValue = 'playlist';
   }
 }

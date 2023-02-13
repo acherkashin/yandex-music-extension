@@ -8,3 +8,4 @@ export { ChartTreeItem } from './chartTreeItem';
 export { UserTrackTreeItem } from './userTrackTreeItem';
 export { LikedPodcastsTreeItem } from './likedPodcastsTreeItem';
 export { UserPlayListTreeItem } from './userPlayListTreeItem';
+export { ArtistTreeItem } from './artistTreeItem';

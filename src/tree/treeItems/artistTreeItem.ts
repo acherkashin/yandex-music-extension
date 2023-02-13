@@ -13,5 +13,7 @@ export class ArtistTreeItem extends vscode.TreeItem {
         } else {
             this.iconPath = new vscode.ThemeIcon("person");
         }
+
+        this.contextValue = "artist";
     }
 }

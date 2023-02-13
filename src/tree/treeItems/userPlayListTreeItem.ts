@@ -5,6 +5,6 @@ export class UserPlayListTreeItem extends PlayListTreeItem {
     constructor(playList: Playlist) {
       super(playList);
   
-      this.contextValue = 'user-playlist';
+      this.contextValue = [this.contextValue, 'user-playlist'].join(',');
     }
   }

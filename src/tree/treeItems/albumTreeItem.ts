@@ -13,5 +13,7 @@ export class AlbumTreeItem extends vscode.TreeItem {
     } else {
       this.iconPath = getThemeIcon("playlist.svg");
     }
+
+    this.contextValue = "album";
   }
 }

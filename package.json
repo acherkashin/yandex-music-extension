@@ -146,6 +146,12 @@
         "category": "Yandex Music",
         "title": "Создать плейлист",
         "icon": "$(add)"
+      },
+      {
+        "command": "yandexMusic.openInBrowser",
+        "category": "Yandex Music",
+        "title": "Открыть в браузере",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {
@@ -207,6 +213,11 @@
         {
           "command": "yandexMusic.deletePlaylist",
           "when": "viewItem =~ /user-playlist/"
+        },
+        {
+          "command": "yandexMusic.openInBrowser",
+          "group": "inline",
+          "when": "viewItem =~ /artist/ || viewItem =~ /album/ || viewItem =~ /playlist/ || viewItem =~ /track/"
         }
       ],
       "commandPalette": [

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { PlayListTree } from "./tree/playListTree";
-import { TrackTreeItem } from "./tree/treeItems";
+import { AlbumTreeItem, ArtistTreeItem, PlayListTreeItem, TrackTreeItem } from "./tree/treeItems";
 import { Store } from "./store";
 import { showPlaylistNameBox, showPlaylistsBox, showPrompt, showSearchBox } from "./inputs";
 import { ChartTree } from "./tree/chartTree";
@@ -14,6 +14,7 @@ import { defaultTraceSource } from './logging/TraceSource';
 import { UserPlayListTreeItem, UserTrackTreeItem } from "./tree/treeItems";
 import { Playlist } from "yandex-music-client";
 import { errorLogger } from "./logging/ErrorLogger";
+import open = require("open");
 const packageJson = require('./../package');
 
 let store: Store = null as any;
@@ -173,7 +174,18 @@ export function activate(context: vscode.ExtensionContext) {
         await store.api.deletePlaylist(node.playList.kind);
         await refreshExplorer();
       }
-    }, "Delete playlist"))
+    }, "Delete playlist")),
+    vscode.commands.registerCommand("yandexMusic.openInBrowser", errorLogger(async (node) => {
+      if (node instanceof ArtistTreeItem) {
+        open(`https://music.yandex.ru/artist/${node.artist.id}`);
+      } else if(node instanceof AlbumTreeItem) {
+        open(`https://music.yandex.ru/album/${node.album.id}`);
+      } else if (node instanceof PlayListTreeItem) {
+        open(`https://music.yandex.ru/users/${node.playList.owner.login}/playlists/${node.playList.kind}`);
+      } else if(node instanceof TrackTreeItem) {
+        open(`https://music.yandex.ru/album/${node.track.albums[0].id}/track/${node.track.id}`);
+      }
+    })),
   );
 }
 
