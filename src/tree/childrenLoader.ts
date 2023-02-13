@@ -4,12 +4,19 @@ import { NewPlayListsTreeItem, PlayListTreeItem, TrackTreeItem, NewReleasesTreeI
 import { Store, LIKED_TRACKS_PLAYLIST_ID, LIKED_PODCASTS_PLAYLIST_ID } from '../store';
 import { ActualPodcastsTreeItem } from './treeItems/actualPodcastsTreeItem';
 import { ArtistTreeItem } from './treeItems/artistTreeItem';
-import { LikedPodcastsTreeItem } from './treeItems/likedPodcastsTreeItem';
+import { UserPlayListTreeItem, UserTrackTreeItem, LikedPodcastsTreeItem } from './treeItems';
 
 export function getChildren(store: Store, element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (element instanceof NewPlayListsTreeItem) {
         return store.api.getNewPlayLists().then((playLists) => {
             return playLists.map((item) => new PlayListTreeItem(item));
+        });
+    }
+
+    if (element instanceof UserPlayListTreeItem) {
+        const playlist = element.playList;
+        return store.getTracks(playlist.owner.uid, playlist.kind).then((tracks) => {
+            return tracks.map((track, index) => new UserTrackTreeItem(store, track, playlist, index));
         });
     }
 

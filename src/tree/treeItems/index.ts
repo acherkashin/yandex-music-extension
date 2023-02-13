@@ -5,3 +5,8 @@ export { NewReleasesTreeItem } from './newReleasesTreeItem';
 export { PlayListTreeItem } from './playListTreeItem';
 export { TrackTreeItem } from './trackTreeItem';
 export { ChartTreeItem } from './chartTreeItem';
+export { UserTrackTreeItem } from './userTrackTreeItem';
+export { LikedPodcastsTreeItem } from './likedPodcastsTreeItem';
+export { UserPlayListTreeItem } from './userPlayListTreeItem';
+export { ArtistTreeItem } from './artistTreeItem';
+export { MyWaveTreeItem } from './myWaveTreeItem';

@@ -7,7 +7,7 @@
     "url": "https://github.com/acherkashin/yandex-music-extension"
   },
   "description": "Enjoy listening to YandexMusic right in your favorite code editor",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "preview": true,
   "engines": {
     "vscode": "^1.53.0"
@@ -43,37 +43,37 @@
       {
         "command": "yandexMusic.play",
         "category": "Yandex Music",
-        "title": "Play Track"
+        "title": "Воспроизвести"
       },
       {
         "command": "yandexMusic.pause",
         "category": "Yandex Music",
-        "title": "Pause Track"
+        "title": "Пауза"
       },
       {
         "command": "yandexMusic.next",
         "category": "Yandex Music",
-        "title": "Next Track"
+        "title": "Следующий трек"
       },
       {
         "command": "yandexMusic.prev",
         "category": "Yandex Music",
-        "title": "Previous Track"
+        "title": "Предыдущий трек"
       },
       {
         "command": "yandexMusic.rewindForward",
         "category": "Yandex Music",
-        "title": "Rewind Track Forward"
+        "title": "Перемотать вперёд"
       },
       {
         "command": "yandexMusic.rewindBackward",
         "category": "Yandex Music",
-        "title": "Rewind Track Backward"
+        "title": "Перемотать назад"
       },
       {
         "command": "yandexMusic.downloadTrack",
         "category": "Yandex Music",
-        "title": "Download Track",
+        "title": "Скачать",
         "icon": "$(cloud-download)"
       },
       {
@@ -94,32 +94,64 @@
       {
         "command": "yandexMusic.signIn",
         "category": "Yandex Music",
-        "title": "Sign In",
+        "title": "Войти",
         "icon": "$(log-in)"
       },
       {
         "command": "yandexMusic.signOut",
         "category": "Yandex Music",
-        "title": "Sign Out",
+        "title": "Выйти",
         "icon": "$(log-out)"
       },
       {
         "command": "yandexMusic.refresh",
         "category": "Yandex Music",
-        "title": "Refresh play lists",
+        "title": "Обновить плейлисты",
         "icon": "$(refresh)"
       },
       {
         "command": "yandexMusic.search",
         "category": "Yandex Music",
-        "title": "Search",
+        "title": "Поиск",
         "icon": "$(search)"
       },
       {
         "command": "yandexMusic.clearSearchResult",
         "category": "Yandex Music",
-        "title": "Clear Search Result",
+        "title": "Очистить результаты",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "yandexMusic.addToPlaylist",
+        "category": "Yandex Music",
+        "title": "Добавить в плейлист"
+      },
+      {
+        "command": "yandexMusic.removeFromPlaylist",
+        "category": "Yandex Music",
+        "title": "Удалить из плейлиста"
+      },
+      {
+        "command": "yandexMusic.renamePlaylist",
+        "category": "Yandex Music",
+        "title": "Переименовать плейлист"
+      },
+      {
+        "command": "yandexMusic.deletePlaylist",
+        "category": "Yandex Music",
+        "title": "Удалить плейлист"
+      },
+      {
+        "command": "yandexMusic.createPlaylist",
+        "category": "Yandex Music",
+        "title": "Создать плейлист",
+        "icon": "$(add)"
+      },
+      {
+        "command": "yandexMusic.openInBrowser",
+        "category": "Yandex Music",
+        "title": "Открыть в браузере",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {
@@ -131,6 +163,11 @@
         },
         {
           "command": "yandexMusic.signOut",
+          "group": "navigation",
+          "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
+        },
+        {
+          "command": "yandexMusic.createPlaylist",
           "group": "navigation",
           "when": "view == yandex-music-play-lists && yandexMusic.isAuthorized"
         },
@@ -149,17 +186,38 @@
         {
           "command": "yandexMusic.downloadTrack",
           "group": "inline",
-          "when": "viewItem == track || viewItem == likedTrack"
+          "when": "viewItem =~ /track/"
         },
         {
           "command": "yandexMusic.likeTrack",
           "group": "inline",
-          "when": "viewItem == track"
+          "when": "viewItem =~ /canlike/"
         },
         {
           "command": "yandexMusic.dislikeTrack",
           "group": "inline",
-          "when": "viewItem == likedTrack"
+          "when": "viewItem =~ /cannotlike/"
+        },
+        {
+          "command": "yandexMusic.addToPlaylist",
+          "when": "viewItem =~ /track/"
+        },
+        {
+          "command": "yandexMusic.removeFromPlaylist",
+          "when": "viewItem =~ /in-user/"
+        },
+        {
+          "command": "yandexMusic.renamePlaylist",
+          "when": "viewItem =~ /user-playlist/"
+        },
+        {
+          "command": "yandexMusic.deletePlaylist",
+          "when": "viewItem =~ /user-playlist/"
+        },
+        {
+          "command": "yandexMusic.openInBrowser",
+          "group": "inline",
+          "when": "viewItem =~ /artist/ || viewItem =~ /album/ || viewItem =~ /playlist/ || viewItem =~ /track/"
         }
       ],
       "commandPalette": [
@@ -221,20 +279,20 @@
       "yandex-music-explorer": [
         {
           "id": "yandex-music-play-lists",
-          "name": "Yandex Music Play Lists",
+          "name": "Плейлисты",
           "message": "message"
         },
         {
           "id": "yandex-music-chart",
-          "name": "Chart"
+          "name": "Чарт"
         },
         {
           "id": "yandex-music-recommendations",
-          "name": "Recommendations"
+          "name": "Рекомендации"
         },
         {
           "id": "yandex-music-search",
-          "name": "Search"
+          "name": "Поиск"
         }
       ]
     },
@@ -262,11 +320,11 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
     "@types/vscode": "^1.53.0",
+    "@vscode/test-electron": "^2.2.3",
     "glob": "^7.1.5",
     "mocha": "^6.2.2",
     "tslint": "^5.20.0",
-    "typescript": "^4.9.4",
-    "vscode-test": "^1.2.2"
+    "typescript": "^4.9.4"
   },
   "dependencies": {
     "@electron/get": "^2.0.2",

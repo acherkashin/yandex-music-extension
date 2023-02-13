@@ -14,7 +14,14 @@ export class TrackTreeItem extends vscode.TreeItem {
       arguments: [this],
     };
 
+    const contexts = ["track"];
+    if (store.isLikedTrack(this.track.id, this.track.type)) {
+      contexts.push("cannotlike");
+    } else {
+      contexts.push("canlike");
+    }
+
     this.iconPath = getThemeIcon("track.svg");
-    this.contextValue = store.isLikedTrack(this.track.id) ? "likedTrack" : "track";
+    this.contextValue = contexts.join(",");
   }
 }
