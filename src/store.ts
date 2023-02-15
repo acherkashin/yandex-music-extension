@@ -189,12 +189,16 @@ export class Store {
     return result;
   }
 
-  async getStationTracks(radioId: string){
-    const result = await this.api.getStationTracks(radioId);
-    const tracks = result.sequence.map(item => item.track);
-    this.savePlaylist(radioId, tracks);
+  async getStationTracks(radioId: string): Promise<Track[]> {
+    if (this.playLists.has(radioId)) {
+      return this.playLists.get(radioId)!;
+    } else {
+      const result = await this.api.getStationTracks(radioId);
+      const tracks = result.sequence.map(item => item.track);
+      this.savePlaylist(radioId, tracks);
 
-    return tracks;
+      return tracks;
+    }
   }
 
   async getLikedTracks(): Promise<Track[]> {
@@ -290,7 +294,7 @@ export class Store {
     this.player.rewind(sec);
   }
 
-  next() {
+  async next() {
     this.internalPlay((this.currentTrackIndex ?? 0) + 1);
   }
 
@@ -304,7 +308,7 @@ export class Store {
       const track = tracks.find((track) => track.id === id);
 
       return track != null;
-    } else if(this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && trackType === 'podcast-episode') {
+    } else if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && trackType === 'podcast-episode') {
       const tracks = this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? [];
       const track = tracks.find((track) => track.id === id);
 
@@ -333,6 +337,14 @@ export class Store {
     }
 
     const playlist = this.playLists.get(this.currentPlayListId);
+
+    //TODO: need to load tracks when we start playing the last one
+    if (playlist != null && this.currentPlayListId === "user:onyourwave" && (playlist.length - 1) <= index) {
+      const nextTracks = await this.getStationTracks("user:onyourwave");
+      playlist.push(...nextTracks);
+      //NOTE: update playlist to refresh @computed properties like hasNextTrack
+      this.playLists.set(this.currentPlayListId, playlist);
+    }
 
     if (playlist != null && index >= 0 && index <= playlist.length) {
       this.currentTrackIndex = index;

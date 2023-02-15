@@ -146,6 +146,7 @@ export class YandexMusicApi {
   }
 
   async getStationTracks(stationId: string) {
+    //TODO: add typings for the result
     return ((await this.client!.rotor.getStationTracks(stationId, true)).result);
   }
   
