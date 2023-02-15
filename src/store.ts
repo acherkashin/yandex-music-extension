@@ -10,6 +10,7 @@ import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
+import { RadioPlaylist, TracksPlaylist } from "./players/playlist";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -29,7 +30,7 @@ export class Store {
   private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
   // TODO: implement PlayList class which will implement "loadMore" function
-  @observable playLists = new Map<string, Track[]>();
+  @observable playLists = new Map<string, TracksPlaylist>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
   @observable private currentPlayListId: string | undefined;
@@ -48,28 +49,9 @@ export class Store {
     return this._api.isAuthorized;
   }
 
-  @computed get currentTrack(): Track | null {
-    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
-      return null;
-    }
-    return this.getTrack(this.currentPlayListId, this.currentTrackIndex);
-  }
-
-  @computed get nextTrack(): Track | null {
-    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
-      return null;
-    }
-
-    return this.getTrack(this.currentPlayListId, this.currentTrackIndex + 1);
-  }
-
-  @computed get prevTrack(): Track | null {
-    if (this.currentPlayListId == null || this.currentTrackIndex == null) {
-      return null;
-    }
-
-    return this.getTrack(this.currentPlayListId, this.currentTrackIndex - 1);
-  }
+  @observable currentTrack: Track | null | undefined = null;
+  @observable nextTrack: Track | null | undefined = null;
+  @observable prevTrack: Track | null | undefined = null;
 
   @computed get hasNextTrack(): boolean {
     return this.nextTrack != null;
@@ -133,7 +115,7 @@ export class Store {
       this.searchResult = resp.result;
       vscode.commands.executeCommand("setContext", "yandexMusic.hasSearchResult", true);
       if (this.searchResult.tracks) {
-        this.savePlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
+        this.saveTrackPlaylist(SEARCH_TRACKS_PLAYLIST_ID, this.searchResult.tracks.results);
       } else {
         this.removePlaylist(SEARCH_TRACKS_PLAYLIST_ID);
       }
@@ -163,62 +145,62 @@ export class Store {
 
   async getChart(): Promise<ChartItem[]> {
     const { tracks, chartItems } = await this.api.getChartTracks();
-    this.savePlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
+    this.saveTrackPlaylist(CHART_TRACKS_PLAYLIST_ID, tracks);
 
     return chartItems;
   }
 
   async getAlbumTracks(albumId: number): Promise<Track[]> {
     const tracks = await this.api.getAlbumTracks(albumId);
-    this.savePlaylist(albumId, tracks);
+    this.saveTrackPlaylist(albumId, tracks);
 
     return tracks;
   }
 
   async getArtistTracks(artistId: string): Promise<Track[]> {
     const tracks = await this.api.getArtistTracks(artistId);
-    this.savePlaylist(artistId, tracks);
+    this.saveTrackPlaylist(artistId, tracks);
 
     return tracks;
   }
 
   async getTracks(userId: number, playListId: number) {
     const result = await this.api.getPlaylistTracks(userId, playListId);
-    this.savePlaylist(playListId, result);
+    this.saveTrackPlaylist(playListId, result);
 
     return result;
   }
 
   async getStationTracks(radioId: string): Promise<Track[]> {
     if (this.playLists.has(radioId)) {
-      return this.playLists.get(radioId)!;
+      return this.playLists.get(radioId)!.tracks;
     } else {
       const result = await this.api.getStationTracks(radioId);
       const tracks = result.sequence.map(item => item.track);
-      this.savePlaylist(radioId, tracks);
+      this.saveRadioPlaylist(radioId, tracks);
 
       return tracks;
     }
   }
 
   async getLikedTracks(): Promise<Track[]> {
-    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.length ?? 0) > 0) {
-      return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? []);
+    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks.length ?? 0) > 0) {
+      return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks ?? []);
     }
 
     await this.refreshLikedTracks();
 
-    return this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
+    return this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks ?? [];
   }
 
   async getLikedPodcasts(): Promise<Track[]> {
-    if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && (this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.length ?? 0) > 0) {
-      return Promise.resolve(this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? []);
+    if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && (this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks.length ?? 0) > 0) {
+      return Promise.resolve(this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks ?? []);
     }
 
     await this.refreshLikedTracks();
 
-    return this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? [];
+    return this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks ?? [];
   }
 
   private likesPromise: ReturnType<typeof this.api.getLikedTracks> | null = null;
@@ -231,17 +213,17 @@ export class Store {
     const { result } = await (this.likesPromise = this.api.getLikedTracks());
     const podcasts = result.filter(item => item.type === 'podcast-episode');
     const tracks = result.filter(item => item.type === 'music');
-    this.savePlaylist(LIKED_PODCASTS_PLAYLIST_ID, podcasts);
-    this.savePlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks);
+    this.saveTrackPlaylist(LIKED_PODCASTS_PLAYLIST_ID, podcasts);
+    this.saveTrackPlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks);
 
     this.likesPromise = null;
   }
 
   play(track?: { itemId: string; playListId: string }) {
     if (track) {
-      const tracks = this.playLists.get(track.playListId);
-      if (tracks) {
-        const index = tracks.findIndex((item) => item.id === track?.itemId);
+      const playlist = this.playLists.get(track.playListId);
+      if (playlist) {
+        const index = playlist.getTrackIndex(track.itemId);
         if (index !== -1) {
           this.currentPlayListId = track.playListId;
           this.internalPlay(index);
@@ -303,19 +285,20 @@ export class Store {
   }
 
   isLikedTrack(id: string, trackType: string): boolean {
+    let playlist: TracksPlaylist | undefined = undefined;
     if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && trackType === 'music') {
-      const tracks = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID) ?? [];
-      const track = tracks.find((track) => track.id === id);
-
-      return track != null;
+      playlist = this.playLists.get(LIKED_TRACKS_PLAYLIST_ID);
     } else if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && trackType === 'podcast-episode') {
-      const tracks = this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID) ?? [];
-      const track = tracks.find((track) => track.id === id);
-
-      return track != null;
+      playlist = this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID);
     }
 
-    return false;
+    if (playlist == null) {
+      return false;
+    }
+
+    const track = playlist.getById(id);
+
+    return track != null;
   }
 
   isLikedCurrentTrack(): boolean {
@@ -338,48 +321,52 @@ export class Store {
 
     const playlist = this.playLists.get(this.currentPlayListId);
 
-    //TODO: need to load tracks when we start playing the last one
-    if (playlist != null && this.currentPlayListId === "user:onyourwave" && (playlist.length - 1) <= index) {
-      const nextTracks = await this.getStationTracks("user:onyourwave");
-      playlist.push(...nextTracks);
-      //NOTE: update playlist to refresh @computed properties like hasNextTrack
-      this.playLists.set(this.currentPlayListId, playlist);
-    }
-
-    if (playlist != null && index >= 0 && index <= playlist.length) {
-      this.currentTrackIndex = index;
-      const track = playlist?.[index];
-
+    if (playlist != null) {
+      const track = await playlist.getByIndex(index);
       if (track) {
-        const url = await this._api.getTrackUrl(track.id);
-        this.player.play({
-          url,
-          album: getAlbums(track),
-          artist: getArtists(track),
-          title: track.title,
-          coverUri: getCoverUri(track.coverUri, 200),
-        });
-        this.isPlaying = true;
+        this.currentTrackIndex = index;
+
+        if (track) {
+          this.currentTrack = track;
+          this.prevTrack = await playlist.getByIndex(index - 1);
+          this.nextTrack = await playlist.getByIndex(index + 1);
+
+          const url = await this._api.getTrackUrl(track.id);
+          this.player.play({
+            url,
+            album: getAlbums(track),
+            artist: getArtists(track),
+            title: track.title,
+            coverUri: getCoverUri(track.coverUri, 200),
+          });
+          this.isPlaying = true;
+        }
       }
     }
   }
 
-  private savePlaylist(playListId: string | number, tracks: Track[]) {
-    this.playLists.set(playListId.toString(), tracks);
+  private saveTrackPlaylist(playListId: string | number, tracks: Track[]) {
+    const strId = playListId.toString();
+    this.playLists.set(strId, new TracksPlaylist(this, strId, tracks));
+  }
+
+  private saveRadioPlaylist(playListId: string | number, tracks: Track[]) {
+    const strId = playListId.toString();
+    this.playLists.set(strId, new RadioPlaylist(this, strId, tracks));
   }
 
   private removePlaylist(playListId: string) {
     this.playLists.delete(playListId);
   }
 
-  private getTrack(playListId: string, index: number): Track | null {
+  private async getTrack(playListId: string, index: number): Promise<Track | undefined> {
     const tracks = this.playLists.get(playListId);
 
     if (tracks == null) {
-      return null;
+      return undefined;
     }
 
-    return tracks[index];
+    return tracks.getByIndex(index);
   }
 
   dispose() {
