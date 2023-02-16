@@ -10,7 +10,8 @@ import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
 import { getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
-import { RadioPlaylist, TracksPlaylist } from "./players/playlist";
+import { RadioPlaylist } from "./players/RadioPlaylist";
+import { TracksPlaylist } from './players/TracksPlaylist';
 
 export interface UserCredentials {
   username: string | undefined;
@@ -29,7 +30,6 @@ export class Store {
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
   @observable isPlaying = false;
-  // TODO: implement PlayList class which will implement "loadMore" function
   @observable playLists = new Map<string, TracksPlaylist>();
   @observable private currentTrackIndex: number | undefined;
   //TODO add "type PlayListId = string | number | undefined;"
@@ -183,24 +183,23 @@ export class Store {
     }
   }
 
-  async getLikedTracks(): Promise<Track[]> {
-    if (this.playLists.has(LIKED_TRACKS_PLAYLIST_ID) && (this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks.length ?? 0) > 0) {
-      return Promise.resolve(this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks ?? []);
-    }
-
-    await this.refreshLikedTracks();
-
-    return this.playLists.get(LIKED_TRACKS_PLAYLIST_ID)?.tracks ?? [];
+  getLikedTracks() {
+    return this.getLikedTracksInternal(LIKED_TRACKS_PLAYLIST_ID);
   }
 
-  async getLikedPodcasts(): Promise<Track[]> {
-    if (this.playLists.has(LIKED_PODCASTS_PLAYLIST_ID) && (this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks.length ?? 0) > 0) {
-      return Promise.resolve(this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks ?? []);
+  getLikedPodcasts() {
+    return this.getLikedTracksInternal(LIKED_PODCASTS_PLAYLIST_ID);
+  }
+
+  private async getLikedTracksInternal(playlistId: string) {
+    const tracks = this.playLists.get(playlistId)?.tracks ?? [];
+    if (tracks.length > 0) {
+      return Promise.resolve(tracks);
     }
 
     await this.refreshLikedTracks();
 
-    return this.playLists.get(LIKED_PODCASTS_PLAYLIST_ID)?.tracks ?? [];
+    return this.playLists.get(playlistId)?.tracks ?? [];
   }
 
   private likesPromise: ReturnType<typeof this.api.getLikedTracks> | null = null;
@@ -311,7 +310,8 @@ export class Store {
   }
 
   /**
-   *
+   * Plays track in current playlist by index
+   * 
    * @param index Song index of current playList
    */
   private async internalPlay(index: number) {
@@ -347,7 +347,7 @@ export class Store {
 
   private saveTrackPlaylist(playListId: string | number, tracks: Track[]) {
     const strId = playListId.toString();
-    this.playLists.set(strId, new TracksPlaylist(this, strId, tracks));
+    this.playLists.set(strId, new TracksPlaylist(strId, tracks));
   }
 
   private saveRadioPlaylist(playListId: string | number, tracks: Track[]) {
@@ -357,16 +357,6 @@ export class Store {
 
   private removePlaylist(playListId: string) {
     this.playLists.delete(playListId);
-  }
-
-  private async getTrack(playListId: string, index: number): Promise<Track | undefined> {
-    const tracks = this.playLists.get(playListId);
-
-    if (tracks == null) {
-      return undefined;
-    }
-
-    return tracks.getByIndex(index);
   }
 
   dispose() {
