@@ -1,9 +1,13 @@
 # [Yandex Music Extension](https://marketplace.visualstudio.com/items?itemName=acherkashin.yandex-music-extension)
 
-![Visual Studio Code loves Yandex Music](images/vs-loves-yandex-music.png)
+<p align="center">
+  <img src="images/vs-loves-yandex-music.png">
+</p>
 
 Extension allows you enjoy listening to YandexMusic right in your favorite code editor.
 All operation systems are supported 🎉🎉🎉.
+
+![Extension Features](images/extension-features.png)
 
 ## Requirements
 
