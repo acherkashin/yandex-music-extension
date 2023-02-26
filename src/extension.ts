@@ -98,6 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })),
     vscode.commands.registerCommand("yandexMusic.playRadio", async (stationId: string) => {
+      const result = await store.startMyWaveRadio();
       const tracks = await store.getStationTracks(stationId);
       store.play({ itemId: tracks[0].id, playListId: stationId });
     }),

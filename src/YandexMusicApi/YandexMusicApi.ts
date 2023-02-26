@@ -149,7 +149,7 @@ export class YandexMusicApi {
     //TODO: add typings for the result
     return ((await this.client!.rotor.getStationTracks(stationId, true)).result);
   }
-  
+
   //TODO: in generated API form-data is used and it breaks api for some reason, so currently self-written methods are used to add/remove track from playlist
   // async addTrackToPlaylist(kingPlaylist: number, revision: number, track: Track) {
   //   // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
@@ -229,8 +229,16 @@ export class YandexMusicApi {
     return this.client!.playlists.createPlaylist(this.userId!, {
       title: name,
       visibility: 'private'
-    })
-  } 
+    });
+  }
+
+  startMyWaveRadio() {
+    return this.client!.rotor.sendStationFeedback("user:onyourwave", {
+      type: "radioStarted",
+      timestamp: new Date().toISOString(),
+      from: "vscode-extension"
+    });
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

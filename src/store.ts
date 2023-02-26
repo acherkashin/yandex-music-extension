@@ -171,6 +171,10 @@ export class Store {
     return result;
   }
 
+  startMyWaveRadio() {
+    return this.api.startMyWaveRadio();
+  }
+
   async getStationTracks(radioId: string): Promise<Track[]> {
     if (this.playLists.has(radioId)) {
       return this.playLists.get(radioId)!.tracks;
