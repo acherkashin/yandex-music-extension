@@ -239,6 +239,58 @@ export class YandexMusicApi {
       from: "vscode-extension"
     });
   }
+
+  async startPlayAudio(playId: string, track: Track, stationId?: string, batchId?: string) {
+    const now = new Date().toISOString();
+
+    if (stationId) {
+      await this.client!.rotor.sendStationFeedback(stationId, {
+        type: 'trackStarted',
+        timestamp: now,
+        trackId: track.id,
+      }, batchId);
+    }
+
+    return this.client!.tracks.playAudio({
+      "play-id": playId,
+      from: "vscode-extension",
+      'track-id': track.id,
+      'client-now': now,
+      'album-id': track.albums[0].id.toString(),
+      'from-cache': false,
+      "track-length-seconds": track.durationMs / 1000,
+      "end-position-seconds": 0,
+      "total-played-seconds": 0,
+      timestamp: now,
+    });
+  }
+
+  async finishPlayAudio(playId: string, track: Track, stationId?: string, batchId?: string) {
+    const now = new Date().toISOString();
+    const playedSeconds = track.durationMs / 1000;
+
+    if (stationId) {
+      await this.client!.rotor.sendStationFeedback(stationId, {
+        type: 'trackFinished',
+        timestamp: now,
+        trackId: track.id,
+        totalPlayedSeconds: playedSeconds,
+      }, batchId);
+    }
+
+    return this.client!.tracks.playAudio({
+      "play-id": playId,
+      from: "vscode-extension",
+      'track-id': track.id,
+      'client-now': now,
+      'album-id': track.albums[0].id.toString(),
+      'from-cache': false,
+      "track-length-seconds": playedSeconds,
+      "end-position-seconds": playedSeconds,
+      "total-played-seconds": playedSeconds,
+      'timestamp': now
+    });
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [

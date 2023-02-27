@@ -8,7 +8,7 @@ import { RewindBarItem } from "./statusbar/rewindBarItem";
 import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { ElectronPlayer } from "./players/electronPlayer";
 import { IYandexMusicAuthData } from "./settings";
-import { getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
+import { generatePlayId, getAlbums, getArtists, getCoverUri } from "./YandexMusicApi/ApiUtils";
 import { defaultTraceSource } from "./logging/TraceSource";
 import { RadioPlaylist } from "./players/RadioPlaylist";
 import { TracksPlaylist } from './players/TracksPlaylist';
@@ -36,6 +36,10 @@ export class Store {
   @observable private currentPlayListId: string | undefined;
   private searchText = '';
   @observable searchResult: Search | undefined;
+  /**
+   * Уникальный идентификатор проигрывания. Необходимо отправлять один и тот же id в начале и конце проигрывания трека.
+   */
+  private playId = '';
 
   // TODO create abstraction around "YandexMusicApi" which will be called "PlayListLoader" or "PlayListProvider" 
   // where we will be able to hide all logic about adding custom identifiers like we have in searchTree
@@ -280,10 +284,12 @@ export class Store {
   }
 
   async next() {
+    //TODO: need to send "skipped" feedback when radio is playing
     this.internalPlay((this.currentTrackIndex ?? 0) + 1);
   }
 
   prev() {
+    //TODO: need to send "skipped" feedback when radio is playing
     this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
@@ -323,29 +329,42 @@ export class Store {
       return;
     }
 
-    const playlist = this.playLists.get(this.currentPlayListId);
+    try {
+      const playlist = this.playLists.get(this.currentPlayListId);
 
-    if (playlist != null) {
-      const track = await playlist.getByIndex(index);
-      if (track) {
-        this.currentTrackIndex = index;
-
+      if (playlist != null) {
+        const track = await playlist.getByIndex(index);
         if (track) {
-          this.currentTrack = track;
-          this.prevTrack = await playlist.getByIndex(index - 1);
-          this.nextTrack = await playlist.getByIndex(index + 1);
+          this.currentTrackIndex = index;
 
-          const url = await this._api.getTrackUrl(track.id);
-          this.player.play({
-            url,
-            album: getAlbums(track),
-            artist: getArtists(track),
-            title: track.title,
-            coverUri: getCoverUri(track.coverUri, 200),
-          });
-          this.isPlaying = true;
+          if (track) {
+            this.currentTrack = track;
+            // if (this.currentTrack && this.playId) {
+            //   await this.api.finishPlayAudio(this.playId, this.currentTrack, playlist.id);
+            // }
+
+            this.prevTrack = await playlist.getByIndex(index - 1);
+            this.nextTrack = await playlist.getByIndex(index + 1);
+
+
+            this.playId = generatePlayId();
+            // await this.api.startPlayAudio(this.playId, track);
+
+            const url = await this._api.getTrackUrl(track.id);
+            this.player.play({
+              url,
+              album: getAlbums(track),
+              artist: getArtists(track),
+              title: track.title,
+              coverUri: getCoverUri(track.coverUri, 200),
+            });
+            this.isPlaying = true;
+          }
         }
       }
+    } catch (_ex) {
+      const ex = _ex as ({ response: { status: number } });
+      // TODO: add logging
     }
   }
 

@@ -9,7 +9,8 @@ export class RadioPlaylist extends TracksPlaylist {
 
     async getByIndex(index: number): Promise<Track | undefined> {
         if (this.tracks.length <= index) {
-            const nextTracks = await this.store.getStationTracks(this.id);
+            const result = await this.store.api.getStationTracks(this.id);
+            const nextTracks = result.sequence.map(item => item.track);
             this.tracks.push(...nextTracks);
         }
 
