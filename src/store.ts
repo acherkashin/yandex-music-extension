@@ -12,6 +12,7 @@ import { generatePlayId, getAlbums, getArtists, getCoverUri } from "./YandexMusi
 import { defaultTraceSource } from "./logging/TraceSource";
 import { RadioPlaylist } from "./players/RadioPlaylist";
 import { TracksPlaylist } from './players/TracksPlaylist';
+import { logError } from "./logging/ErrorLogger";
 
 export interface UserCredentials {
   username: string | undefined;
@@ -175,20 +176,13 @@ export class Store {
     return result;
   }
 
-  startMyWaveRadio() {
-    return this.api.startMyWaveRadio();
-  }
+  async startRadio(radioId: string) {
+    await this.api.startRadio(radioId);
+    const radio = new RadioPlaylist(this, radioId);
+    this.saveRadioPlaylist(radio);
+    await radio.loadNextBatch();
 
-  async getStationTracks(radioId: string): Promise<Track[]> {
-    if (this.playLists.has(radioId)) {
-      return this.playLists.get(radioId)!.tracks;
-    } else {
-      const result = await this.api.getStationTracks(radioId);
-      const tracks = result.sequence.map(item => item.track);
-      this.saveRadioPlaylist(radioId, tracks);
-
-      return tracks;
-    }
+    this.play({ itemId: radio.tracks[0].id, playListId: radioId });
   }
 
   getLikedTracks() {
@@ -332,39 +326,54 @@ export class Store {
     try {
       const playlist = this.playLists.get(this.currentPlayListId);
 
-      if (playlist != null) {
-        const track = await playlist.getByIndex(index);
-        if (track) {
-          this.currentTrackIndex = index;
+      if (playlist == null) {
+        return;
+      }
 
-          if (track) {
-            this.currentTrack = track;
-            // if (this.currentTrack && this.playId) {
-            //   await this.api.finishPlayAudio(this.playId, this.currentTrack, playlist.id);
-            // }
+      const track = await playlist.getByIndex(index);
+      if (track == null) {
+        return;
+      }
 
-            this.prevTrack = await playlist.getByIndex(index - 1);
-            this.nextTrack = await playlist.getByIndex(index + 1);
+      this.currentTrackIndex = index;
 
+      this.currentTrack = track;
 
-            this.playId = generatePlayId();
-            // await this.api.startPlayAudio(this.playId, track);
-
-            const url = await this._api.getTrackUrl(track.id);
-            this.player.play({
-              url,
-              album: getAlbums(track),
-              artist: getArtists(track),
-              title: track.title,
-              coverUri: getCoverUri(track.coverUri, 200),
-            });
-            this.isPlaying = true;
-          }
+      if (this.currentTrack && this.playId && playlist instanceof RadioPlaylist && playlist.batchId) {
+        try {
+          await this.api.finishPlayAudio(this.playId, this.currentTrack, playlist.id, playlist.batchId);
+        } catch (ex) {
+          // sometimes 502 error may happen for some reason. It happens sometimes in official yandex app as well
+          logError(ex);
         }
       }
-    } catch (_ex) {
-      const ex = _ex as ({ response: { status: number } });
-      // TODO: add logging
+
+      this.prevTrack = await playlist.getByIndex(index - 1);
+      this.nextTrack = await playlist.getByIndex(index + 1);
+
+      this.playId = generatePlayId();
+
+      if (this.currentTrack && this.playId && playlist instanceof RadioPlaylist && playlist.batchId) {
+        try {
+          await this.api.startPlayAudio(this.playId, this.currentTrack, playlist.id, playlist.batchId);
+        } catch (ex) {
+          // sometimes 502 error may happen for some reason. It happens sometimes in official yandex app as well
+          logError(ex);
+        }
+      }
+
+      const url = await this._api.getTrackUrl(track.id);
+      this.player.play({
+        url,
+        album: getAlbums(track),
+        artist: getArtists(track),
+        title: track.title,
+        coverUri: getCoverUri(track.coverUri, 200),
+      });
+      this.isPlaying = true;
+
+    } catch (ex) {
+      logError(ex as any);
     }
   }
 
@@ -373,9 +382,8 @@ export class Store {
     this.playLists.set(strId, new TracksPlaylist(strId, tracks));
   }
 
-  private saveRadioPlaylist(playListId: string | number, tracks: Track[]) {
-    const strId = playListId.toString();
-    this.playLists.set(strId, new RadioPlaylist(this, strId, tracks));
+  private saveRadioPlaylist(playlist: RadioPlaylist) {
+    this.playLists.set(playlist.id, playlist);
   }
 
   private removePlaylist(playListId: string) {

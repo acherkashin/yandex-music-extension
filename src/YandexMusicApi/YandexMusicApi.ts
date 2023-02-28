@@ -145,9 +145,9 @@ export class YandexMusicApi {
     return exposeTracks(tracks);
   }
 
-  async getStationTracks(stationId: string) {
+  async getRadioTracks(radioId: string) {
     //TODO: add typings for the result
-    return ((await this.client!.rotor.getStationTracks(stationId, true)).result);
+    return ((await this.client!.rotor.getStationTracks(radioId, true)).result);
   }
 
   //TODO: in generated API form-data is used and it breaks api for some reason, so currently self-written methods are used to add/remove track from playlist
@@ -232,19 +232,19 @@ export class YandexMusicApi {
     });
   }
 
-  startMyWaveRadio() {
-    return this.client!.rotor.sendStationFeedback("user:onyourwave", {
+  startRadio(radioId: string) {
+    return this.client!.rotor.sendStationFeedback(radioId, {
       type: "radioStarted",
       timestamp: new Date().toISOString(),
       from: "vscode-extension"
     });
   }
 
-  async startPlayAudio(playId: string, track: Track, stationId?: string, batchId?: string) {
+  async startPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
     const now = new Date().toISOString();
 
-    if (stationId) {
-      await this.client!.rotor.sendStationFeedback(stationId, {
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
         type: 'trackStarted',
         timestamp: now,
         trackId: track.id,
@@ -265,12 +265,12 @@ export class YandexMusicApi {
     });
   }
 
-  async finishPlayAudio(playId: string, track: Track, stationId?: string, batchId?: string) {
+  async finishPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
     const now = new Date().toISOString();
     const playedSeconds = track.durationMs / 1000;
 
-    if (stationId) {
-      await this.client!.rotor.sendStationFeedback(stationId, {
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
         type: 'trackFinished',
         timestamp: now,
         trackId: track.id,

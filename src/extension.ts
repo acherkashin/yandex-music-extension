@@ -97,11 +97,9 @@ export function activate(context: vscode.ExtensionContext) {
         store.play();
       }
     })),
-    vscode.commands.registerCommand("yandexMusic.playRadio", async (stationId: string) => {
-      const result = await store.startMyWaveRadio();
-      const tracks = await store.getStationTracks(stationId);
-      store.play({ itemId: tracks[0].id, playListId: stationId });
-    }),
+    vscode.commands.registerCommand("yandexMusic.playRadio", errorLogger(async (radioId: string) => {
+      await store.startRadio(radioId);
+    })),
     vscode.commands.registerCommand("yandexMusic.next", errorLogger(() => store.next())),
     vscode.commands.registerCommand("yandexMusic.prev", errorLogger(() => store.prev())),
     vscode.commands.registerCommand("yandexMusic.pause", errorLogger(() => store.pause())),
