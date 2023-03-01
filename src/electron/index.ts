@@ -6,6 +6,7 @@ declare var navigator: Navigator;
 
 class BrowserPlayer {
     audio = new Audio();
+    lastTime = -1;
 
     constructor() {
         function playNextTrack() {
@@ -22,6 +23,7 @@ class BrowserPlayer {
         navigator.mediaSession?.setActionHandler('nexttrack', playNextTrack);
 
         this.audio.addEventListener('ended', playNextTrack);
+        this.audio.addEventListener('timeupdate', () => this.sendTimeUpdated());
     }
 
     play(payload) {
@@ -50,15 +52,23 @@ class BrowserPlayer {
         //TODO need to use time from settings
         this.audio.currentTime += seconds;
     }
-    
+
     pause() {
         this.audio.pause();
         ipcRenderer.send('message', { command: 'paused' });
     }
-    
+
     resume() {
         this.audio.play();
         ipcRenderer.send('message', { command: 'resumed' });
+    }
+
+    sendTimeUpdated() {
+        const currentTime = parseInt(this.audio.currentTime);
+
+        if (currentTime !== this.lastTime && currentTime % 5 === 0) {
+            ipcRenderer.send('message', { command: 'timeupdate', currentTime: currentTime });
+        }
     }
 }
 

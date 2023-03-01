@@ -30,6 +30,7 @@ export class Store {
   private playerControlPanel = new PlayerBarItem(this, vscode.StatusBarAlignment.Left, 2001);
   private rewindPanel = new RewindBarItem(this, vscode.StatusBarAlignment.Left, 2000);
   private landingBlocks: LandingBlock[] = [];
+  private totalPlayedSeconds: number = -1;
   @observable isPlaying = false;
   @observable playLists = new Map<string, TracksPlaylist>();
   @observable private currentTrackIndex: number | undefined;
@@ -86,6 +87,7 @@ export class Store {
         case 'previoustrack': this.prev(); break;
         case 'paused': this.isPlaying = false; break;
         case 'resumed': this.isPlaying = true; break;
+        case 'timeupdate': this.totalPlayedSeconds = message.currentTime; break;
       }
     });
 
@@ -290,7 +292,7 @@ export class Store {
         await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId);
       }
     }
-    
+
     this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
