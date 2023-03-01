@@ -8,7 +8,6 @@
   },
   "description": "Enjoy listening to YandexMusic right in your favorite code editor",
   "version": "0.14.0",
-  "preview": true,
   "engines": {
     "vscode": "^1.53.0"
   },
