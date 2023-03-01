@@ -6,11 +6,10 @@ declare var navigator: Navigator;
 
 class BrowserPlayer {
     audio = new Audio();
+    lastTime = -1;
 
     constructor() {
-        function playNextTrack() {
-            ipcRenderer.send('message', { command: 'nexttrack' });
-        }
+
 
         navigator.mediaSession?.setActionHandler('play', () => this.resume());
         navigator.mediaSession?.setActionHandler('pause', () => this.pause());
@@ -19,9 +18,10 @@ class BrowserPlayer {
         navigator.mediaSession?.setActionHandler('previoustrack', () => {
             ipcRenderer.send('message', { command: 'previoustrack' });
         });
-        navigator.mediaSession?.setActionHandler('nexttrack', playNextTrack);
+        navigator.mediaSession?.setActionHandler('nexttrack', () => this.playNextTrack('skip'));
 
-        this.audio.addEventListener('ended', playNextTrack);
+        this.audio.addEventListener('ended', () => this.playNextTrack('track-finished'));
+        this.audio.addEventListener('timeupdate', () => this.sendTimeUpdated());
     }
 
     play(payload) {
@@ -50,15 +50,27 @@ class BrowserPlayer {
         //TODO need to use time from settings
         this.audio.currentTime += seconds;
     }
-    
+
     pause() {
         this.audio.pause();
         ipcRenderer.send('message', { command: 'paused' });
     }
-    
+
     resume() {
         this.audio.play();
         ipcRenderer.send('message', { command: 'resumed' });
+    }
+
+    sendTimeUpdated() {
+        const currentTime = parseInt(this.audio.currentTime);
+
+        if (currentTime !== this.lastTime && currentTime % 5 === 0) {
+            ipcRenderer.send('message', { command: 'timeupdate', currentTime });
+        }
+    }
+
+    playNextTrack(reason: 'skip' | 'track-finished') {
+        ipcRenderer.send('message', { command: 'nexttrack', reason });
     }
 }
 

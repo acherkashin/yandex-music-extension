@@ -69,3 +69,7 @@ export function getTrackShortName(name: string) {
   }
   return displayName.trim();
 }
+
+export function generatePlayId(): string {
+  return `${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 1000)}`;
+}

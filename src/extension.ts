@@ -97,7 +97,10 @@ export function activate(context: vscode.ExtensionContext) {
         store.play();
       }
     })),
-    vscode.commands.registerCommand("yandexMusic.next", errorLogger(() => store.next())),
+    vscode.commands.registerCommand("yandexMusic.playRadio", errorLogger(async (radioId: string) => {
+      await store.startRadio(radioId);
+    })),
+    vscode.commands.registerCommand("yandexMusic.next", errorLogger(() => store.next('skip'))),
     vscode.commands.registerCommand("yandexMusic.prev", errorLogger(() => store.prev())),
     vscode.commands.registerCommand("yandexMusic.pause", errorLogger(() => store.pause())),
     vscode.commands.registerCommand("yandexMusic.toggleLikeCurrentTrack", errorLogger(async () => {
@@ -178,11 +181,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.openInBrowser", errorLogger(async (node) => {
       if (node instanceof ArtistTreeItem) {
         open(`https://music.yandex.ru/artist/${node.artist.id}`);
-      } else if(node instanceof AlbumTreeItem) {
+      } else if (node instanceof AlbumTreeItem) {
         open(`https://music.yandex.ru/album/${node.album.id}`);
       } else if (node instanceof PlayListTreeItem) {
         open(`https://music.yandex.ru/users/${node.playList.owner.login}/playlists/${node.playList.kind}`);
-      } else if(node instanceof TrackTreeItem) {
+      } else if (node instanceof TrackTreeItem) {
         open(`https://music.yandex.ru/album/${node.track.albums[0].id}/track/${node.track.id}`);
       }
     })),

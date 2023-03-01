@@ -145,6 +145,11 @@ export class YandexMusicApi {
     return exposeTracks(tracks);
   }
 
+  async getRadioTracks(radioId: string) {
+    //TODO: add typings for the result
+    return ((await this.client!.rotor.getStationTracks(radioId, true)).result);
+  }
+
   //TODO: in generated API form-data is used and it breaks api for some reason, so currently self-written methods are used to add/remove track from playlist
   // async addTrackToPlaylist(kingPlaylist: number, revision: number, track: Track) {
   //   // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
@@ -224,8 +229,79 @@ export class YandexMusicApi {
     return this.client!.playlists.createPlaylist(this.userId!, {
       title: name,
       visibility: 'private'
-    })
-  } 
+    });
+  }
+
+  skipTrack(track: Track, radioId: string, batchId: string) {
+    const now = new Date().toISOString();
+
+    return this.client!.rotor.sendStationFeedback(radioId, {
+      type: 'skip',
+      timestamp: now,
+      trackId: track.id,
+      totalPlayedSeconds: 20, //TODO: need to pass totalPlayedSeconds as argument
+    }, batchId);
+  }
+
+  startRadio(radioId: string) {
+    return this.client!.rotor.sendStationFeedback(radioId, {
+      type: "radioStarted",
+      timestamp: new Date().toISOString(),
+      from: "vscode-extension"
+    });
+  }
+
+  async startPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
+    const now = new Date().toISOString();
+
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
+        type: 'trackStarted',
+        timestamp: now,
+        trackId: track.id,
+      }, batchId);
+    }
+
+    return this.client!.tracks.playAudio({
+      "play-id": playId,
+      from: "vscode-extension",
+      'track-id': track.id,
+      'client-now': now,
+      'album-id': track.albums[0].id.toString(),
+      'from-cache': false,
+      "track-length-seconds": track.durationMs / 1000,
+      "end-position-seconds": 0,
+      "total-played-seconds": 0,
+      timestamp: now,
+    });
+  }
+
+  async finishPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
+    const now = new Date().toISOString();
+    const playedSeconds = track.durationMs / 1000;
+
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
+        type: 'trackFinished',
+        timestamp: now,
+        trackId: track.id,
+        totalPlayedSeconds: playedSeconds,
+      }, batchId);
+    }
+
+    return this.client!.tracks.playAudio({
+      "play-id": playId,
+      from: "vscode-extension",
+      'track-id': track.id,
+      'client-now': now,
+      'album-id': track.albums[0].id.toString(),
+      'from-cache': false,
+      "track-length-seconds": playedSeconds,
+      "end-position-seconds": playedSeconds,
+      "total-played-seconds": playedSeconds,
+      'timestamp': now
+    });
+  }
 }
 
 export const ALL_LANDING_BLOCKS: LandingBlockType[] = [
