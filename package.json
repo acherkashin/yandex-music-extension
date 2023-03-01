@@ -184,19 +184,19 @@
       ],
       "view/item/context": [
         {
-          "command": "yandexMusic.downloadTrack",
-          "group": "inline",
-          "when": "viewItem =~ /track/"
-        },
-        {
           "command": "yandexMusic.likeTrack",
-          "group": "inline",
+          "group": "inline@1",
           "when": "viewItem =~ /canlike/"
         },
         {
           "command": "yandexMusic.dislikeTrack",
-          "group": "inline",
+          "group": "inline@1",
           "when": "viewItem =~ /cannotlike/"
+        },
+        {
+          "command": "yandexMusic.downloadTrack",
+          "group": "inline@3",
+          "when": "viewItem =~ /track/"
         },
         {
           "command": "yandexMusic.addToPlaylist",
@@ -216,7 +216,7 @@
         },
         {
           "command": "yandexMusic.openInBrowser",
-          "group": "inline",
+          "group": "inline@2",
           "when": "viewItem =~ /artist/ || viewItem =~ /album/ || viewItem =~ /playlist/ || viewItem =~ /track/"
         }
       ],
