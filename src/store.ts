@@ -83,7 +83,7 @@ export class Store {
 
     this.player.on("message", (message) => {
       switch (message.command) {
-        case 'nexttrack': this.next(); break;
+        case 'nexttrack': this.next(message.reason); break;
         case 'previoustrack': this.prev(); break;
         case 'paused': this.isPlaying = false; break;
         case 'resumed': this.isPlaying = true; break;
@@ -279,8 +279,15 @@ export class Store {
     this.player.rewind(sec);
   }
 
-  async next() {
-    //TODO: need to send "skipped" feedback when radio is playing
+  async next(reason: 'skip' | 'track-finished') {
+    if (reason === 'skip' && this.currentPlayListId && this.currentTrack) {
+      const playlist = this.playLists.get(this.currentPlayListId);
+
+      if (this.currentTrack && playlist instanceof RadioPlaylist && playlist.batchId) {
+        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId);
+      }
+    }
+
     this.internalPlay((this.currentTrackIndex ?? 0) + 1);
   }
 

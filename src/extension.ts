@@ -100,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.playRadio", errorLogger(async (radioId: string) => {
       await store.startRadio(radioId);
     })),
-    vscode.commands.registerCommand("yandexMusic.next", errorLogger(() => store.next())),
+    vscode.commands.registerCommand("yandexMusic.next", errorLogger(() => store.next('skip'))),
     vscode.commands.registerCommand("yandexMusic.prev", errorLogger(() => store.prev())),
     vscode.commands.registerCommand("yandexMusic.pause", errorLogger(() => store.pause())),
     vscode.commands.registerCommand("yandexMusic.toggleLikeCurrentTrack", errorLogger(async () => {

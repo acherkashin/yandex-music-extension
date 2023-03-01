@@ -9,9 +9,7 @@ class BrowserPlayer {
     lastTime = -1;
 
     constructor() {
-        function playNextTrack() {
-            ipcRenderer.send('message', { command: 'nexttrack' });
-        }
+
 
         navigator.mediaSession?.setActionHandler('play', () => this.resume());
         navigator.mediaSession?.setActionHandler('pause', () => this.pause());
@@ -20,9 +18,9 @@ class BrowserPlayer {
         navigator.mediaSession?.setActionHandler('previoustrack', () => {
             ipcRenderer.send('message', { command: 'previoustrack' });
         });
-        navigator.mediaSession?.setActionHandler('nexttrack', playNextTrack);
+        navigator.mediaSession?.setActionHandler('nexttrack', () => this.playNextTrack('skip'));
 
-        this.audio.addEventListener('ended', playNextTrack);
+        this.audio.addEventListener('ended', () => this.playNextTrack('track-finished'));
         this.audio.addEventListener('timeupdate', () => this.sendTimeUpdated());
     }
 
@@ -67,8 +65,12 @@ class BrowserPlayer {
         const currentTime = parseInt(this.audio.currentTime);
 
         if (currentTime !== this.lastTime && currentTime % 5 === 0) {
-            ipcRenderer.send('message', { command: 'timeupdate', currentTime: currentTime });
+            ipcRenderer.send('message', { command: 'timeupdate', currentTime });
         }
+    }
+
+    playNextTrack(reason: 'skip' | 'track-finished') {
+        ipcRenderer.send('message', { command: 'nexttrack', reason });
     }
 }
 
