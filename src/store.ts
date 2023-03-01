@@ -282,8 +282,15 @@ export class Store {
     this.internalPlay((this.currentTrackIndex ?? 0) + 1);
   }
 
-  prev() {
-    //TODO: need to send "skipped" feedback when radio is playing
+  async prev() {
+    if (this.currentPlayListId && this.currentTrack) {
+      const playlist = this.playLists.get(this.currentPlayListId);
+
+      if (this.currentTrack && playlist instanceof RadioPlaylist && playlist.batchId) {
+        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId);
+      }
+    }
+    
     this.internalPlay((this.currentTrackIndex ?? 0) - 1);
   }
 
