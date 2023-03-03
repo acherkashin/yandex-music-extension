@@ -116,7 +116,7 @@ export class YandexMusicSettings {
             const authData: IYandexMusicAuthData = {
                 userId: status!.result.account.uid!,
                 token: token,
-                userName: status.result.defaultEmail,
+                userName: status!.result.defaultEmail,
             };
             await this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
         } catch (e) {

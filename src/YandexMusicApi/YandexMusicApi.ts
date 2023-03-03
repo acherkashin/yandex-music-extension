@@ -34,6 +34,8 @@ export class YandexMusicApi {
    */
   setup(config?: IYandexMusicAuthData) {
     if (!config) {
+      this.userId = undefined;
+      this.token = undefined;
       return;
     }
 
@@ -50,6 +52,12 @@ export class YandexMusicApi {
   }
 
   async setupByToken(token: string) {
+    if (!token) {
+      this.userId = undefined;
+      this.token = undefined;
+      return;
+    }
+
     this.token = token;
     
     this.client = new YandexMusicClient({

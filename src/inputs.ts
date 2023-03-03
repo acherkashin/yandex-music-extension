@@ -32,7 +32,7 @@ export async function showPasswordBox(): Promise<string | undefined> {
 export async function showTokenBox(): Promise<string | undefined> {
   const name = await vscode.window.showInputBox({
     prompt: "Введите токен [инструкция по получению токена](https://github.com/MarshalX/yandex-music-api/discussions/513)",
-    placeHolder: "Токе",
+    placeHolder: "Токен",
     value: '',
     password: true,
     validateInput: text => {
