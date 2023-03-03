@@ -265,6 +265,7 @@ export class YandexMusicApi {
       "end-position-seconds": 0,
       "total-played-seconds": 0,
       timestamp: now,
+      uid: this.userId
     });
 
     if (radioId) {
@@ -290,7 +291,8 @@ export class YandexMusicApi {
       "track-length-seconds": playedSeconds,
       "end-position-seconds": playedSeconds,
       "total-played-seconds": playedSeconds,
-      'timestamp': now
+      timestamp: now,
+      uid: this.userId
     });
 
     if (radioId) {
