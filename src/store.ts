@@ -284,7 +284,7 @@ export class Store {
       const playlist = this.playLists.get(this.currentPlayListId);
 
       if (this.currentTrack && playlist instanceof RadioPlaylist && playlist.batchId) {
-        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId);
+        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId, this.totalPlayedSeconds);
       }
     }
 
@@ -296,7 +296,7 @@ export class Store {
       const playlist = this.playLists.get(this.currentPlayListId);
 
       if (this.currentTrack && playlist instanceof RadioPlaylist && playlist.batchId) {
-        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId);
+        await this.api.skipTrack(this.currentTrack, playlist.id, playlist.batchId, this.totalPlayedSeconds);
       }
     }
 

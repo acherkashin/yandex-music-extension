@@ -232,14 +232,14 @@ export class YandexMusicApi {
     });
   }
 
-  skipTrack(track: Track, radioId: string, batchId: string) {
+  skipTrack(track: Track, radioId: string, batchId: string, totalPlayedSeconds: number) {
     const now = new Date().toISOString();
 
     return this.client!.rotor.sendStationFeedback(radioId, {
       type: 'skip',
       timestamp: now,
       trackId: track.id,
-      totalPlayedSeconds: 20, //TODO: need to pass totalPlayedSeconds as argument
+      totalPlayedSeconds,
     }, batchId);
   }
 
