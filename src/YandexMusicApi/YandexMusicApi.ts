@@ -12,12 +12,17 @@ export class YandexMusicApi {
   private axiosClient = axios.create({
     baseURL: `https://api.music.yandex.net:443`,
   });
-  private client: YandexMusicClient | undefined;
+  private client = new YandexMusicClient({
+    BASE: "https://api.music.yandex.net:443",
+    HEADERS: {
+      'Accept-Language': 'ru'
+    },
+  });
   private userId: number | undefined;
   private token: string | undefined;
 
   get isAuthorized(): boolean {
-    return !!this.client;
+    return !!this.token;
   }
 
   constructor() { }
@@ -29,7 +34,6 @@ export class YandexMusicApi {
    */
   setup(config?: IYandexMusicAuthData) {
     if (!config) {
-      this.client = undefined;
       return;
     }
 
@@ -43,6 +47,23 @@ export class YandexMusicApi {
         'Accept-Language': 'ru'
       },
     });
+  }
+
+  async setupByToken(token: string) {
+    this.token = token;
+    
+    this.client = new YandexMusicClient({
+      BASE: "https://api.music.yandex.net:443",
+      HEADERS: {
+        'Authorization': `OAuth ${token}`,
+        'Accept-Language': 'ru'
+      },
+    });
+
+    const status = await this.client.account.getAccountStatus();
+    this.userId = status.result.account?.uid;
+
+    return status;
   }
 
   getToken = getToken;

@@ -302,7 +302,7 @@
       },
       {
         "view": "yandex-music-play-lists",
-        "contents": "Войдите в Яндекс.Музыку чтобы увидеть ваши рекомендации. \n[Войти](command:yandexMusic.signIn)"
+        "contents": "Войдите в Яндекс.Музыку чтобы увидеть ваши рекомендации. \n [Войти по токену](command:yandexMusic.signInToken) \n[Войти по логину и паролю](command:yandexMusic.signIn)"
       }
     ]
   },
@@ -331,6 +331,6 @@
     "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
-    "yandex-music-client": "0.2.0"
+    "yandex-music-client": "0.2.1"
   }
 }

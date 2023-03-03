@@ -148,6 +148,10 @@ export function activate(context: vscode.ExtensionContext) {
       await settings.signIn();
       refreshExplorer();
     }), "Sign in"),
+    vscode.commands.registerCommand("yandexMusic.signInToken", errorLogger(async () => {
+      await settings.signInToken();
+      refreshExplorer();
+    }), "Sign in"),
     vscode.commands.registerCommand("yandexMusic.signOut", errorLogger(async () => {
       await settings.signOut();
       refreshExplorer();

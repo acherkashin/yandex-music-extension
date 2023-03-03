@@ -1,5 +1,5 @@
 import { workspace, WorkspaceConfiguration, Disposable, ConfigurationChangeEvent, SecretStorage, ExtensionContext, window, commands } from "vscode";
-import { showLoginBox, showPasswordBox } from "./inputs";
+import { showLoginBox, showPasswordBox, showTokenBox } from "./inputs";
 import { YandexMusicApi } from "./YandexMusicApi/YandexMusicApi";
 import { defaultTraceSource } from './logging/TraceSource';
 
@@ -90,6 +90,33 @@ export class YandexMusicSettings {
                 userId: response.data.uid,
                 token: response.data.access_token,
                 userName
+            };
+            await this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
+        } catch (e) {
+            window
+                .showErrorMessage("Не удалось войти в Yandex аккаунт. Проверьте правильность логина и пароля.", "Изменить логин и пароль")
+                .then((a) => {
+                    if (a) {
+                        commands.executeCommand("yandexMusic.signIn");
+                    }
+                });
+            console.error(e);
+            defaultTraceSource.error(`Cannot logging into account: ${e?.toString()}`);
+        }
+    }
+
+    async signInToken() {
+        const token = await showTokenBox();
+        if (!token) {
+            return;
+        }
+
+        try {
+            const status = await this.api.setupByToken(token);
+            const authData: IYandexMusicAuthData = {
+                userId: status!.result.account.uid!,
+                token: token,
+                userName: status.result.defaultEmail,
             };
             await this.storage.store(this._yandexMusicKey, JSON.stringify(authData));
         } catch (e) {

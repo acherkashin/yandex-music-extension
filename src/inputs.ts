@@ -29,6 +29,20 @@ export async function showPasswordBox(): Promise<string | undefined> {
   return name;
 }
 
+export async function showTokenBox(): Promise<string | undefined> {
+  const name = await vscode.window.showInputBox({
+    prompt: "Введите токен [инструкция по получению токена](https://github.com/MarshalX/yandex-music-api/discussions/513)",
+    placeHolder: "Токе",
+    value: '',
+    password: true,
+    validateInput: text => {
+      return !text ? "Токен не может быть пустым!" : null;
+    }
+  });
+
+  return name;
+}
+
 export async function showSearchBox() {
   // TODO: show search history like on music.yandex.ru
   const name = await vscode.window.showInputBox({
