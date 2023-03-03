@@ -254,15 +254,7 @@ export class YandexMusicApi {
   async startPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
     const now = new Date().toISOString();
 
-    if (radioId) {
-      await this.client!.rotor.sendStationFeedback(radioId, {
-        type: 'trackStarted',
-        timestamp: now,
-        trackId: track.id,
-      }, batchId);
-    }
-
-    return this.client!.tracks.playAudio({
+    await this.client!.tracks.playAudio({
       "play-id": playId,
       from: "vscode-extension",
       'track-id': track.id,
@@ -274,22 +266,21 @@ export class YandexMusicApi {
       "total-played-seconds": 0,
       timestamp: now,
     });
+
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
+        type: 'trackStarted',
+        timestamp: now,
+        trackId: track.id,
+      }, batchId);
+    }
   }
 
   async finishPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
     const now = new Date().toISOString();
     const playedSeconds = track.durationMs / 1000;
 
-    if (radioId) {
-      await this.client!.rotor.sendStationFeedback(radioId, {
-        type: 'trackFinished',
-        timestamp: now,
-        trackId: track.id,
-        totalPlayedSeconds: playedSeconds,
-      }, batchId);
-    }
-
-    return this.client!.tracks.playAudio({
+    await this.client!.tracks.playAudio({
       "play-id": playId,
       from: "vscode-extension",
       'track-id': track.id,
@@ -301,6 +292,15 @@ export class YandexMusicApi {
       "total-played-seconds": playedSeconds,
       'timestamp': now
     });
+
+    if (radioId) {
+      await this.client!.rotor.sendStationFeedback(radioId, {
+        type: 'trackFinished',
+        timestamp: now,
+        trackId: track.id,
+        totalPlayedSeconds: playedSeconds,
+      }, batchId);
+    }
   }
 }
 
