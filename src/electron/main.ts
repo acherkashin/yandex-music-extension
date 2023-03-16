@@ -10,8 +10,7 @@ function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
+            preload: path.join(__dirname, 'preload.js'),
             devTools: true,
         },
         width: 800,
@@ -33,7 +32,8 @@ function createWindow() {
         }
     });
 
-    ipcMain.on('message', (_, message)=> {
+    // listen for events from renderer process
+    ipcMain.handle('message', (_, message)=> {
         process.send?.(message);
     });
 
@@ -72,7 +72,7 @@ function loadAudioHtml(window: BrowserWindow) {
         </body>
     </html>`;
 
-    // https://github.com/electron/electron/issues/1146#issuecomment-591983815
+    //Code is taken from https://github.com/electron/electron/issues/1146#issuecomment-591983815
     fs.writeFileSync(filePath, html, { encoding: 'utf8' });
     window.webContents.once("dom-ready", () => {
         fs.unlinkSync(filePath); // remove generated file

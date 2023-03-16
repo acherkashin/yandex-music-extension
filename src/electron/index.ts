@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-
 var window: any;
 var Audio: any;
 var document: any;
@@ -17,7 +15,7 @@ class BrowserPlayer {
         navigator.mediaSession?.setActionHandler('seekbackward', () => this.rewind(-15));
         navigator.mediaSession?.setActionHandler('seekforward', () => this.rewind(15));
         navigator.mediaSession?.setActionHandler('previoustrack', () => {
-            ipcRenderer.send('message', { command: 'previoustrack' });
+            window.electronAPI.sendMessage({ command: 'previoustrack' });
         });
         navigator.mediaSession?.setActionHandler('nexttrack', () => this.playNextTrack('skip'));
 
@@ -54,31 +52,31 @@ class BrowserPlayer {
 
     pause() {
         this.audio.pause();
-        ipcRenderer.send('message', { command: 'paused' });
+        window.electronAPI.sendMessage({ command: 'paused' });
     }
 
     resume() {
         this.audio.play();
-        ipcRenderer.send('message', { command: 'resumed' });
+        window.electronAPI.sendMessage({ command: 'resumed' });
     }
 
     sendTimeUpdated() {
         const currentTime = parseInt(this.audio.currentTime);
 
         if (currentTime !== this.lastTime && currentTime % 5 === 0) {
-            ipcRenderer.send('message', { command: 'timeupdate', currentTime });
+            window.electronAPI.sendMessage({ command: 'timeupdate', currentTime });
         }
     }
 
     playNextTrack(reason: 'skip' | 'track-finished') {
-        ipcRenderer.send('message', { command: 'nexttrack', reason });
+        window.electronAPI.sendMessage({ command: 'nexttrack', reason });
     }
 }
 
 window.onload = () => {
     const player = new BrowserPlayer();
 
-    ipcRenderer.on('play', (_, ...args) => {
+    window.electronAPI.handlePlay((_, ...args) => {
         const payload = args[0];
 
         console.log(JSON.stringify(payload));
@@ -86,11 +84,11 @@ window.onload = () => {
         player.play(payload);
     });
 
-    ipcRenderer.on('pause', () => {
+    window.electronAPI.handlePause(() => {
         player.pause();
     });
 
-    ipcRenderer.on('rewind', (_, sec) => {
+    window.electronAPI.handleRewind((_, sec) => {
         player.rewind(sec);
     });
 };
