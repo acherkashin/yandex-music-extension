@@ -5,10 +5,18 @@ declare var navigator: Navigator;
 
 class BrowserPlayer {
     audio;
+    trackName;
+    artistName;
+    albumName;
+    coverImg;
     lastTime = -1;
 
     constructor() {
         this.audio = document.getElementById('player');
+        this.trackName = document.getElementById('track');
+        this.artistName = document.getElementById('artist');
+        this.coverImg = document.getElementById('cover');
+        this.albumName = document.getElementById('album');
 
         navigator.mediaSession?.setActionHandler('play', () => this.resume());
         navigator.mediaSession?.setActionHandler('pause', () => this.pause());
@@ -26,7 +34,11 @@ class BrowserPlayer {
     play(payload) {
         if (payload) {
             const { url, ...mediaMetadataInit } = payload;
-            this.audio != null ? this.audio.src = url : this.audio = new Audio(url);
+            this.artistName.innerText = mediaMetadataInit.artist;
+            this.coverImg.src = mediaMetadataInit.coverUri;
+            this.albumName.innerText = mediaMetadataInit.album;
+            this.trackName.innerText = mediaMetadataInit.title,
+            this.audio.src = url;
 
             if (navigator.mediaSession != null) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -41,7 +53,7 @@ class BrowserPlayer {
                 });
             }
         }
-
+        
         this.audio.play?.();
     }
 

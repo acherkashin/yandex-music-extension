@@ -68,7 +68,22 @@ function loadAudioHtml(window: BrowserWindow) {
             <div id="title-bar">
                 <div id="title">Yandex Music Extension</div>
             </div>
-            <audio id="player" controls></audio>
+            <div style="width: 100%; display: flex; flex-direction: column;">
+                <img id="cover" style="width: 200px; height: 200px;"/>
+                <div>
+                    <b>Исполнитель:</b>
+                    <span id="artist"></span>
+                </div>
+                <div>
+                    <b>Трек:</b>
+                    <span id="track"></span>
+                </div>
+                <div>
+                    <b>Альбом:</b>
+                    <span id="album"></span>
+                </div>
+                <audio id="player" controls></audio>
+            </div>
         </body>
     </html>`;
 
