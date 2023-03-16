@@ -2,14 +2,15 @@ const { ipcRenderer } = require('electron');
 
 var window: any;
 var Audio: any;
+var document: any;
 declare var navigator: Navigator;
 
 class BrowserPlayer {
-    audio = new Audio();
+    audio;
     lastTime = -1;
 
     constructor() {
-
+        this.audio = document.getElementById('player');
 
         navigator.mediaSession?.setActionHandler('play', () => this.resume());
         navigator.mediaSession?.setActionHandler('pause', () => this.pause());
@@ -74,9 +75,9 @@ class BrowserPlayer {
     }
 }
 
-const player = new BrowserPlayer();
-
 window.onload = () => {
+    const player = new BrowserPlayer();
+
     ipcRenderer.on('play', (_, ...args) => {
         const payload = args[0];
 

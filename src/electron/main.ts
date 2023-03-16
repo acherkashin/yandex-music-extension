@@ -55,7 +55,7 @@ if (!startOptions.showElectronApp) {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.whenReady().then(createWindow);
 
 
 function loadAudioHtml(window: BrowserWindow) {
@@ -68,7 +68,7 @@ function loadAudioHtml(window: BrowserWindow) {
             <div id="title-bar">
                 <div id="title">Yandex Music Extension</div>
             </div>
-            <div id='remoteVideo'></div>
+            <audio id="player" controls></audio>
         </body>
     </html>`;
 
