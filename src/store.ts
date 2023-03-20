@@ -106,6 +106,14 @@ export class Store {
 
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
+
+      const { queueId, queueTracks, currentTrack, currentIndex } = await this.api.getCurrentQueue();
+      this.saveTrackPlaylist(queueId, queueTracks);
+      this.currentPlayListId = queueId;
+      this.currentTrack = currentTrack;
+      this.currentTrackIndex = currentIndex;
+      //TODO: need to send message to Electron to change track without playing it
+      // this.play({ playListId: queueId, itemId: currentTrack?.trackId });
     }
 
     vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());

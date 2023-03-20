@@ -59,7 +59,7 @@ export class YandexMusicApi {
     }
 
     this.token = token;
-    
+
     this.client = new YandexMusicClient({
       BASE: "https://api.music.yandex.net:443",
       HEADERS: {
@@ -77,48 +77,48 @@ export class YandexMusicApi {
   getToken = getToken;
 
   async getTrackUrl(trackId: string) {
-    return getTrackUrl(this.client!, trackId);
+    return getTrackUrl(this.client, trackId);
   }
 
   async getNewReleases(): Promise<Album[]> {
-    const resp = await this.client!.landing.getNewReleases();
+    const resp = await this.client.landing.getNewReleases();
     const albumIds = resp.result.newReleases.join(",");
-    const albums = await this.client!.albums.getAlbumsByIds({ 'album-ids': albumIds });
+    const albums = await this.client.albums.getAlbumsByIds({ 'album-ids': albumIds });
 
     return albums.result;
   }
 
   async getNewPlayLists(): Promise<Playlist[]> {
-    const resp = await this.client!.landing.getNewPlaylists();
+    const resp = await this.client.landing.getNewPlaylists();
     const ids = getPlayListsIds(resp.result.newPlaylists);
-    const playListsResp = await this.client!.playlists.getPlaylistsByIds({ playlistIds: ids });
+    const playListsResp = await this.client.playlists.getPlaylistsByIds({ playlistIds: ids });
 
     return playListsResp.result;
   }
 
   async getActualPodcasts(): Promise<Album[]> {
-    const resp = await this.client!.landing.getNewPodcasts();
+    const resp = await this.client.landing.getNewPodcasts();
     const albumIds = resp.result.podcasts.join(",");
     //TODO: need to limit amount of podcasts we receive, 100 at maximum. Currently we load 6000+ podcasts at time.
-    const podcasts = await this.client!.albums.getAlbumsByIds({ 'album-ids': albumIds });
+    const podcasts = await this.client.albums.getAlbumsByIds({ 'album-ids': albumIds });
 
     return podcasts.result;
   }
 
   async getUserPlaylists() {
-    return this.client!.playlists.getPlayLists(this.userId!);
+    return this.client.playlists.getPlayLists(this.userId!);
   }
 
   async likeAction(track: Track, action: 'like' | 'remove-like') {
     if (action === 'remove-like') {
-      this.client!.tracks.removeLikedTracks(this.userId!, {
+      this.client.tracks.removeLikedTracks(this.userId!, {
         "track-ids": [createAlbumTrackId({
           id: track.id,
           albumId: track.albums[0].id,
         })]
       });
     } else {
-      await this.client!.tracks.likeTracks(this.userId!, {
+      await this.client.tracks.likeTracks(this.userId!, {
         "track-ids": [createAlbumTrackId({
           id: track.id,
           albumId: track.albums[0].id,
@@ -129,34 +129,34 @@ export class YandexMusicApi {
 
   async getLandingBlocks(): Promise<LandingBlock[]> {
     const allBlocks = ALL_LANDING_BLOCKS.join(",");
-    const resp = await this.client!.landing.getLandingBlocks(allBlocks);
+    const resp = await this.client.landing.getLandingBlocks(allBlocks);
     return resp.result.blocks ?? [];
   }
 
   async getLikedTracks() {
-    const result = await this.client!.tracks.getLikedTracksIds(this.userId!);
+    const result = await this.client.tracks.getLikedTracksIds(this.userId!);
     const ids = createTrackAlbumIds(result.result.library.tracks);
-    const tracks = await this.client!.tracks.getTracks({ "track-ids": ids });
+    const tracks = await this.client.tracks.getTracks({ "track-ids": ids });
 
     return tracks;
   }
 
   async getArtistTracks(artistId: string) {
-    const { tracks: trackIds } = (await this.client!.artists.getPopularTracks(artistId)).result;
-    const tracks = (await this.client!.tracks.getTracks({ "track-ids": trackIds })).result;
+    const { tracks: trackIds } = (await this.client.artists.getPopularTracks(artistId)).result;
+    const tracks = (await this.client.tracks.getTracks({ "track-ids": trackIds })).result;
 
     return tracks;
   }
 
   async getAlbumTracks(albumId: number) {
-    const resp = await this.client!.albums.getAlbumsWithTracks(albumId);
+    const resp = await this.client.albums.getAlbumsWithTracks(albumId);
     const tracks = (resp.result.volumes || []).reduce((a, b) => a.concat(b));
 
     return tracks;
   }
 
   async getChartTracks() {
-    const resp = await this.client!.landing.getChart("russia");
+    const resp = await this.client.landing.getChart("russia");
     const chartItems = resp.result.chart.tracks as ChartItem[];
     const tracks = exposeTracks(chartItems);
 
@@ -164,11 +164,11 @@ export class YandexMusicApi {
   }
 
   async search(text: string) {
-    return this.client!.search.search(text, 0, 'all');
+    return this.client.search.search(text, 0, 'all');
   }
 
   async getPlaylistTracks(userId: number, playListId: number) {
-    const resp = await this.client!.playlists.getPlaylistById(userId, playListId);
+    const resp = await this.client.playlists.getPlaylistById(userId, playListId);
     const tracks = resp.result.tracks;
 
     return exposeTracks(tracks);
@@ -176,7 +176,7 @@ export class YandexMusicApi {
 
   async getRadioTracks(radioId: string) {
     //TODO: add typings for the result
-    return ((await this.client!.rotor.getStationTracks(radioId, true)).result);
+    return ((await this.client.rotor.getStationTracks(radioId, true)).result);
   }
 
   //TODO: in generated API form-data is used and it breaks api for some reason, so currently self-written methods are used to add/remove track from playlist
@@ -184,7 +184,7 @@ export class YandexMusicApi {
   //   // const payload = `{\"op\":\"insert\",\"at\":0,\"tracks\":[{\"id\":\"${track.id}\",\"albumId\":${track.albums[0].id}}]}`;
   //   // const payload = JSON.stringify({ "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] });
   //   const payload = { "op": "insert", "at": 0, "tracks": [{ "id": track.id, "albumId": track.albums[0].id }] } as any;
-  //   return this.client!.playlists.changePlaylistTracks(this.userId!, kingPlaylist, {
+  //   return this.client.playlists.changePlaylistTracks(this.userId!, kingPlaylist, {
   //     diff: payload,
   //     revision: revision.toString(),
   //   });
@@ -245,17 +245,17 @@ export class YandexMusicApi {
   }
 
   renamePlaylist(playListKind: number, newName: string) {
-    return this.client!.playlists.renamePlaylist(this.userId!, playListKind, {
+    return this.client.playlists.renamePlaylist(this.userId!, playListKind, {
       value: newName
     });
   }
 
   deletePlaylist(playListKind: number) {
-    return this.client!.playlists.deletePlaylist(this.userId!, playListKind);
+    return this.client.playlists.deletePlaylist(this.userId!, playListKind);
   }
 
   createPlaylist(name: string) {
-    return this.client!.playlists.createPlaylist(this.userId!, {
+    return this.client.playlists.createPlaylist(this.userId!, {
       title: name,
       visibility: 'private'
     });
@@ -264,7 +264,7 @@ export class YandexMusicApi {
   skipTrack(track: Track, radioId: string, batchId: string, totalPlayedSeconds: number) {
     const now = new Date().toISOString();
 
-    return this.client!.rotor.sendStationFeedback(radioId, {
+    return this.client.rotor.sendStationFeedback(radioId, {
       type: 'skip',
       timestamp: now,
       trackId: track.id,
@@ -273,7 +273,7 @@ export class YandexMusicApi {
   }
 
   startRadio(radioId: string) {
-    return this.client!.rotor.sendStationFeedback(radioId, {
+    return this.client.rotor.sendStationFeedback(radioId, {
       type: "radioStarted",
       timestamp: new Date().toISOString(),
       from: "vscode-extension"
@@ -283,7 +283,7 @@ export class YandexMusicApi {
   async startPlayAudio(playId: string, track: Track, radioId?: string, batchId?: string) {
     const now = new Date().toISOString();
 
-    await this.client!.tracks.playAudio({
+    await this.client.tracks.playAudio({
       "play-id": playId,
       from: "vscode-extension",
       'track-id': track.id,
@@ -298,7 +298,7 @@ export class YandexMusicApi {
     });
 
     if (radioId) {
-      await this.client!.rotor.sendStationFeedback(radioId, {
+      await this.client.rotor.sendStationFeedback(radioId, {
         type: 'trackStarted',
         timestamp: now,
         trackId: track.id,
@@ -310,7 +310,7 @@ export class YandexMusicApi {
     const now = new Date().toISOString();
     const playedSeconds = track.durationMs / 1000;
 
-    await this.client!.tracks.playAudio({
+    await this.client.tracks.playAudio({
       "play-id": playId,
       from: "vscode-extension",
       'track-id': track.id,
@@ -325,13 +325,27 @@ export class YandexMusicApi {
     });
 
     if (radioId) {
-      await this.client!.rotor.sendStationFeedback(radioId, {
+      await this.client.rotor.sendStationFeedback(radioId, {
         type: 'trackFinished',
         timestamp: now,
         trackId: track.id,
         totalPlayedSeconds: playedSeconds,
       }, batchId);
     }
+  }
+
+  async getCurrentQueue() {
+    const { result: { queues } } = await this.client.queues
+      .getQueues('os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown');
+
+    const queueId = queues[0].id;
+    const { result } = await this.client.queues.getQueueById(queueId);
+    const { tracks: trackIds, currentIndex } = result;
+    const ids = trackIds?.map(item => `${item.trackId}:${item.albumId}`);
+    const { result: queueTracks } = await this.client.tracks.getTracks({ "track-ids": ids });
+    const currentTrack = queueTracks?.[currentIndex ?? 0]!;
+
+    return { queueId: `queue:${queueId}`, queueTracks, currentTrack, currentIndex };
   }
 }
 
