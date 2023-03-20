@@ -1,22 +1,29 @@
-const { ipcRenderer } = require('electron');
-
 var window: any;
 var Audio: any;
+var document: any;
 declare var navigator: Navigator;
 
 class BrowserPlayer {
-    audio = new Audio();
+    audio;
+    trackName;
+    artistName;
+    albumName;
+    coverImg;
     lastTime = -1;
 
     constructor() {
-
+        this.audio = document.getElementById('player');
+        this.trackName = document.getElementById('track');
+        this.artistName = document.getElementById('artist');
+        this.coverImg = document.getElementById('cover');
+        this.albumName = document.getElementById('album');
 
         navigator.mediaSession?.setActionHandler('play', () => this.resume());
         navigator.mediaSession?.setActionHandler('pause', () => this.pause());
         navigator.mediaSession?.setActionHandler('seekbackward', () => this.rewind(-15));
         navigator.mediaSession?.setActionHandler('seekforward', () => this.rewind(15));
         navigator.mediaSession?.setActionHandler('previoustrack', () => {
-            ipcRenderer.send('message', { command: 'previoustrack' });
+            window.electronAPI.sendMessage({ command: 'previoustrack' });
         });
         navigator.mediaSession?.setActionHandler('nexttrack', () => this.playNextTrack('skip'));
 
@@ -27,7 +34,11 @@ class BrowserPlayer {
     play(payload) {
         if (payload) {
             const { url, ...mediaMetadataInit } = payload;
-            this.audio != null ? this.audio.src = url : this.audio = new Audio(url);
+            this.artistName.innerText = mediaMetadataInit.artist;
+            this.coverImg.src = mediaMetadataInit.coverUri;
+            this.albumName.innerText = mediaMetadataInit.album;
+            this.trackName.innerText = mediaMetadataInit.title,
+            this.audio.src = url;
 
             if (navigator.mediaSession != null) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -42,7 +53,7 @@ class BrowserPlayer {
                 });
             }
         }
-
+        
         this.audio.play?.();
     }
 
@@ -53,31 +64,31 @@ class BrowserPlayer {
 
     pause() {
         this.audio.pause();
-        ipcRenderer.send('message', { command: 'paused' });
+        window.electronAPI.sendMessage({ command: 'paused' });
     }
 
     resume() {
         this.audio.play();
-        ipcRenderer.send('message', { command: 'resumed' });
+        window.electronAPI.sendMessage({ command: 'resumed' });
     }
 
     sendTimeUpdated() {
         const currentTime = parseInt(this.audio.currentTime);
 
         if (currentTime !== this.lastTime && currentTime % 5 === 0) {
-            ipcRenderer.send('message', { command: 'timeupdate', currentTime });
+            window.electronAPI.sendMessage({ command: 'timeupdate', currentTime });
         }
     }
 
     playNextTrack(reason: 'skip' | 'track-finished') {
-        ipcRenderer.send('message', { command: 'nexttrack', reason });
+        window.electronAPI.sendMessage({ command: 'nexttrack', reason });
     }
 }
 
-const player = new BrowserPlayer();
-
 window.onload = () => {
-    ipcRenderer.on('play', (_, ...args) => {
+    const player = new BrowserPlayer();
+
+    window.electronAPI.handlePlay((_, ...args) => {
         const payload = args[0];
 
         console.log(JSON.stringify(payload));
@@ -85,11 +96,11 @@ window.onload = () => {
         player.play(payload);
     });
 
-    ipcRenderer.on('pause', () => {
+    window.electronAPI.handlePause(() => {
         player.pause();
     });
 
-    ipcRenderer.on('rewind', (_, sec) => {
+    window.electronAPI.handleRewind((_, sec) => {
         player.rewind(sec);
     });
 };
