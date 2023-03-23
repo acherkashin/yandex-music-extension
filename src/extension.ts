@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("yandexMusic.refresh", errorLogger(refreshExplorer)),
     vscode.commands.registerCommand("yandexMusic.play", errorLogger(async (item?: TrackTreeItem) => {
       if (item) {
-        store.play({ itemId: item.track.id, playListId: item.playListId.toString() });
+        store.setTrack(item.playListId.toString(), item.track.id);
       } else {
         store.play();
       }

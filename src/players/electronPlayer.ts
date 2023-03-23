@@ -13,6 +13,7 @@ export interface IPlayPayload {
   artist: string;
   album: string;
   coverUri: string;
+  autoPlay: boolean;
 }
 
 export class ElectronPlayer extends EventEmitter {

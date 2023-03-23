@@ -107,13 +107,12 @@ export class Store {
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
 
-      const { queueId, queueTracks, currentTrack, currentIndex } = await this.api.getCurrentQueue();
-      this.saveTrackPlaylist(queueId, queueTracks);
-      this.currentPlayListId = queueId;
-      this.currentTrack = currentTrack;
-      this.currentTrackIndex = currentIndex;
-      //TODO: need to send message to Electron to change track without playing it
-      // this.play({ playListId: queueId, itemId: currentTrack?.trackId });
+      const queue = await this.api.getCurrentQueue();
+      if (queue) {
+        const { queueId, queueTracks, currentTrack } = queue;
+        this.saveTrackPlaylist(queueId, queueTracks);
+        this.setTrack(queueId, currentTrack.id, false);
+      }
     }
 
     vscode.commands.executeCommand("setContext", "yandexMusic.isAuthorized", this.isAuthorized());
@@ -192,7 +191,7 @@ export class Store {
     this.saveRadioPlaylist(radio);
     await radio.loadNextBatch();
 
-    this.play({ itemId: radio.tracks[0].id, playListId: radioId });
+    this.setTrack(radioId, radio.tracks[0].id);
   }
 
   getLikedTracks() {
@@ -230,23 +229,26 @@ export class Store {
     this.likesPromise = null;
   }
 
-  play(track?: { itemId: string; playListId: string }) {
-    if (track) {
-      const playlist = this.playLists.get(track.playListId);
+  setTrack(playListId: string, trackId: string, autoPlay = true) {
+    if (playListId && trackId) {
+      const playlist = this.playLists.get(playListId);
       if (playlist) {
-        const index = playlist.getTrackIndex(track.itemId);
+        const index = playlist.getTrackIndex(trackId);
         if (index !== -1) {
-          this.currentPlayListId = track.playListId;
-          this.internalPlay(index);
+          this.currentPlayListId = playListId;
+          this.internalSetTrack(index, autoPlay);
         }
       } else {
-        defaultTraceSource.error(`playlist ${track?.itemId} is not found`);
+        defaultTraceSource.error(`playlist ${playListId} is not found`);
       }
-      // update current song
     } else {
-      this.player.play();
-      this.isPlaying = true;
+      defaultTraceSource.error(`invalid parameters provided playlistId = ${playListId}, trackId = ${trackId}`);
     }
+  }
+
+  play() {
+    this.player.play();
+    this.isPlaying = true;
   }
 
   pause() {
@@ -296,7 +298,7 @@ export class Store {
       }
     }
 
-    this.internalPlay((this.currentTrackIndex ?? 0) + 1);
+    this.internalSetTrack((this.currentTrackIndex ?? 0) + 1);
   }
 
   async prev() {
@@ -308,7 +310,7 @@ export class Store {
       }
     }
 
-    this.internalPlay((this.currentTrackIndex ?? 0) - 1);
+    this.internalSetTrack((this.currentTrackIndex ?? 0) - 1);
   }
 
   isLikedTrack(id: string, trackType: string): boolean {
@@ -338,11 +340,12 @@ export class Store {
   }
 
   /**
-   * Plays track in current playlist by index
+   * Sets the track in current playlist by index
    * 
    * @param index Song index of current playList
+   * @param autoPlay Determines will be track played immediately or not
    */
-  private async internalPlay(index: number) {
+  private async internalSetTrack(index: number, autoPlay = true) {
     if (!this.currentPlayListId) {
       return;
     }
@@ -393,8 +396,9 @@ export class Store {
         artist: getArtists(track),
         title: track.title,
         coverUri: getCoverUri(track.coverUri, 200),
+        autoPlay
       });
-      this.isPlaying = true;
+      this.isPlaying = autoPlay;
 
     } catch (ex) {
       logError(ex as any);

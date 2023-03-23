@@ -338,12 +338,26 @@ export class YandexMusicApi {
     const { result: { queues } } = await this.client.queues
       .getQueues('os=unknown; os_version=unknown; manufacturer=unknown; model=unknown; clid=; device_id=unknown; uuid=unknown');
 
-    const queueId = queues[0].id;
+    const queueId = queues.find(item => item.context.type !== 'radio')?.id;
+
+    if(!queueId) {
+      return null;
+    }
+
     const { result } = await this.client.queues.getQueueById(queueId);
     const { tracks: trackIds, currentIndex } = result;
     const ids = trackIds?.map(item => `${item.trackId}:${item.albumId}`);
+
+    if(!ids?.length) {
+      return null;
+    }
+
     const { result: queueTracks } = await this.client.tracks.getTracks({ "track-ids": ids });
     const currentTrack = queueTracks?.[currentIndex ?? 0]!;
+
+    if(!currentTrack) {
+      return null;
+    }
 
     return { queueId: `queue:${queueId}`, queueTracks, currentTrack, currentIndex };
   }
