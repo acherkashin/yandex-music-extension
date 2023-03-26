@@ -54,7 +54,11 @@ class BrowserPlayer {
             }
         }
         
-        this.audio.play?.();
+        // if called without parameters - continue playing
+        // if there is payload - respect autoPlay
+        if(!payload || payload.autoPlay) {
+            this.audio.play?.();
+        }
     }
 
     rewind(seconds: number) {
