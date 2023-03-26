@@ -98,7 +98,7 @@ export class Store {
     });
   }
 
-  async init(authData?: IYandexMusicAuthData): Promise<void> {
+  async init(authData?: IYandexMusicAuthData, isFirstRun?: boolean): Promise<void> {
     this._api.setup(authData);
 
     if (authData != null) {
@@ -107,11 +107,13 @@ export class Store {
       // Need fetch liked tracks to show like/dislike button correctly
       await this.refreshLikedTracks();
 
-      const queue = await this.api.getCurrentQueue();
-      if (queue) {
-        const { queueId, queueTracks, currentTrack } = queue;
-        this.saveTrackPlaylist(queueId, queueTracks);
-        this.setTrack(queueId, currentTrack.id, false);
+      if (isFirstRun) {
+        const queue = await this.api.getCurrentQueue();
+        if (queue) {
+          const { queueId, queueTracks, currentTrack } = queue;
+          this.saveTrackPlaylist(queueId, queueTracks);
+          this.setTrack(queueId, currentTrack.id, false);
+        }
       }
     }
 

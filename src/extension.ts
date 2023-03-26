@@ -18,6 +18,7 @@ import open = require("open");
 const packageJson = require('./../package');
 
 let store: Store = null as any;
+let isFirstRun = true;
 
 export function activate(context: vscode.ExtensionContext) {
   const api = new YandexMusicApi();
@@ -45,7 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
     const hasConnection = await isOnline();
     if (hasConnection) {
       const authData = await YandexMusicSettings.instance.getAuthData();
-      await store.init(authData);
+      await store.init(authData, isFirstRun);
+      isFirstRun = false;
 
       if (isExplorerInitialized) {
         treeProvider.refresh();
