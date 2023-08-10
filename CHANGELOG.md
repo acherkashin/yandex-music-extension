@@ -4,6 +4,12 @@ All notable changes to Yandex.Music extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.15.2] - 2023-05-17
+
+- My Wave support
+- Login via token
+- Open tracks, albums, authors in browser
+
 ## [0.12.0] - 2023-01-08
 
 ### Changed
