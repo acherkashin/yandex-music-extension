@@ -27,6 +27,18 @@ This extension contributes the following settings:
 }
 ```
 
+### Remote Development using SSH
+
+When working on a remote machine via SSH, the extension attempts to download and run Electron on the remote machine by default. This is not the correct behavior. We need to instruct Visual Studio Code that the extension should run locally. This can be achieved by using the [remote.extensionKind](https://code.visualstudio.com/docs/remote/ssh#_advanced-forcing-an-extension-to-run-locally-remotely) setting as explained in the VS Code documentation.
+
+```json
+{
+    "remote.extensionKind": {
+        "acherkashin.yandex-music-extension": [ "ui" ]
+    },
+}
+```
+
 ## Keyboard Shortcuts
 
 - `Shift + Alt + P` - Play/pause track
