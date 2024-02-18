@@ -8,6 +8,11 @@ export function createTrackAlbumIds(tracks: { id: string | number, albumId: stri
  * Every track can be many albums so to perform operation with track from certain album need to use combination of track id and album id
  */
 export function createAlbumTrackId(track: { id: string | number, albumId: string | number }): string {
+  if (!track.albumId) {
+    // Some tracks do not have album.
+    return track.id.toString();
+  }
+
   return `${track.id}:${track.albumId}`;
 }
 

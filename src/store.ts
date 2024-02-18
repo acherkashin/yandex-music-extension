@@ -213,13 +213,19 @@ export class Store {
       return;
     }
 
-    const { result } = await (this.likesPromise = this.api.getLikedTracks());
-    const podcasts = result.filter(item => item.type === 'podcast-episode');
-    const tracks = result.filter(item => item.type === 'music');
-    this.saveTrackPlaylist(LIKED_PODCASTS_PLAYLIST_ID, podcasts);
-    this.saveTrackPlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks);
-
-    this.likesPromise = null;
+    try {
+      const result = await (this.likesPromise = this.api.getLikedTracks());
+      const podcasts = result.filter(item => item.type === 'podcast-episode');
+      const tracks = result.filter(item => item.type === 'music');
+      this.saveTrackPlaylist(LIKED_PODCASTS_PLAYLIST_ID, podcasts);
+      this.saveTrackPlaylist(LIKED_TRACKS_PLAYLIST_ID, tracks);
+    }
+    catch (ex) {
+      defaultTraceSource.error(`Error while refreshing liked tracks: ${ex?.toString()}`);
+    }
+    finally {
+      this.likesPromise = null;
+    }
   }
 
   play(track?: { itemId: string; playListId: string }) {

@@ -59,7 +59,7 @@ export class YandexMusicApi {
     }
 
     this.token = token;
-    
+
     this.client = new YandexMusicClient({
       BASE: "https://api.music.yandex.net:443",
       HEADERS: {
@@ -133,12 +133,12 @@ export class YandexMusicApi {
     return resp.result.blocks ?? [];
   }
 
-  async getLikedTracks() {
-    const result = await this.client!.tracks.getLikedTracksIds(this.userId!);
-    const ids = createTrackAlbumIds(result.result.library.tracks);
-    const tracks = await this.client!.tracks.getTracks({ "track-ids": ids });
+  async getLikedTracks(): Promise<Track[]> {
+    const likedTracksResp = await this.client!.tracks.getLikedTracksIds(this.userId!);
+    const ids = createTrackAlbumIds(likedTracksResp.result.library.tracks);
+    const tracksResp = await this.client!.tracks.getTracks({ "track-ids": ids });
 
-    return tracks;
+    return tracksResp.result;
   }
 
   async getArtistTracks(artistId: string) {
