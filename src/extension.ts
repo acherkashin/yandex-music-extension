@@ -69,7 +69,9 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
       vscode.window
         .showErrorMessage('Ошибка со связью. Проверьте подключение к интернету.', "Обновить")
-        .then(() => {
+        .then((result) => {
+          if (!result) { return; }
+
           vscode.commands.executeCommand("yandexMusic.refresh");
         });
     }
