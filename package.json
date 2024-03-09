@@ -327,7 +327,7 @@
   },
   "dependencies": {
     "@electron/get": "^2.0.2",
-    "axios": "^0.21.2",
+    "axios": "^1.6.3",
     "extract-zip": "^2.0.1",
     "mobx": "^5.15.4",
     "open": "^7.0.3",
